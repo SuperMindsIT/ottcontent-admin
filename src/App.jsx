@@ -5,6 +5,7 @@ import { LoginLayout } from "./layouts/LoginLayout";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import GamesPage from "./pages/GamesPage";
+import AddGamesPage from "./pages/AddGamesPage";
 
 const defaultTheme = createTheme();
 
@@ -18,8 +19,8 @@ const App = () => {
         <Route element={<ProtectedLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/games" element={<GamesPage />} />
-          {/* <Route path="profile" element={<ProfilePage />} />
-          <Route path="settings" element={<SettingsPage />} /> */}
+          <Route path="/games/add" element={<AddGamesPage />} />
+          {/* <Route path="/games/:gameId" element={<AddGamesPage />} /> */}
         </Route>
       </Routes>
     </ThemeProvider>

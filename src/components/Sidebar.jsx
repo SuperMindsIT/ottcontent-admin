@@ -45,6 +45,8 @@ const links = [
 export default function Sidebar() {
   const location = useLocation();
 
+  console.log(location.pathname, "jnjnj");
+
   return (
     <Box sx={{ display: "flex" }}>
       <Drawer
@@ -79,20 +81,30 @@ export default function Sidebar() {
               <ListItemButton
                 component={Link}
                 to={item.navigate}
-                selected={location.pathname === item.navigate}
+                selected={
+                  location.pathname === item.navigate ||
+                  location.pathname.startsWith(item.navigate)
+                }
                 sx={{
                   backgroundColor:
-                    location.pathname === item.navigate
+                    location.pathname === item.navigate ||
+                    location.pathname.startsWith(item.navigate)
                       ? "rgba(14, 139, 255, 0.12)"
                       : "transparent",
                   borderRadius:
-                    location.pathname === item.navigate ? "8px" : "0px",
+                    location.pathname === item.navigate ||
+                    location.pathname.startsWith(item.navigate)
+                      ? "8px"
+                      : "0px",
                 }}
               >
                 <ListItemText
                   sx={{
                     color:
-                      location.pathname === item.navigate ? "#148bfa" : "#fff",
+                      location.pathname === item.navigate ||
+                      location.pathname.startsWith(item.navigate)
+                        ? "#148bfa"
+                        : "#fff",
                     "& .MuiTypography-root": {
                       fontWeight: 800,
                     },

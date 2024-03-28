@@ -1,7 +1,7 @@
 import { Navigate, useOutlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import Sidebar from "../components/Sidebar";
 import { Box } from "@mui/material";
+import Sidebar from "../components/Sidebar";
 
 export const ProtectedLayout = () => {
   const { user } = useAuth();
@@ -14,7 +14,7 @@ export const ProtectedLayout = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "row" }}>
       <Sidebar />
-      <Box sx={{ my: 17, mx: 11 }}>{outlet}</Box>
+      <Box sx={{ my: 18, mx: 11, width: "100%" }}>{outlet}</Box>
     </Box>
   );
 };
