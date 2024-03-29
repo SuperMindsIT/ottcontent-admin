@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { appsApi } from "./api";
 
-const useGamesApi = () => {
+const useTonesApi = () => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const { data } = await appsApi.get("/games");
-      console.log(data, "games data");
+      const { data } = await appsApi.get("/tones");
+      console.log(data, "tones data");
       setData(data);
       setIsLoading(false);
     } catch (error) {
@@ -20,11 +20,11 @@ const useGamesApi = () => {
   const postData = async (gameData) => {
     try {
       setIsLoading(true);
-      const response = await appsApi.post("/games", gameData);
-      console.log("Game posted successfully:", response.data);
+      const response = await appsApi.post("/tones", gameData);
+      console.log("Tone posted successfully:", response.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
-      console.error("Error posting game:", error);
+      console.error("Error posting Tone:", error);
     } finally {
       setIsLoading(false);
     }
@@ -41,4 +41,4 @@ const useGamesApi = () => {
   };
 };
 
-export default useGamesApi;
+export default useTonesApi;

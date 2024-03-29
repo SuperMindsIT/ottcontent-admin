@@ -3,7 +3,7 @@ import DataTable from "../components/DataTable";
 import PropTypes from "prop-types";
 
 const MainLayout = (props) => {
-  const { title, onAddClick, rows, columns } = props;
+  const { title, onAddClick, rows, columns, isLoading } = props;
 
   return (
     <div>
@@ -28,7 +28,7 @@ const MainLayout = (props) => {
           + Add
         </Button>
       </Box>
-      <DataTable rows={rows} columns={columns} />
+      <DataTable rows={rows} columns={columns} isLoading={isLoading} />
     </div>
   );
 };

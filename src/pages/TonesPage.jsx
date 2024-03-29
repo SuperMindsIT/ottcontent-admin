@@ -1,37 +1,37 @@
 import { Button, Link, Stack } from "@mui/material";
 import MainLayout from "../layouts/MainLayout";
 import { useNavigate } from "react-router-dom";
-import useGamesApi from "../api/useGamesApi";
+import useTonesApi from "../api/useTonesApi";
 
-const GamesPage = () => {
+const TonesPage = () => {
   let navigate = useNavigate();
 
-  const { data, isLoading, postData } = useGamesApi();
+  const { data, isLoading, postData } = useTonesApi();
   // console.log(data, "data for games in games page");
 
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },
-    { field: "title", headerName: "Title", flex: 1 },
-    {
-      field: "iframe",
-      headerName: "iframe",
-      sortable: false,
-      renderCell: (params) => (
-        <Link
-          sx={{
-            textDecoration: "none",
-            color: "#0E8BFF",
-            fontWeight: 500,
-            textDecorationLine: "underline",
-          }}
-          target="_blank"
-          href={`${params.row.iframe}`}
-        >
-          LINK
-        </Link>
-      ),
-      flex: 1,
-    },
+    { field: "title", headerName: "Name", flex: 1 },
+    // {
+    //   field: "iframe",
+    //   headerName: "iframe",
+    //   sortable: false,
+    //   renderCell: (params) => (
+    //     <Link
+    //       sx={{
+    //         textDecoration: "none",
+    //         color: "#0E8BFF",
+    //         fontWeight: 500,
+    //         textDecorationLine: "underline",
+    //       }}
+    //       target="_blank"
+    //       href={`${params.row.iframe}`}
+    //     >
+    //       LINK
+    //     </Link>
+    //   ),
+    //   flex: 1,
+    // },
     {
       field: "actions",
       headerName: "Actions",
@@ -105,9 +105,9 @@ const GamesPage = () => {
       rows={data}
       columns={columns}
       isLoading={isLoading}
-      onAddClick={() => navigate("/games/add")}
+      onAddClick={() => navigate("/tones/add")}
     />
   );
 };
 
-export default GamesPage;
+export default TonesPage;
