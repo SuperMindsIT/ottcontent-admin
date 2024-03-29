@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import InputBox from "../components/InputBox";
@@ -6,15 +6,25 @@ import * as yup from "yup";
 import UploadFile from "../components/UploadFile";
 import CustomButton from "../components/CustomButton";
 import useTonesApi from "../api/useTonesApi";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = yup.object({
-  name: yup.string("Enter the name of game").required("Name is required"),
+  name: yup.string("Enter the name of tone").required("Tone is required"),
 });
 
-const AddTonesPage = () => {
-  const { postData } = useTonesApi();
+const EditTonesPage = () => {
+  const { toneId } = useParams();
+  const { putData, getDataById, toneById, isLoading } = useTonesApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    getDataById(toneId);
+    console.log(toneId, "tone id kudg kefgh ");
+    console.log(toneById, "tone in edit tone");
+  }, [toneId]);
 
   const formik = useFormik({
     initialValues: {
@@ -27,9 +37,24 @@ const AddTonesPage = () => {
       };
       const formData = new FormData();
       formData.append("string", selectedFile);
-      await postData(data, formData);
+      await putData(toneId, data, formData);
+      {
+        !isLoading && navigate("/tones");
+      }
     },
   });
+
+  useEffect(() => {
+    if (toneById) {
+      formik.setValues({
+        name: toneById.title || "",
+      });
+    }
+  }, [toneById]);
+
+  const handleCancel = () => {
+    navigate("/tones");
+  };
 
   return (
     <div>
@@ -41,7 +66,7 @@ const AddTonesPage = () => {
           mb: 5,
         }}
       >
-        + Add Tone
+        Edit Tone
       </Typography>
       <Box
         sx={{
@@ -74,7 +99,11 @@ const AddTonesPage = () => {
             />
             <Stack direction="row" spacing={2}>
               <CustomButton btn="primary" label="save" type="submit" />
-              <CustomButton btn="secondary" label="cancel" />
+              <CustomButton
+                btn="secondary"
+                label="cancel"
+                onClick={handleCancel}
+              />
             </Stack>
           </form>
         </Box>
@@ -83,4 +112,4 @@ const AddTonesPage = () => {
   );
 };
 
-export default AddTonesPage;
+export default EditTonesPage;
