@@ -6,7 +6,12 @@ import useTonesApi from "../api/useTonesApi";
 const TonesPage = () => {
   let navigate = useNavigate();
 
-  const { data, isLoading } = useTonesApi();
+  const { data, isLoading, deleteData } = useTonesApi();
+
+  const handleToneClick = (toneId) => {
+    // Navigate to the route for the clicked game
+    navigate(`/tones/${toneId}`);
+  };
 
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },
@@ -15,10 +20,13 @@ const TonesPage = () => {
       field: "actions",
       headerName: "Actions",
       sortable: false,
-      renderCell: () => {
+      renderCell: (params) => {
         return (
           <Stack direction="row" spacing={2}>
-            <Button sx={{ px: 0, minWidth: 0 }}>
+            <Button
+              sx={{ px: 0, minWidth: 0 }}
+              onClick={() => handleToneClick(params.id)}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -34,7 +42,10 @@ const TonesPage = () => {
                 </g>
               </svg>
             </Button>
-            <Button sx={{ px: 0, minWidth: 0 }}>
+            <Button
+              sx={{ px: 0, minWidth: 0 }}
+              onClick={() => deleteData(params.id)}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="21"
