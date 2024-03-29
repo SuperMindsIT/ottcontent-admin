@@ -45,8 +45,6 @@ const links = [
 export default function Sidebar() {
   const location = useLocation();
 
-  console.log(location.pathname, "jnjnj");
-
   return (
     <Box sx={{ display: "flex" }}>
       <Drawer

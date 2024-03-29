@@ -40,4 +40,5 @@ MainLayout.propTypes = {
   onAddClick: PropTypes.func,
   rows: PropTypes.array,
   columns: PropTypes.array,
+  isLoading: PropTypes.bool,
 };

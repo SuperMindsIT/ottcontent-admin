@@ -6,8 +6,7 @@ import useGamesApi from "../api/useGamesApi";
 const GamesPage = () => {
   let navigate = useNavigate();
 
-  const { data, isLoading, postData } = useGamesApi();
-  // console.log(data, "data for games in games page");
+  const { data, isLoading, deleteData } = useGamesApi();
 
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },
@@ -36,7 +35,7 @@ const GamesPage = () => {
       field: "actions",
       headerName: "Actions",
       sortable: false,
-      renderCell: () => {
+      renderCell: (params) => {
         return (
           <Stack direction="row" spacing={2}>
             <Button sx={{ px: 0, minWidth: 0 }}>
@@ -55,7 +54,10 @@ const GamesPage = () => {
                 </g>
               </svg>
             </Button>
-            <Button sx={{ px: 0, minWidth: 0 }}>
+            <Button
+              sx={{ px: 0, minWidth: 0 }}
+              onClick={() => deleteData(params.id)}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="21"
@@ -78,24 +80,6 @@ const GamesPage = () => {
           </Stack>
         );
       },
-    },
-  ];
-
-  const rows = [
-    {
-      createdAt: "25-02-2024",
-      title: "Dodgeball Battle",
-      iframe: "https://18candleriggs.com/",
-    },
-    {
-      createdAt: "26-02-2024",
-      title: "King Of Strings",
-      iframe: "https://luuminax.com/",
-    },
-    {
-      createdAt: "27-02-2024",
-      title: "Pop The Virus",
-      iframe: "https://superminds.dev/",
     },
   ];
 

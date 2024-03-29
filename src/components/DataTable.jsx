@@ -30,7 +30,7 @@ export default function DataTable(props) {
           pageSizeOptions={[5, 10]}
           rowHeight={40}
           autoHeight
-          getRowId={(row) => row.createdAt}
+          getRowId={(row) => row.id}
           rowSelection={false}
           sx={{
             borderRadius: "30px",
@@ -89,4 +89,5 @@ export default function DataTable(props) {
 DataTable.propTypes = {
   rows: PropTypes.array,
   columns: PropTypes.array,
+  isLoading: PropTypes.bool,
 };

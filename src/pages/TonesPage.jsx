@@ -1,4 +1,4 @@
-import { Button, Link, Stack } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import MainLayout from "../layouts/MainLayout";
 import { useNavigate } from "react-router-dom";
 import useTonesApi from "../api/useTonesApi";
@@ -6,32 +6,11 @@ import useTonesApi from "../api/useTonesApi";
 const TonesPage = () => {
   let navigate = useNavigate();
 
-  const { data, isLoading, postData } = useTonesApi();
-  // console.log(data, "data for games in games page");
+  const { data, isLoading } = useTonesApi();
 
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },
     { field: "title", headerName: "Name", flex: 1 },
-    // {
-    //   field: "iframe",
-    //   headerName: "iframe",
-    //   sortable: false,
-    //   renderCell: (params) => (
-    //     <Link
-    //       sx={{
-    //         textDecoration: "none",
-    //         color: "#0E8BFF",
-    //         fontWeight: 500,
-    //         textDecorationLine: "underline",
-    //       }}
-    //       target="_blank"
-    //       href={`${params.row.iframe}`}
-    //     >
-    //       LINK
-    //     </Link>
-    //   ),
-    //   flex: 1,
-    // },
     {
       field: "actions",
       headerName: "Actions",
@@ -81,27 +60,9 @@ const TonesPage = () => {
     },
   ];
 
-  const rows = [
-    {
-      createdAt: "25-02-2024",
-      title: "Dodgeball Battle",
-      iframe: "https://18candleriggs.com/",
-    },
-    {
-      createdAt: "26-02-2024",
-      title: "King Of Strings",
-      iframe: "https://luuminax.com/",
-    },
-    {
-      createdAt: "27-02-2024",
-      title: "Pop The Virus",
-      iframe: "https://superminds.dev/",
-    },
-  ];
-
   return (
     <MainLayout
-      title="Games"
+      title="Tones"
       rows={data}
       columns={columns}
       isLoading={isLoading}
