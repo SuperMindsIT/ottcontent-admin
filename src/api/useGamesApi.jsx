@@ -3,13 +3,14 @@ import { appsApi } from "./api";
 
 const useGamesApi = () => {
   const [data, setData] = useState([]);
+  const [gameById, setGameById] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = async () => {
     try {
       setIsLoading(true);
       const { data } = await appsApi.get("/games");
-      console.log(data, "games data");
+      // console.log(data, "games data");
       setData(data);
       setIsLoading(false);
     } catch (error) {
@@ -35,6 +36,21 @@ const useGamesApi = () => {
     }
   };
 
+  const putData = async (id, gameData, thumbnailData) => {
+    try {
+      setIsLoading(true);
+      const response = await appsApi.put(`/games/${id}`, gameData);
+      console.log("Game updated successfully:", response.data);
+      // await appsApi.put(`/games/${id}/thumbnail`, thumbnailData);
+      // console.log("Thumbnail updated successfully");
+      fetchData(); // Refresh data after updating
+    } catch (error) {
+      console.error("Error updating game:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const deleteData = async (id) => {
     try {
       setIsLoading(true);
@@ -53,6 +69,7 @@ const useGamesApi = () => {
       setIsLoading(true);
       const response = await appsApi.get(`/games/${id}`);
       console.log("Game data by id:", response.data);
+      setGameById(response?.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
       console.error("Error posting game:", error);
@@ -68,9 +85,11 @@ const useGamesApi = () => {
   return {
     data,
     isLoading,
+    gameById,
     postData,
     deleteData,
     getDataById,
+    putData,
   };
 };
 

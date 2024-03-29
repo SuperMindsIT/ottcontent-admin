@@ -7,6 +7,10 @@ const GamesPage = () => {
   let navigate = useNavigate();
 
   const { data, isLoading, deleteData } = useGamesApi();
+  const handleGameClick = (gameId) => {
+    // Navigate to the route for the clicked game
+    navigate(`/games/${gameId}`);
+  };
 
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },
@@ -38,7 +42,10 @@ const GamesPage = () => {
       renderCell: (params) => {
         return (
           <Stack direction="row" spacing={2}>
-            <Button sx={{ px: 0, minWidth: 0 }}>
+            <Button
+              sx={{ px: 0, minWidth: 0 }}
+              onClick={() => handleGameClick(params.id)}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
