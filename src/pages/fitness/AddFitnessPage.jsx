@@ -10,6 +10,8 @@ import UploadFile from "../../components/UploadFile";
 import CustomButton from "../../components/CustomButton";
 import useFitnessApi from "../../api/useFitnessApi";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { convertToRaw } from "draft-js";
+import draftToHtml from "draftjs-to-html";
 
 const validationSchema = yup.object({
   name: yup.string("Enter the name of game").required("Name is required"),
@@ -24,24 +26,52 @@ const AddFitnessPage = () => {
 
   const onEditorStateChange = (editorState) => {
     setEditorState(editorState);
+    console.log(editorState, "editor state");
+    // Convert ContentState to raw format
+    const rawContentState = convertToRaw(editorState.getCurrentContent());
+
+    // Convert rawContentState to HTML
+    const htmlContent = draftToHtml(rawContentState);
+    console.log(typeof htmlContent);
   };
 
   const formik = useFormik({
     initialValues: {
-      name: "",
-      iframe: "",
+      title_en: "",
+      description_en: "",
+      content_en: "",
+      title_es: "",
+      description_es: "",
+      content_es: "",
+      title_gr: "",
+      description_gr: "",
+      content_gr: "",
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const data = {
-        title: values.name,
-        iframe: values.iframe,
+        title_en: values.title_en,
+        description_en: values.description_en,
+        content_en: values.content_en,
+        title_es: values.title_es,
+        description_es: values.description_es,
+        content_es: values.content_es,
+        title_gr: values.title_gr,
+        description_gr: values.description_gr,
+        content_gr: values.content_gr,
       };
       const formData = new FormData();
       formData.append("thumbnail", selectedFile);
       await postData(data, formData);
     },
   });
+
+  const [showEditor, setShowEditor] = useState(false);
+
+  const handleEditorClick = () => {
+    setShowEditor(!showEditor);
+    console.log(showEditor, "show editor in fitness");
+  };
 
   return (
     <div>
@@ -105,6 +135,11 @@ const AddFitnessPage = () => {
               errors={formik.errors.description}
               placeholder="Description*"
             />
+            {/* <div
+              dangerouslySetInnerHTML={{
+                __html: htmlString,
+              }}
+            ></div> */}
             <Editor
               editorState={editorState}
               wrapperClassName="demo-wrapper"
