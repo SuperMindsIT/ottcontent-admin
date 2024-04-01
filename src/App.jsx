@@ -10,6 +10,8 @@ import AddGamesPage from "./pages/games/AddGamesPage";
 import AddTonesPage from "./pages/AddTonesPage";
 import EditGamesPage from "./pages/games/EditGamesPage";
 import EditTonesPage from "./pages/EditTonesPage";
+import FitnessPage from "./pages/fitness/FitnessPage";
+import AddFitnessPage from "./pages/fitness/AddFitnessPage";
 
 const defaultTheme = createTheme();
 
@@ -24,12 +26,12 @@ const App = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/games" element={<GamesPage />} />
           <Route path="/tones" element={<TonesPage />} />
+          <Route path="/fitness" element={<FitnessPage />} />
           <Route path="/games/add" element={<AddGamesPage />} />
           <Route path="/tones/add" element={<AddTonesPage />} />
+          <Route path="/fitness/add" element={<AddFitnessPage />} />
           <Route path="/games/:gameId" element={<EditGamesPage />} />
           <Route path="/tones/:toneId" element={<EditTonesPage />} />
-
-          {/* <Route path="/games/:gameId" element={<AddGamesPage />} /> */}
         </Route>
       </Routes>
     </ThemeProvider>
