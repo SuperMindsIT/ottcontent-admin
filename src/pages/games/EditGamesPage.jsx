@@ -1,21 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import InputBox from "../components/InputBox";
+import InputBox from "../../components/InputBox";
 import * as yup from "yup";
-import UploadFile from "../components/UploadFile";
-import CustomButton from "../components/CustomButton";
-import useGamesApi from "../api/useGamesApi";
+import UploadFile from "../../components/UploadFile";
+import CustomButton from "../../components/CustomButton";
+import useGamesApi from "../../api/useGamesApi";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = yup.object({
   name: yup.string("Enter the name of game").required("Name is required"),
   iframe: yup.string("Enter the link of game").required("Iframe is required"),
 });
 
-const AddGamesPage = () => {
-  const { postData } = useGamesApi();
+const EditGamesPage = () => {
+  const { gameId } = useParams();
+  const { putData, getDataById, gameById, isLoading } = useGamesApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    getDataById(gameId);
+    console.log(gameById, "game in edit game");
+  }, [gameId]);
 
   const formik = useFormik({
     initialValues: {
@@ -30,9 +39,25 @@ const AddGamesPage = () => {
       };
       const formData = new FormData();
       formData.append("thumbnail", selectedFile);
-      await postData(data, formData);
+      await putData(gameId, data, formData);
+      {
+        !isLoading && navigate("/games");
+      }
     },
   });
+
+  useEffect(() => {
+    if (gameById) {
+      formik.setValues({
+        name: gameById.title || "",
+        iframe: gameById.iframe || "",
+      });
+    }
+  }, [gameById]);
+
+  const handleCancel = () => {
+    navigate("/games");
+  };
 
   return (
     <div>
@@ -44,7 +69,7 @@ const AddGamesPage = () => {
           mb: 5,
         }}
       >
-        + Add Game
+        Edit Game
       </Typography>
       <Box
         sx={{
@@ -88,7 +113,11 @@ const AddGamesPage = () => {
             />
             <Stack direction="row" spacing={2}>
               <CustomButton btn="primary" label="save" type="submit" />
-              <CustomButton btn="secondary" label="cancel" />
+              <CustomButton
+                btn="secondary"
+                label="cancel"
+                onClick={handleCancel}
+              />
             </Stack>
           </form>
         </Box>
@@ -97,4 +126,4 @@ const AddGamesPage = () => {
   );
 };
 
-export default AddGamesPage;
+export default EditGamesPage;

@@ -1,7 +1,7 @@
 import { Button, Link, Stack } from "@mui/material";
-import MainLayout from "../layouts/MainLayout";
+import MainLayout from "../../layouts/MainLayout";
 import { useNavigate } from "react-router-dom";
-import useGamesApi from "../api/useGamesApi";
+import useGamesApi from "../../api/useGamesApi";
 
 const GamesPage = () => {
   let navigate = useNavigate();
