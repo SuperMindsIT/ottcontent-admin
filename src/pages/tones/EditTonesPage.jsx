@@ -1,46 +1,59 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import InputBox from "../../components/InputBox";
 import * as yup from "yup";
 import UploadFile from "../../components/UploadFile";
 import CustomButton from "../../components/CustomButton";
-import useGamesApi from "../../api/useGamesApi";
+import useTonesApi from "../../api/useTonesApi";
+import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const validationSchema = yup.object({
-  name: yup.string("Enter the name of game").required("Name is required"),
-  iframe: yup.string("Enter the link of game").required("Iframe is required"),
+  name: yup.string("Enter the name of tone").required("Tone is required"),
 });
 
-const AddGamesPage = () => {
-  const { postData, isLoading } = useGamesApi();
-  const navigate = useNavigate();
+const EditTonesPage = () => {
+  const { toneId } = useParams();
+  const { putData, getDataById, toneById, isLoading } = useTonesApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    getDataById(toneId);
+    console.log(toneId, "tone id kudg kefgh ");
+    console.log(toneById, "tone in edit tone");
+  }, [toneId]);
 
   const formik = useFormik({
     initialValues: {
       name: "",
-      iframe: "",
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const data = {
         title: values.name,
-        iframe: values.iframe,
       };
       const formData = new FormData();
-      formData.append("thumbnail", selectedFile);
-      await postData(data, formData);
+      formData.append("string", selectedFile);
+      await putData(toneId, data, formData);
       {
-        !isLoading && navigate("/games");
+        !isLoading && navigate("/tones");
       }
     },
   });
 
+  useEffect(() => {
+    if (toneById) {
+      formik.setValues({
+        name: toneById.title || "",
+      });
+    }
+  }, [toneById]);
+
   const handleCancel = () => {
-    navigate("/games");
+    navigate("/tones");
   };
 
   return (
@@ -53,7 +66,7 @@ const AddGamesPage = () => {
           mb: 5,
         }}
       >
-        + Add Game
+        Edit Tone
       </Typography>
       <Box
         sx={{
@@ -76,21 +89,10 @@ const AddGamesPage = () => {
               onBlur={formik.handleBlur}
               error={formik.touched.name}
               errors={formik.errors.name}
-              placeholder="Game name*"
-            />
-            <InputBox
-              id="iframe"
-              name="iframe"
-              type="url"
-              value={formik.values.iframe}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.iframe}
-              errors={formik.errors.iframe}
-              placeholder="iframe link*"
+              placeholder="Tone name*"
             />
             <UploadFile
-              label="Upload Game Icon (440x280)*"
+              label="Upload Tone (max 10mb)*"
               sx={{ mt: "22px", mb: "151px" }}
               selectedFile={selectedFile}
               setSelectedFile={setSelectedFile}
@@ -110,4 +112,4 @@ const AddGamesPage = () => {
   );
 };
 
-export default AddGamesPage;
+export default EditTonesPage;

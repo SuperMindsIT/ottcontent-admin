@@ -1,30 +1,29 @@
 import { useEffect, useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import InputBox from "../components/InputBox";
+import InputBox from "../../components/InputBox";
 import * as yup from "yup";
-import UploadFile from "../components/UploadFile";
-import CustomButton from "../components/CustomButton";
-import useTonesApi from "../api/useTonesApi";
+import UploadFile from "../../components/UploadFile";
+import CustomButton from "../../components/CustomButton";
+import useWallpapersApi from "../../api/useWallpapersApi";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const validationSchema = yup.object({
-  name: yup.string("Enter the name of tone").required("Tone is required"),
+  name: yup.string("Enter the name of wallpaper").required("Name is required"),
 });
 
-const EditTonesPage = () => {
-  const { toneId } = useParams();
-  const { putData, getDataById, toneById, isLoading } = useTonesApi();
+const EditWallpapersPage = () => {
+  const { wallpaperId } = useParams();
+  const { putData, getDataById, wallpaperById, isLoading } = useWallpapersApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    getDataById(toneId);
-    console.log(toneId, "tone id kudg kefgh ");
-    console.log(toneById, "tone in edit tone");
-  }, [toneId]);
+    getDataById(wallpaperId);
+    console.log(wallpaperById, "wallpaper in edit wallpaper");
+  }, [wallpaperId]);
 
   const formik = useFormik({
     initialValues: {
@@ -36,24 +35,24 @@ const EditTonesPage = () => {
         title: values.name,
       };
       const formData = new FormData();
-      formData.append("string", selectedFile);
-      await putData(toneId, data, formData);
+      formData.append("image", selectedFile);
+      await putData(wallpaperId, data, formData);
       {
-        !isLoading && navigate("/tones");
+        !isLoading && navigate("/wallpapers");
       }
     },
   });
 
   useEffect(() => {
-    if (toneById) {
+    if (wallpaperById) {
       formik.setValues({
-        name: toneById.title || "",
+        name: wallpaperById.title || "",
       });
     }
-  }, [toneById]);
+  }, [wallpaperById]);
 
   const handleCancel = () => {
-    navigate("/tones");
+    navigate("/wallpapers");
   };
 
   return (
@@ -66,7 +65,7 @@ const EditTonesPage = () => {
           mb: 5,
         }}
       >
-        Edit Tone
+        Edit Wallpaper
       </Typography>
       <Box
         sx={{
@@ -89,10 +88,21 @@ const EditTonesPage = () => {
               onBlur={formik.handleBlur}
               error={formik.touched.name}
               errors={formik.errors.name}
-              placeholder="Tone name*"
+              placeholder="Wallpaper name*"
             />
+            {/* <InputBox
+              id="iframe"
+              name="iframe"
+              type="url"
+              value={formik.values.iframe}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.iframe}
+              errors={formik.errors.iframe}
+              placeholder="iframe link*"
+            /> */}
             <UploadFile
-              label="Upload Tone (max 10mb)*"
+              label="Upload Wallpaper Icon (440x280)*"
               sx={{ mt: "22px", mb: "151px" }}
               selectedFile={selectedFile}
               setSelectedFile={setSelectedFile}
@@ -112,4 +122,4 @@ const EditTonesPage = () => {
   );
 };
 
-export default EditTonesPage;
+export default EditWallpapersPage;
