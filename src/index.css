@@ -15,3 +15,34 @@ body {
   margin: 0;
   padding: 0;
 }
+
+.demo-editor {
+  border-radius: 26px;
+}
+
+.demo-wrapper {
+  border-radius: 26px;
+  /* min-height: 200px; */
+  padding: 15px;
+}
+
+.rdw-editor-toolbar {
+  border: none;
+}
+
+.rdw-option-wrapper,
+.rdw-dropdown-wrapper,
+.rdw-editor-toolbar,
+.demo-editor,
+.demo-wrapper {
+  background: #403e4c;
+}
+
+.rdw-dropdown-wrapper:hover {
+  box-shadow: 1px 1px 0px #bfbdbd;
+  background-color: #403e4c;
+}
+/* 
+.rdw-dropdown-wrapper {
+  background: #403e4c;
+} */
