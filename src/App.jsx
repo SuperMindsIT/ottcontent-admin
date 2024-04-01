@@ -4,11 +4,11 @@ import { ProtectedLayout } from "./layouts/ProtectedLayout";
 import { LoginLayout } from "./layouts/LoginLayout";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
-import GamesPage from "./pages/GamesPage";
+import GamesPage from "./pages/games/GamesPage";
 import TonesPage from "./pages/TonesPage";
-import AddGamesPage from "./pages/AddGamesPage";
+import AddGamesPage from "./pages/games/AddGamesPage";
 import AddTonesPage from "./pages/AddTonesPage";
-import EditGamesPage from "./pages/EditGamesPage";
+import EditGamesPage from "./pages/games/EditGamesPage";
 import EditTonesPage from "./pages/EditTonesPage";
 
 const defaultTheme = createTheme();
