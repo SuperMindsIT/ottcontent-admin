@@ -5,11 +5,14 @@ import { LoginLayout } from "./layouts/LoginLayout";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import GamesPage from "./pages/games/GamesPage";
-import TonesPage from "./pages/TonesPage";
 import AddGamesPage from "./pages/games/AddGamesPage";
-import AddTonesPage from "./pages/AddTonesPage";
 import EditGamesPage from "./pages/games/EditGamesPage";
-import EditTonesPage from "./pages/EditTonesPage";
+import TonesPage from "./pages/tones/TonesPage";
+import AddTonesPage from "./pages/tones/AddTonesPage";
+import EditTonesPage from "./pages/tones/EditTonesPage";
+import WallpapersPage from "./pages/wallpapers/WallpapersPage";
+import AddWallpapersPage from "./pages/wallpapers/AddWallpapersPage";
+import EditWallpapersPage from "./pages/wallpapers/EditWallpapersPage";
 import FitnessPage from "./pages/fitness/FitnessPage";
 import AddFitnessPage from "./pages/fitness/AddFitnessPage";
 
@@ -26,12 +29,20 @@ const App = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/games" element={<GamesPage />} />
           <Route path="/tones" element={<TonesPage />} />
+          <Route path="/wallpapers" element={<WallpapersPage />} />
           <Route path="/fitness" element={<FitnessPage />} />
+          {/* add section */}
           <Route path="/games/add" element={<AddGamesPage />} />
           <Route path="/tones/add" element={<AddTonesPage />} />
+          <Route path="/wallpapers/add" element={<AddWallpapersPage />} />
           <Route path="/fitness/add" element={<AddFitnessPage />} />
+          {/* id section */}
           <Route path="/games/:gameId" element={<EditGamesPage />} />
           <Route path="/tones/:toneId" element={<EditTonesPage />} />
+          <Route
+            path="/wallpapers/:wallpaperId"
+            element={<EditWallpapersPage />}
+          />
         </Route>
       </Routes>
     </ThemeProvider>

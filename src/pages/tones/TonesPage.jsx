@@ -1,42 +1,23 @@
-import { Button, Link, Stack } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import MainLayout from "../../layouts/MainLayout";
 import { useNavigate } from "react-router-dom";
-import useGamesApi from "../../api/useGamesApi";
+import useTonesApi from "../../api/useTonesApi";
 
-const GamesPage = () => {
+const TonesPage = () => {
   let navigate = useNavigate();
 
-  const { data, isLoading, deleteData } = useGamesApi();
-  const handleGameClick = (gameId) => {
-    // Navigate to the route for the clicked game
-    navigate(`/games/${gameId}`);
+  const { data, isLoading, deleteData } = useTonesApi();
+
+  const handleToneClick = (toneId) => {
+    // Navigate to the route for the clicked tone
+    navigate(`/tones/${toneId}`);
   };
 
-  // console.log(data, "games in games page");
+  console.log(data, "tones in tones page");
 
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },
-    { field: "title", headerName: "Title", flex: 1 },
-    {
-      field: "iframe",
-      headerName: "iframe",
-      sortable: false,
-      renderCell: (params) => (
-        <Link
-          sx={{
-            textDecoration: "none",
-            color: "#0E8BFF",
-            fontWeight: 500,
-            textDecorationLine: "underline",
-          }}
-          target="_blank"
-          href={`${params.row.iframe}`}
-        >
-          LINK
-        </Link>
-      ),
-      flex: 1,
-    },
+    { field: "title", headerName: "Name", flex: 1 },
     {
       field: "actions",
       headerName: "Actions",
@@ -46,7 +27,7 @@ const GamesPage = () => {
           <Stack direction="row" spacing={2}>
             <Button
               sx={{ px: 0, minWidth: 0 }}
-              onClick={() => handleGameClick(params.id)}
+              onClick={() => handleToneClick(params.id)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -94,13 +75,13 @@ const GamesPage = () => {
 
   return (
     <MainLayout
-      title="Games"
+      title="Tones"
       rows={data}
       columns={columns}
       isLoading={isLoading}
-      onAddClick={() => navigate("/games/add")}
+      onAddClick={() => navigate("/tones/add")}
     />
   );
 };
 
-export default GamesPage;
+export default TonesPage;

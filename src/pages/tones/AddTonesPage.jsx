@@ -5,16 +5,15 @@ import InputBox from "../../components/InputBox";
 import * as yup from "yup";
 import UploadFile from "../../components/UploadFile";
 import CustomButton from "../../components/CustomButton";
-import useGamesApi from "../../api/useGamesApi";
+import useTonesApi from "../../api/useTonesApi";
 import { useNavigate } from "react-router-dom";
 
 const validationSchema = yup.object({
-  name: yup.string("Enter the name of game").required("Name is required"),
-  iframe: yup.string("Enter the link of game").required("Iframe is required"),
+  name: yup.string("Enter the name of tone").required("Name is required"),
 });
 
-const AddGamesPage = () => {
-  const { postData, isLoading } = useGamesApi();
+const AddTonesPage = () => {
+  const { postData } = useTonesApi();
   const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -22,25 +21,20 @@ const AddGamesPage = () => {
   const formik = useFormik({
     initialValues: {
       name: "",
-      iframe: "",
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const data = {
         title: values.name,
-        iframe: values.iframe,
       };
       const formData = new FormData();
-      formData.append("thumbnail", selectedFile);
+      formData.append("string", selectedFile);
       await postData(data, formData);
-      {
-        !isLoading && navigate("/games");
-      }
     },
   });
 
   const handleCancel = () => {
-    navigate("/games");
+    navigate("/tones");
   };
 
   return (
@@ -53,7 +47,7 @@ const AddGamesPage = () => {
           mb: 5,
         }}
       >
-        + Add Game
+        + Add Tone
       </Typography>
       <Box
         sx={{
@@ -76,21 +70,10 @@ const AddGamesPage = () => {
               onBlur={formik.handleBlur}
               error={formik.touched.name}
               errors={formik.errors.name}
-              placeholder="Game name*"
-            />
-            <InputBox
-              id="iframe"
-              name="iframe"
-              type="url"
-              value={formik.values.iframe}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.iframe}
-              errors={formik.errors.iframe}
-              placeholder="iframe link*"
+              placeholder="Tone name*"
             />
             <UploadFile
-              label="Upload Game Icon (440x280)*"
+              label="Upload Tone (max 10mb)*"
               sx={{ mt: "22px", mb: "151px" }}
               selectedFile={selectedFile}
               setSelectedFile={setSelectedFile}
@@ -110,4 +93,4 @@ const AddGamesPage = () => {
   );
 };
 
-export default AddGamesPage;
+export default AddTonesPage;

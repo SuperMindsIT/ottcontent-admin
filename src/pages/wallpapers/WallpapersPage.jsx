@@ -1,21 +1,42 @@
-import { Button, Stack } from "@mui/material";
-import MainLayout from "../layouts/MainLayout";
+import { Button, Link, Stack } from "@mui/material";
+import MainLayout from "../../layouts/MainLayout";
 import { useNavigate } from "react-router-dom";
-import useTonesApi from "../api/useTonesApi";
+import useWallpapersApi from "../../api/useWallpapersApi";
 
-const TonesPage = () => {
+const WallpapersPage = () => {
   let navigate = useNavigate();
 
-  const { data, isLoading, deleteData } = useTonesApi();
-
-  const handleToneClick = (toneId) => {
+  const { data, isLoading, deleteData } = useWallpapersApi();
+  const handleWallpaperClick = (wallpaperId) => {
     // Navigate to the route for the clicked game
-    navigate(`/tones/${toneId}`);
+    navigate(`/wallpapers/${wallpaperId}`);
   };
+
+  // console.log(data, "games in games page");
 
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },
     { field: "title", headerName: "Name", flex: 1 },
+    // {
+    //   field: "iframe",
+    //   headerName: "iframe",
+    //   sortable: false,
+    //   renderCell: (params) => (
+    //     <Link
+    //       sx={{
+    //         textDecoration: "none",
+    //         color: "#0E8BFF",
+    //         fontWeight: 500,
+    //         textDecorationLine: "underline",
+    //       }}
+    //       target="_blank"
+    //       href={`${params.row.iframe}`}
+    //     >
+    //       LINK
+    //     </Link>
+    //   ),
+    //   flex: 1,
+    // },
     {
       field: "actions",
       headerName: "Actions",
@@ -25,7 +46,7 @@ const TonesPage = () => {
           <Stack direction="row" spacing={2}>
             <Button
               sx={{ px: 0, minWidth: 0 }}
-              onClick={() => handleToneClick(params.id)}
+              onClick={() => handleWallpaperClick(params.id)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -73,13 +94,13 @@ const TonesPage = () => {
 
   return (
     <MainLayout
-      title="Tones"
+      title="Wallpapers"
       rows={data}
       columns={columns}
       isLoading={isLoading}
-      onAddClick={() => navigate("/tones/add")}
+      onAddClick={() => navigate("/wallpapers/add")}
     />
   );
 };
 
-export default TonesPage;
+export default WallpapersPage;

@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import InputBox from "../components/InputBox";
+import InputBox from "../../components/InputBox";
 import * as yup from "yup";
-import UploadFile from "../components/UploadFile";
-import CustomButton from "../components/CustomButton";
-import useTonesApi from "../api/useTonesApi";
+import UploadFile from "../../components/UploadFile";
+import CustomButton from "../../components/CustomButton";
+import useWallpapersApi from "../../api/useWallpapersApi";
 
 const validationSchema = yup.object({
-  name: yup.string("Enter the name of game").required("Name is required"),
+  name: yup.string("Enter the name of wallpaper").required("Name is required"),
 });
 
-const AddTonesPage = () => {
-  const { postData } = useTonesApi();
+const AddWallpapersPage = () => {
+  const { postData } = useWallpapersApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -26,7 +26,7 @@ const AddTonesPage = () => {
         title: values.name,
       };
       const formData = new FormData();
-      formData.append("string", selectedFile);
+      formData.append("image", selectedFile);
       await postData(data, formData);
     },
   });
@@ -41,7 +41,7 @@ const AddTonesPage = () => {
           mb: 5,
         }}
       >
-        + Add Tone
+        + Add Wallpaper
       </Typography>
       <Box
         sx={{
@@ -64,10 +64,10 @@ const AddTonesPage = () => {
               onBlur={formik.handleBlur}
               error={formik.touched.name}
               errors={formik.errors.name}
-              placeholder="Tone name*"
+              placeholder="Wallpaper name*"
             />
             <UploadFile
-              label="Upload Tone (max 10mb)*"
+              label="Upload Wallpaper (max 10 mb)*"
               sx={{ mt: "22px", mb: "151px" }}
               selectedFile={selectedFile}
               setSelectedFile={setSelectedFile}
@@ -83,4 +83,4 @@ const AddTonesPage = () => {
   );
 };
 
-export default AddTonesPage;
+export default AddWallpapersPage;
