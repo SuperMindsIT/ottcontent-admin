@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-ott
+  namespace: superminds
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: admin-ott
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: admin-ott
+    spec:
+      containers:
+        - name: admin-ott
+          image: registry.digitalocean.com/superminds/admin-ott:${{ env.IMAGE_TAG }}
+          ports:
+            - name: http
+              containerPort: 8080
