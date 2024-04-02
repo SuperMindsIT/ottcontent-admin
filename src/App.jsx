@@ -15,6 +15,7 @@ import AddWallpapersPage from "./pages/wallpapers/AddWallpapersPage";
 import EditWallpapersPage from "./pages/wallpapers/EditWallpapersPage";
 import FitnessPage from "./pages/fitness/FitnessPage";
 import AddFitnessPage from "./pages/fitness/AddFitnessPage";
+import EditFitnessPage from "./pages/fitness/EditFitnessPage";
 
 const defaultTheme = createTheme();
 
@@ -43,6 +44,7 @@ const App = () => {
             path="/wallpapers/:wallpaperId"
             element={<EditWallpapersPage />}
           />
+          <Route path="/fitness/:fitnessId" element={<EditFitnessPage />} />
         </Route>
       </Routes>
     </ThemeProvider>

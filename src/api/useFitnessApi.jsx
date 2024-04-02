@@ -10,6 +10,7 @@ const useFitnessApi = () => {
     try {
       setIsLoading(true);
       const { data } = await appsApi.get("/fitness");
+      console.log(data, "data in fitness");
       setData(data);
       setIsLoading(false);
     } catch (error) {
@@ -29,7 +30,7 @@ const useFitnessApi = () => {
       console.log("Fitness posted successfully:", response.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
-      console.error("Error posting fitness:", error);
+      console.error("Error posting fitness:", error.response.data.error);
     } finally {
       setIsLoading(false);
     }

@@ -4,11 +4,40 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 
-export default function SelectLabels() {
-  const [language, setLanguage] = useState("English");
+export default function SelectLabels({
+  language,
+  setLanguage,
+  handleValueUpdate,
+}) {
+  // const [language, setLanguage] = useState("en");
+
+  // const handleChange = (event) => {
+  //   setLanguage(event.target.value);
+  // };
+
+  // const handleChange = (event) => {
+  //   const selectedLanguage = event.target.value;
+
+  //   // Update values for both selected language and default language
+  //   setValues((prevValues) => ({
+  //     ...prevValues,
+  //     [`title_${selectedLanguage}`]: values[`title_${selectedLanguage}`],
+  //     [`description_${selectedLanguage}`]: values[`description_${selectedLanguage}`],
+  //     [`content_${selectedLanguage}`]: values[`content_${selectedLanguage}`],
+  //   }));
+
+  //   setLanguage(selectedLanguage);
+  // };
 
   const handleChange = (event) => {
-    setLanguage(event.target.value);
+    const selectedLanguage = event.target.value;
+
+    // Update values for both selected language and default language
+    handleValueUpdate(`title_${selectedLanguage}`, "");
+    handleValueUpdate(`description_${selectedLanguage}`, "");
+    handleValueUpdate(`content_${selectedLanguage}`, "");
+
+    setLanguage(selectedLanguage);
   };
 
   return (
@@ -50,8 +79,9 @@ export default function SelectLabels() {
             },
           }}
         >
-          <MenuItem value="English">English</MenuItem>
-          <MenuItem value="Spanish">Spanish</MenuItem>
+          <MenuItem value="en">English</MenuItem>
+          <MenuItem value="es">Spanish</MenuItem>
+          <MenuItem value="gr">Greek</MenuItem>
         </Select>
       </FormControl>
     </Box>
