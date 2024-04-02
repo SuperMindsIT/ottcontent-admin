@@ -30,7 +30,7 @@ const useWallpapersApi = () => {
       console.log("Wallpaper posted successfully:", response.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
-      console.error("Error posting wallpaper:", error);
+      console.error("Error posting wallpaper:", error.response.data.message);
     } finally {
       setIsLoading(false);
     }

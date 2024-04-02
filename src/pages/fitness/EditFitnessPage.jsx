@@ -1,19 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import { EditorState } from "draft-js";
+import { ContentState, EditorState, convertFromHTML } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
+import InputBox from "../../components/InputBox";
 import * as yup from "yup";
 import Dropdown from "../../components/Dropdown";
-import InputBox from "../../components/InputBox";
 import UploadFile from "../../components/UploadFile";
 import CustomButton from "../../components/CustomButton";
 import useFitnessApi from "../../api/useFitnessApi";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
-import { values } from "draft-js/lib/DefaultDraftBlockRenderMap";
-import { useNavigate } from "react-router-dom";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 const validationSchema = yup.object({
   title_en: yup.string().required("Title in English is required"),
@@ -21,14 +21,16 @@ const validationSchema = yup.object({
   content_en: yup.string().required("Content in English is required"),
 });
 
-const AddFitnessPage = () => {
-  const { postData, isLoading } = useFitnessApi();
+const EditFitnessPage = () => {
+  const { fitnessId } = useParams();
   const navigate = useNavigate();
+  const { putData, getDataById, fitnessById, isLoading } = useFitnessApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [language, setLanguage] = useState("en");
 
+  // editor
   const onEditorStateChange = (editorState) => {
     setEditorState(editorState);
     // console.log(editorState, "editor state");
@@ -62,6 +64,23 @@ const AddFitnessPage = () => {
     return data;
   };
 
+  useEffect(() => {
+    getDataById(fitnessId);
+    console.log(fitnessById, "fitness in edit fitness");
+  }, [fitnessId]);
+
+  useEffect(() => {
+    if (fitnessById) {
+      const htmlContent = fitnessById[`content_${language}`] || "";
+      const blocksFromHTML = convertFromHTML(htmlContent);
+      const contentState = ContentState.createFromBlockArray(
+        blocksFromHTML.contentBlocks,
+        blocksFromHTML.entityMap
+      );
+      setEditorState(EditorState.createWithContent(contentState));
+    }
+  }, [fitnessById, language]);
+
   const formik = useFormik({
     initialValues: {
       title_en: "",
@@ -81,12 +100,28 @@ const AddFitnessPage = () => {
       const formData = new FormData();
       formData.append("image", selectedFile);
       console.log(data, "data in fitness");
-      await postData(data, formData);
+      await putData(fitnessId, data, formData);
       {
         !isLoading && navigate("/fitness");
       }
     },
   });
+
+  useEffect(() => {
+    if (fitnessById) {
+      formik.setValues({
+        title_en: fitnessById.title_en || "",
+        description_en: fitnessById.description_en || "",
+        content_en: fitnessById.content_en || "",
+        title_es: fitnessById.title_es || "",
+        description_es: fitnessById.description_es || "",
+        content_es: fitnessById.content_es || "",
+        title_gr: fitnessById.title_gr || "",
+        description_gr: fitnessById.description_gr || "",
+        content_gr: fitnessById.content_gr || "",
+      });
+    }
+  }, [fitnessById]);
 
   const handleValueUpdate = (fieldName, value) => {
     formik.setValues((prevValues) => ({
@@ -109,7 +144,7 @@ const AddFitnessPage = () => {
           mb: 5,
         }}
       >
-        + Add Fitness
+        Edit Fitness
       </Typography>
       <Box
         sx={{
@@ -121,58 +156,19 @@ const AddFitnessPage = () => {
           py: 6,
         }}
       >
-        <UploadFile
-          label="Upload Cover (1920x756)*"
-          sx={{ mb: 2 }}
-          selectedFile={selectedFile}
-          setSelectedFile={setSelectedFile}
-        />
-        <Dropdown
-          language={language}
-          setLanguage={setLanguage}
-          handleValueUpdate={handleValueUpdate}
-        />
-
-        <form onSubmit={formik.handleSubmit}>
-          <Box
-            sx={{
-              backgroundColor: "rgba(63, 63, 63, 0.30)",
-              borderRadius: "23px",
-              px: "26px",
-              pt: "26px",
-              pb: "10px",
-              mb: "77px",
-            }}
-          >
-            {/* <InputBox
-              id="title"
-              name="title"
-              type="text"
-              value={formik.values.title}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.title}
-              errors={formik.errors.title}
-              placeholder="Title*"
-            /> */}
-
-            {/* <InputBox
-              id="description"
-              name="description"
-              type="text"
-              value={formik.values.description}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.description}
-              errors={formik.errors.description}
-              placeholder="Description*"
-            />
-            <Editor
-              editorState={editorState}
-              wrapperClassName="demo-wrapper"
-              editorClassName="demo-editor"
-              onEditorStateChange={onEditorStateChange}
-            /> */}
+        <Box>
+          <UploadFile
+            label="Upload Cover (1920x756)*"
+            sx={{ mb: 2 }}
+            selectedFile={selectedFile}
+            setSelectedFile={setSelectedFile}
+          />
+          <Dropdown
+            language={language}
+            setLanguage={setLanguage}
+            handleValueUpdate={handleValueUpdate}
+          />
+          <form onSubmit={formik.handleSubmit}>
             <InputBox
               id="title"
               name={`title_${language}`}
@@ -201,35 +197,19 @@ const AddFitnessPage = () => {
               editorClassName="demo-editor"
               onEditorStateChange={onEditorStateChange}
             />
-            {/* <textarea
-              id="content"
-              name={`content_${language}`}
-              value={formik.values[`content_${language}`]}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              placeholder="Content*"
-              style={{
-                width: "100%",
-                minHeight: "200px",
-                border: "1px solid #ccc",
-                borderRadius: "5px",
-                padding: "10px",
-                marginTop: "10px",
-              }}
-            /> */}
-          </Box>
-          <Stack direction="row" spacing={2}>
-            <CustomButton btn="primary" label="save" type="submit" />
-            <CustomButton
-              btn="secondary"
-              label="cancel"
-              onClick={handleCancel}
-            />
-          </Stack>
-        </form>
+            <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+              <CustomButton btn="primary" label="save" type="submit" />
+              <CustomButton
+                btn="secondary"
+                label="cancel"
+                onClick={handleCancel}
+              />
+            </Stack>
+          </form>
+        </Box>
       </Box>
     </div>
   );
 };
 
-export default AddFitnessPage;
+export default EditFitnessPage;
