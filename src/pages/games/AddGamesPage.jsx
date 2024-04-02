@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Box, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Typography,
+  Card,
+  CardContent,
+  CardMedia,
+} from "@mui/material";
 import { useFormik } from "formik";
 import InputBox from "../../components/InputBox";
 import * as yup from "yup";
@@ -91,10 +98,20 @@ const AddGamesPage = () => {
             />
             <UploadFile
               label="Upload Game Icon (440x280)*"
-              sx={{ mt: "22px", mb: "151px" }}
+              sx={{ mt: "22px", mb: "50px" }}
               selectedFile={selectedFile}
               setSelectedFile={setSelectedFile}
             />
+            {selectedFile && (
+              <Card sx={{ maxWidth: 400, mb: "50px" }}>
+                <CardMedia
+                  component="img"
+                  height={200}
+                  image={URL.createObjectURL(selectedFile)}
+                  alt="Uploaded Image"
+                />
+              </Card>
+            )}
             <Stack direction="row" spacing={2}>
               <CustomButton btn="primary" label="save" type="submit" />
               <CustomButton

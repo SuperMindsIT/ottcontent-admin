@@ -22,8 +22,8 @@ const EditTonesPage = () => {
 
   useEffect(() => {
     getDataById(toneId);
-    console.log(toneId, "tone id kudg kefgh ");
-    console.log(toneById, "tone in edit tone");
+    // console.log(toneId, "tone id kudg kefgh ");
+    // console.log(toneById, "tone in edit tone");
   }, [toneId]);
 
   const formik = useFormik({

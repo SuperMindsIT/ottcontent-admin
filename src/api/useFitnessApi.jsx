@@ -10,7 +10,7 @@ const useFitnessApi = () => {
     try {
       setIsLoading(true);
       const { data } = await appsApi.get("/fitness");
-      console.log(data, "data in fitness");
+      // console.log(data, "data in fitness");
       setData(data);
       setIsLoading(false);
     } catch (error) {
@@ -27,7 +27,7 @@ const useFitnessApi = () => {
         `/fitness/${response.data.id}/image`,
         imageData
       );
-      console.log("Fitness posted successfully:", response.data);
+      // console.log("Fitness posted successfully:", response.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
       console.error("Error posting fitness:", error.response.data.error);
@@ -40,7 +40,7 @@ const useFitnessApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.put(`/fitness/${id}`, fitnessData);
-      console.log("Fitness updated successfully:", response.data);
+      // console.log("Fitness updated successfully:", response.data);
       fetchData(); // Refresh data after updating
     } catch (error) {
       console.error("Error updating fitness:", error);
@@ -53,7 +53,7 @@ const useFitnessApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.delete(`/fitness/${id}`);
-      console.log("Fitness deleted successfully:", response.data);
+      // console.log("Fitness deleted successfully:", response.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
       console.error("Error deleting fitness:", error);
@@ -66,7 +66,7 @@ const useFitnessApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.get(`/fitness/${id}`);
-      console.log("Fitness data by id:", response.data);
+      // console.log("Fitness data by id:", response.data);
       setFitnessById(response?.data);
       fetchData(); // Refresh data after posting
     } catch (error) {

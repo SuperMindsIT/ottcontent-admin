@@ -29,7 +29,7 @@ const AddTonesPage = () => {
       };
       const formData = new FormData();
       formData.append("audio", selectedFile);
-      console.log(formData, "form data in tones after posting");
+      // console.log(formData, "form data in tones after posting");
       await postData(data, formData);
     },
   });

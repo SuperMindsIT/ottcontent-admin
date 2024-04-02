@@ -27,7 +27,7 @@ const useGamesApi = () => {
         `/games/${response.data.id}/thumbnail`,
         thumbnailData
       );
-      console.log("Game posted successfully:", response.data);
+      // console.log("Game posted successfully:", response.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
       console.error("Error posting game:", error);
@@ -40,7 +40,7 @@ const useGamesApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.put(`/games/${id}`, gameData);
-      console.log("Game updated successfully:", response.data);
+      // console.log("Game updated successfully:", response.data);
       // await appsApi.put(`/games/${id}/thumbnail`, thumbnailData);
       // console.log("Thumbnail updated successfully");
       fetchData(); // Refresh data after updating
@@ -55,8 +55,21 @@ const useGamesApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.delete(`/games/${id}`);
-      console.log("Game deleted successfully:", response.data);
+      // console.log("Game deleted successfully:", response.data);
       fetchData(); // Refresh data after posting
+    } catch (error) {
+      console.error("Error posting game:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deleteImageById = async (id) => {
+    try {
+      setIsLoading(true);
+      const response = await appsApi.delete(`/games/${id}/thumbnail`);
+      // console.log("Game image deleted successfully:", response.data);
+      fetchData();
     } catch (error) {
       console.error("Error posting game:", error);
     } finally {
@@ -68,7 +81,7 @@ const useGamesApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.get(`/games/${id}`);
-      console.log("Game data by id:", response.data);
+      // console.log("Game data by id:", response.data);
       setGameById(response?.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
@@ -90,6 +103,7 @@ const useGamesApi = () => {
     deleteData,
     getDataById,
     putData,
+    deleteImageById,
   };
 };
 

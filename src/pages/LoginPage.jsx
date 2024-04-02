@@ -13,7 +13,7 @@ const LoginPage = () => {
   const onSubmit = async (values, setSubmitting) => {
     alert(JSON.stringify(values));
     setSubmitting(true);
-    await login(values.email);
+    await login(values.username);
   };
 
   return (
@@ -56,12 +56,12 @@ const LoginPage = () => {
             Enter your details below
           </Typography>
           <Formik
-            initialValues={{ email: "", password: "" }}
+            initialValues={{ username: "", password: "" }}
             onSubmit={(values, { setSubmitting }) =>
               onSubmit(values, setSubmitting)
             }
             validationSchema={Yup.object().shape({
-              email: Yup.string().email().required("Required"),
+              username: Yup.string().required("Required"),
               password: Yup.string().required("Required"),
             })}
           >
@@ -78,13 +78,15 @@ const LoginPage = () => {
               return (
                 <form onSubmit={handleSubmit}>
                   <CustomTextField
-                    type="email"
-                    name="email"
+                    type="text"
+                    name="username"
                     placeholder="Username"
-                    value={values.email}
+                    value={values.username}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    helperText={errors.email && touched.email && errors.email}
+                    helperText={
+                      errors.username && touched.username && errors.username
+                    }
                   />
                   <CustomTextField
                     type="password"

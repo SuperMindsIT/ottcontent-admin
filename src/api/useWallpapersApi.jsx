@@ -27,7 +27,7 @@ const useWallpapersApi = () => {
         `/wallpapers/${response.data.id}/image`,
         thumbnailData
       );
-      console.log("Wallpaper posted successfully:", response.data);
+      // console.log("Wallpaper posted successfully:", response.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
       console.error("Error posting wallpaper:", error.response.data.message);
@@ -40,7 +40,7 @@ const useWallpapersApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.put(`/wallpapers/${id}`, wallpaperData);
-      console.log("Wallpaper updated successfully:", response.data);
+      // console.log("Wallpaper updated successfully:", response.data);
       // await appsApi.put(`/games/${id}/thumbnail`, thumbnailData);
       // console.log("Thumbnail updated successfully");
       fetchData(); // Refresh data after updating
@@ -55,7 +55,7 @@ const useWallpapersApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.delete(`/wallpapers/${id}`);
-      console.log("Wallpaper deleted successfully:", response.data);
+      // console.log("Wallpaper deleted successfully:", response.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
       console.error("Error posting wallpaper:", error);
@@ -68,7 +68,7 @@ const useWallpapersApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.get(`/wallpapers/${id}`);
-      console.log("Wallpaper data by id:", response.data);
+      // console.log("Wallpaper data by id:", response.data);
       setWallpaperById(response?.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
