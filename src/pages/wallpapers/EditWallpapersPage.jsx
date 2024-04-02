@@ -22,7 +22,7 @@ const EditWallpapersPage = () => {
 
   useEffect(() => {
     getDataById(wallpaperId);
-    console.log(wallpaperById, "wallpaper in edit wallpaper");
+    // console.log(wallpaperById, "wallpaper in edit wallpaper");
   }, [wallpaperId]);
 
   const formik = useFormik({

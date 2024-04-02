@@ -13,7 +13,7 @@ const TonesPage = () => {
     navigate(`/tones/${toneId}`);
   };
 
-  console.log(data, "tones in tones page");
+  // console.log(data, "tones in tones page");
 
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },

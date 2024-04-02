@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Box, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Typography,
+  Card,
+  CardContent,
+  CardMedia,
+} from "@mui/material";
 import { useFormik } from "formik";
 import InputBox from "../../components/InputBox";
 import * as yup from "yup";
@@ -16,14 +23,15 @@ const validationSchema = yup.object({
 
 const EditGamesPage = () => {
   const { gameId } = useParams();
-  const { putData, getDataById, gameById, isLoading } = useGamesApi();
+  const { putData, getDataById, deleteImageById, gameById, isLoading } =
+    useGamesApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     getDataById(gameId);
-    console.log(gameById, "game in edit game");
+    // console.log(gameById, "game in edit game");
   }, [gameId]);
 
   const formik = useFormik({
@@ -52,11 +60,17 @@ const EditGamesPage = () => {
         name: gameById.title || "",
         iframe: gameById.iframe || "",
       });
+      if (gameById.thumbnail) {
+        setSelectedFile(gameById.thumbnail);
+      }
     }
   }, [gameById]);
 
   const handleCancel = () => {
     navigate("/games");
+  };
+  const handleDeleteImage = (id) => {
+    deleteImageById(id);
   };
 
   return (
@@ -105,12 +119,30 @@ const EditGamesPage = () => {
               errors={formik.errors.iframe}
               placeholder="iframe link*"
             />
-            <UploadFile
-              label="Upload Game Icon (440x280)*"
-              sx={{ mt: "22px", mb: "151px" }}
-              selectedFile={selectedFile}
-              setSelectedFile={setSelectedFile}
-            />
+            {selectedFile !== null ? (
+              <Box sx={{ mt: "22px", mb: "20px" }}>
+                <Card sx={{ maxWidth: 404, mb: "20px" }}>
+                  <CardMedia
+                    component="img"
+                    height={200}
+                    image={selectedFile || (gameById && gameById.thumbnail)}
+                    alt="Uploaded Image"
+                  />
+                </Card>
+                <CustomButton
+                  btn="secondary"
+                  label="Delete Image"
+                  onClick={handleDeleteImage(gameId)}
+                />
+              </Box>
+            ) : (
+              <UploadFile
+                label="Upload Game Icon (440x280)*"
+                sx={{ mt: "22px", mb: "20px" }}
+                selectedFile={selectedFile}
+                setSelectedFile={setSelectedFile}
+              />
+            )}
             <Stack direction="row" spacing={2}>
               <CustomButton btn="primary" label="save" type="submit" />
               <CustomButton

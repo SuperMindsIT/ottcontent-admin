@@ -66,7 +66,7 @@ const EditFitnessPage = () => {
 
   useEffect(() => {
     getDataById(fitnessId);
-    console.log(fitnessById, "fitness in edit fitness");
+    // console.log(fitnessById, "fitness in edit fitness");
   }, [fitnessId]);
 
   useEffect(() => {
@@ -96,10 +96,10 @@ const EditFitnessPage = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const data = updateValuesForLanguages(values, language);
-      console.log("Form submitted with values:", values);
+      //   console.log("Form submitted with values:", values);
       const formData = new FormData();
       formData.append("image", selectedFile);
-      console.log(data, "data in fitness");
+      //   console.log(data, "data in fitness");
       await putData(fitnessId, data, formData);
       {
         !isLoading && navigate("/fitness");
