@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 export default function DataTable(props) {
   const { rows, columns, isLoading } = props;
-  // console.log(rows, "rows data");
+  console.log(rows, "rows data");
 
   return (
     <div style={{ height: 525, width: "100%" }}>
@@ -25,10 +25,10 @@ export default function DataTable(props) {
           columns={columns}
           initialState={{
             pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
+              paginationModel: { page: 0, pageSize: 10 },
             },
           }}
-          pageSizeOptions={[5, 10]}
+          pageSizeOptions={[10, 15, 20]}
           rowHeight={40}
           autoHeight
           getRowId={(row) => row.id}

@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Card, CardMedia, Stack, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import InputBox from "../../components/InputBox";
 import * as yup from "yup";
 import UploadFile from "../../components/UploadFile";
 import CustomButton from "../../components/CustomButton";
 import useWallpapersApi from "../../api/useWallpapersApi";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = yup.object({
   name: yup.string("Enter the name of wallpaper").required("Name is required"),
@@ -13,6 +14,7 @@ const validationSchema = yup.object({
 
 const AddWallpapersPage = () => {
   const { postData } = useWallpapersApi();
+  const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -30,6 +32,9 @@ const AddWallpapersPage = () => {
       await postData(data, formData);
     },
   });
+  const handleCancel = () => {
+    navigate("/wallpapers");
+  };
 
   return (
     <div>
@@ -68,13 +73,27 @@ const AddWallpapersPage = () => {
             />
             <UploadFile
               label="Upload Wallpaper (max 10 mb)*"
-              sx={{ mt: "22px", mb: "151px" }}
+              sx={{ mt: "22px", mb: "51px" }}
               selectedFile={selectedFile}
               setSelectedFile={setSelectedFile}
             />
-            <Stack direction="row" spacing={2}>
+            {selectedFile && (
+              <Card sx={{ maxWidth: 400, mb: "50px" }}>
+                <CardMedia
+                  component="img"
+                  height={200}
+                  image={URL.createObjectURL(selectedFile)}
+                  alt="Uploaded Image"
+                />
+              </Card>
+            )}
+            <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
               <CustomButton btn="primary" label="save" type="submit" />
-              <CustomButton btn="secondary" label="cancel" />
+              <CustomButton
+                btn="secondary"
+                label="cancel"
+                onClick={handleCancel}
+              />
             </Stack>
           </form>
         </Box>

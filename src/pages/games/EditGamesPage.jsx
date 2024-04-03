@@ -32,7 +32,7 @@ const EditGamesPage = () => {
   useEffect(() => {
     getDataById(gameId);
     // console.log(gameById, "game in edit game");
-  }, [gameId]);
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -46,11 +46,17 @@ const EditGamesPage = () => {
         iframe: values.iframe,
       };
       const formData = new FormData();
+      // if (selectedFile instanceof File) {
+      //   formData.append("thumbnail", selectedFile);
+      // }
       formData.append("thumbnail", selectedFile);
-      await putData(gameId, data, formData);
+
+      const gameIdInt = parseInt(gameId, 10);
+      await putData(gameIdInt, data, formData);
       {
         !isLoading && navigate("/games");
       }
+      // console.log(formData);
     },
   });
 
@@ -64,13 +70,23 @@ const EditGamesPage = () => {
         setSelectedFile(gameById.thumbnail);
       }
     }
+    // console.log("use effect 2 is running");
   }, [gameById]);
 
   const handleCancel = () => {
     navigate("/games");
   };
-  const handleDeleteImage = (id) => {
-    deleteImageById(id);
+  // const handleDeleteImage = (id) => {
+  //   deleteImageById(id);
+  // };
+
+  const handleDeleteImage = async (id) => {
+    try {
+      await deleteImageById(id);
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
   };
 
   return (
@@ -119,31 +135,40 @@ const EditGamesPage = () => {
               errors={formik.errors.iframe}
               placeholder="iframe link*"
             />
-            {selectedFile !== null ? (
-              <Box sx={{ mt: "22px", mb: "20px" }}>
+            {selectedFile && selectedFile !== "Not available" ? (
+              <Box sx={{ mt: "22px", mb: "120px" }}>
                 <Card sx={{ maxWidth: 404, mb: "20px" }}>
-                  <CardMedia
-                    component="img"
-                    height={200}
-                    image={selectedFile || (gameById && gameById.thumbnail)}
-                    alt="Uploaded Image"
-                  />
+                  {typeof selectedFile === "string" ? (
+                    <CardMedia
+                      component="img"
+                      height={200}
+                      image={selectedFile}
+                      alt="Uploaded Image"
+                    />
+                  ) : (
+                    <CardMedia
+                      component="img"
+                      height={200}
+                      image={URL.createObjectURL(selectedFile)}
+                      alt="Uploaded Image"
+                    />
+                  )}
                 </Card>
                 <CustomButton
                   btn="secondary"
                   label="Delete Image"
-                  onClick={handleDeleteImage(gameId)}
+                  onClick={() => handleDeleteImage(gameId)}
                 />
               </Box>
             ) : (
               <UploadFile
                 label="Upload Game Icon (440x280)*"
-                sx={{ mt: "22px", mb: "20px" }}
+                sx={{ mt: "22px", mb: "120px" }}
                 selectedFile={selectedFile}
                 setSelectedFile={setSelectedFile}
               />
             )}
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
               <CustomButton btn="primary" label="save" type="submit" />
               <CustomButton
                 btn="secondary"

@@ -197,7 +197,7 @@ const EditFitnessPage = () => {
               editorClassName="demo-editor"
               onEditorStateChange={onEditorStateChange}
             />
-            <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+            <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
               <CustomButton btn="primary" label="save" type="submit" />
               <CustomButton
                 btn="secondary"

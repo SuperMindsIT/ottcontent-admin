@@ -52,7 +52,9 @@ const useTonesApi = () => {
   const putData = async (id, toneData, audioData) => {
     try {
       setIsLoading(true);
-      const response = await appsApi.put(`/tones/${id}`, toneData);
+      let response;
+      response = await appsApi.post(`/tones/${id}/audio`, audioData);
+      response = await appsApi.put(`/tones/${id}`, toneData);
       // console.log("Tone updated successfully:", response.data);
       // await appsApi.put(`/games/${id}/thumbnail`, thumbnailData);
       // console.log("Thumbnail updated successfully");
@@ -91,6 +93,19 @@ const useTonesApi = () => {
     }
   };
 
+  const deleteToneById = async (id) => {
+    try {
+      setIsLoading(true);
+      const response = await appsApi.delete(`/tones/${id}/audio`);
+      // console.log("Game image deleted successfully:", response.data);
+      getDataById(id);
+    } catch (error) {
+      console.error("Error posting tone:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -103,6 +118,7 @@ const useTonesApi = () => {
     deleteData,
     putData,
     getDataById,
+    deleteToneById,
   };
 };
 
