@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import { EditorState } from "draft-js";
+import { EditorState, RichUtils } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import * as yup from "yup";
 import Dropdown from "../../components/Dropdown";
@@ -88,6 +88,28 @@ const AddFitnessPage = () => {
     },
   });
 
+  const toggleBlockType = (blockType) => {
+    onEditorStateChange(RichUtils.toggleBlockType(editorState, blockType));
+  };
+
+  const customToolbarOptions = {
+    options: ["inline", "blockType", "list"], // Include list options
+    inline: {
+      options: ["bold", "italic"], // Show only bold and italic options
+    },
+    blockType: {
+      options: ["Normal", "HeaderOne", "HeaderTwo"], // Show Normal, H1, and H2 options
+      className: undefined,
+      dropdownClassName: undefined,
+      onClick: toggleBlockType,
+    },
+    list: {
+      options: ["unordered", "ordered"],
+      className: undefined,
+      dropdownClassName: undefined,
+    },
+  };
+
   const handleValueUpdate = (fieldName, value) => {
     formik.setValues((prevValues) => ({
       ...prevValues,
@@ -144,35 +166,6 @@ const AddFitnessPage = () => {
               mb: "77px",
             }}
           >
-            {/* <InputBox
-              id="title"
-              name="title"
-              type="text"
-              value={formik.values.title}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.title}
-              errors={formik.errors.title}
-              placeholder="Title*"
-            /> */}
-
-            {/* <InputBox
-              id="description"
-              name="description"
-              type="text"
-              value={formik.values.description}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.description}
-              errors={formik.errors.description}
-              placeholder="Description*"
-            />
-            <Editor
-              editorState={editorState}
-              wrapperClassName="demo-wrapper"
-              editorClassName="demo-editor"
-              onEditorStateChange={onEditorStateChange}
-            /> */}
             <InputBox
               id="title"
               name={`title_${language}`}
@@ -200,6 +193,7 @@ const AddFitnessPage = () => {
               wrapperClassName="demo-wrapper"
               editorClassName="demo-editor"
               onEditorStateChange={onEditorStateChange}
+              // toolbar={customToolbarOptions}
             />
             {/* <textarea
               id="content"
@@ -218,7 +212,7 @@ const AddFitnessPage = () => {
               }}
             /> */}
           </Box>
-          <Stack direction="row" spacing={2}>
+          <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
             <CustomButton btn="primary" label="save" type="submit" />
             <CustomButton
               btn="secondary"

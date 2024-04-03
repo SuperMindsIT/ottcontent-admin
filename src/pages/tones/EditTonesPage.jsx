@@ -15,7 +15,8 @@ const validationSchema = yup.object({
 
 const EditTonesPage = () => {
   const { toneId } = useParams();
-  const { putData, getDataById, toneById, isLoading } = useTonesApi();
+  const { putData, getDataById, deleteToneById, toneById, isLoading } =
+    useTonesApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const EditTonesPage = () => {
     getDataById(toneId);
     // console.log(toneId, "tone id kudg kefgh ");
     // console.log(toneById, "tone in edit tone");
-  }, [toneId]);
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -36,7 +37,7 @@ const EditTonesPage = () => {
         title: values.name,
       };
       const formData = new FormData();
-      formData.append("string", selectedFile);
+      formData.append("audio", selectedFile);
       await putData(toneId, data, formData);
       {
         !isLoading && navigate("/tones");
@@ -49,11 +50,23 @@ const EditTonesPage = () => {
       formik.setValues({
         name: toneById.title || "",
       });
+      if (toneById.audio) {
+        setSelectedFile(toneById.audio);
+      }
     }
   }, [toneById]);
 
   const handleCancel = () => {
     navigate("/tones");
+  };
+
+  const handleDeleteTone = async (id) => {
+    try {
+      await deleteToneById(id);
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Error deleting tone:", error);
+    }
   };
 
   return (
@@ -91,13 +104,51 @@ const EditTonesPage = () => {
               errors={formik.errors.name}
               placeholder="Tone name*"
             />
-            <UploadFile
+            {/* <UploadFile
               label="Upload Tone (max 10mb)*"
               sx={{ mt: "22px", mb: "151px" }}
               selectedFile={selectedFile}
               setSelectedFile={setSelectedFile}
-            />
-            <Stack direction="row" spacing={2}>
+            /> */}
+            {selectedFile && selectedFile !== "Not available" ? (
+              <Box sx={{ mt: "22px", mb: "20px" }}>
+                {typeof selectedFile === "string" ? (
+                  <Box sx={{ mt: 2, mb: "50px" }}>
+                    <audio
+                      controls
+                      src={selectedFile}
+                      style={{ width: "100%" }}
+                    >
+                      Your browser does not support the audio element.
+                    </audio>
+                  </Box>
+                ) : (
+                  <Box sx={{ mt: 2, mb: "50px" }}>
+                    <audio
+                      controls
+                      src={URL.createObjectURL(selectedFile)}
+                      style={{ width: "100%" }}
+                    >
+                      Your browser does not support the audio element.
+                    </audio>
+                  </Box>
+                )}
+
+                <CustomButton
+                  btn="secondary"
+                  label="Delete Tone"
+                  onClick={() => handleDeleteTone(toneId)}
+                />
+              </Box>
+            ) : (
+              <UploadFile
+                label="Upload Tone (max 10mb)*"
+                sx={{ mt: "22px", mb: "151px" }}
+                selectedFile={selectedFile}
+                setSelectedFile={setSelectedFile}
+              />
+            )}
+            <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
               <CustomButton btn="primary" label="save" type="submit" />
               <CustomButton
                 btn="secondary"
@@ -113,3 +164,15 @@ const EditTonesPage = () => {
 };
 
 export default EditTonesPage;
+
+// {selectedFile && (
+//   <Box sx={{ mt: 2, mb: "50px" }}>
+//     <audio
+//       controls
+//       src={URL.createObjectURL(selectedFile)}
+//       style={{ width: "100%" }}
+//     >
+//       Your browser does not support the audio element.
+//     </audio>
+//   </Box>
+// )}

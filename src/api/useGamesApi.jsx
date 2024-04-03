@@ -28,7 +28,7 @@ const useGamesApi = () => {
         thumbnailData
       );
       // console.log("Game posted successfully:", response.data);
-      fetchData(); // Refresh data after posting
+      // fetchData(); // Refresh data after posting
     } catch (error) {
       console.error("Error posting game:", error);
     } finally {
@@ -39,7 +39,10 @@ const useGamesApi = () => {
   const putData = async (id, gameData, thumbnailData) => {
     try {
       setIsLoading(true);
-      const response = await appsApi.put(`/games/${id}`, gameData);
+      let response;
+      response = await appsApi.post(`/games/${id}/thumbnail`, thumbnailData);
+      response = await appsApi.put(`/games/${id}`, gameData);
+
       // console.log("Game updated successfully:", response.data);
       // await appsApi.put(`/games/${id}/thumbnail`, thumbnailData);
       // console.log("Thumbnail updated successfully");
@@ -64,12 +67,13 @@ const useGamesApi = () => {
     }
   };
 
-  const deleteImageById = async (id) => {
+  const getDataById = async (id) => {
     try {
       setIsLoading(true);
-      const response = await appsApi.delete(`/games/${id}/thumbnail`);
-      // console.log("Game image deleted successfully:", response.data);
-      fetchData();
+      const response = await appsApi.get(`/games/${id}`);
+      // console.log("Game data by id:", response.data);
+      setGameById(response?.data);
+      // fetchData(); // Refresh data after posting
     } catch (error) {
       console.error("Error posting game:", error);
     } finally {
@@ -77,13 +81,12 @@ const useGamesApi = () => {
     }
   };
 
-  const getDataById = async (id) => {
+  const deleteImageById = async (id) => {
     try {
       setIsLoading(true);
-      const response = await appsApi.get(`/games/${id}`);
-      // console.log("Game data by id:", response.data);
-      setGameById(response?.data);
-      fetchData(); // Refresh data after posting
+      const response = await appsApi.delete(`/games/${id}/thumbnail`);
+      // console.log("Game image deleted successfully:", response.data);
+      getDataById(id);
     } catch (error) {
       console.error("Error posting game:", error);
     } finally {

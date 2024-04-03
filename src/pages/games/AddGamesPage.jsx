@@ -39,6 +39,7 @@ const AddGamesPage = () => {
       };
       const formData = new FormData();
       formData.append("thumbnail", selectedFile);
+      console.log(typeof selectedFile);
       await postData(data, formData);
       {
         !isLoading && navigate("/games");
@@ -112,7 +113,7 @@ const AddGamesPage = () => {
                 />
               </Card>
             )}
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
               <CustomButton btn="primary" label="save" type="submit" />
               <CustomButton
                 btn="secondary"

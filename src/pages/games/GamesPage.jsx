@@ -1,18 +1,37 @@
-import { Button, Link, Stack } from "@mui/material";
+import { Button, Link, Stack, Box } from "@mui/material";
 import MainLayout from "../../layouts/MainLayout";
 import { useNavigate } from "react-router-dom";
 import useGamesApi from "../../api/useGamesApi";
+import { useState } from "react";
 
 const GamesPage = () => {
   let navigate = useNavigate();
 
   const { data, isLoading, deleteData } = useGamesApi();
+
+  const [deleteId, setDeleteId] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  const handleDeleteClick = (gameId) => {
+    setDeleteId(gameId);
+    setOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    deleteData(deleteId);
+    setOpen(false);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const handleGameClick = (gameId) => {
     // Navigate to the route for the clicked game
     navigate(`/games/${gameId}`);
   };
 
-  // console.log(data, "games in games page");
+  console.log(typeof data, "games in games page");
 
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },
@@ -64,8 +83,8 @@ const GamesPage = () => {
               </svg>
             </Button>
             <Button
-              sx={{ px: 0, minWidth: 0 }}
-              onClick={() => deleteData(params.id)}
+              sx={{ px: 0, minWidth: 0, position: "relative" }}
+              onClick={() => handleDeleteClick(params.id)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -86,6 +105,31 @@ const GamesPage = () => {
                 </g>
               </svg>
             </Button>
+            {open && (
+              <Box
+                onClick={handleClose}
+                sx={{
+                  width: 400,
+                  position: "absolute",
+                  top: "20%",
+                  right: "5%",
+                  // left: "50%",
+                  textAlign: "center",
+                  background: "black",
+                }}
+              >
+                <h2 id="parent-modal-title">Delete Game?</h2>
+                <p id="parent-modal-description">
+                  Are you sure you want to delete this game?
+                </p>
+                <Button onClick={handleClose} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={handleDeleteConfirm} color="primary">
+                  Delete
+                </Button>
+              </Box>
+            )}
           </Stack>
         );
       },

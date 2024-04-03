@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Box, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Typography,
+  Card,
+  CardContent,
+  CardMedia,
+} from "@mui/material";
 import { useFormik } from "formik";
 import InputBox from "../../components/InputBox";
 import * as yup from "yup";
@@ -15,7 +22,8 @@ const validationSchema = yup.object({
 
 const EditWallpapersPage = () => {
   const { wallpaperId } = useParams();
-  const { putData, getDataById, wallpaperById, isLoading } = useWallpapersApi();
+  const { putData, getDataById, deleteImageById, wallpaperById, isLoading } =
+    useWallpapersApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
@@ -23,7 +31,7 @@ const EditWallpapersPage = () => {
   useEffect(() => {
     getDataById(wallpaperId);
     // console.log(wallpaperById, "wallpaper in edit wallpaper");
-  }, [wallpaperId]);
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -36,7 +44,8 @@ const EditWallpapersPage = () => {
       };
       const formData = new FormData();
       formData.append("image", selectedFile);
-      await putData(wallpaperId, data, formData);
+      const wallpaperIntId = parseInt(wallpaperId, 10);
+      await putData(wallpaperIntId, data, formData);
       {
         !isLoading && navigate("/wallpapers");
       }
@@ -48,8 +57,20 @@ const EditWallpapersPage = () => {
       formik.setValues({
         name: wallpaperById.title || "",
       });
+      if (wallpaperById.image) {
+        setSelectedFile(wallpaperById.image);
+      }
     }
   }, [wallpaperById]);
+
+  const handleDeleteImage = async (id) => {
+    try {
+      await deleteImageById(id);
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
+  };
 
   const handleCancel = () => {
     navigate("/wallpapers");
@@ -90,24 +111,46 @@ const EditWallpapersPage = () => {
               errors={formik.errors.name}
               placeholder="Wallpaper name*"
             />
-            {/* <InputBox
-              id="iframe"
-              name="iframe"
-              type="url"
-              value={formik.values.iframe}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.iframe}
-              errors={formik.errors.iframe}
-              placeholder="iframe link*"
-            /> */}
-            <UploadFile
+            {selectedFile && selectedFile !== "Not available" ? (
+              <Box sx={{ mt: "22px", mb: "20px" }}>
+                <Card sx={{ maxWidth: 404, mb: "20px" }}>
+                  {typeof selectedFile === "string" ? (
+                    <CardMedia
+                      component="img"
+                      height={200}
+                      image={selectedFile}
+                      alt="Uploaded Image"
+                    />
+                  ) : (
+                    <CardMedia
+                      component="img"
+                      height={200}
+                      image={URL.createObjectURL(selectedFile)}
+                      alt="Uploaded Image"
+                    />
+                  )}
+                </Card>
+                <CustomButton
+                  btn="secondary"
+                  label="Delete Image"
+                  onClick={() => handleDeleteImage(wallpaperId)}
+                />
+              </Box>
+            ) : (
+              <UploadFile
+                label="Upload wallpaper Icon (440x280)*"
+                sx={{ mt: "22px", mb: "20px" }}
+                selectedFile={selectedFile}
+                setSelectedFile={setSelectedFile}
+              />
+            )}
+            {/* <UploadFile
               label="Upload Wallpaper Icon (440x280)*"
               sx={{ mt: "22px", mb: "151px" }}
               selectedFile={selectedFile}
               setSelectedFile={setSelectedFile}
-            />
-            <Stack direction="row" spacing={2}>
+            /> */}
+            <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
               <CustomButton btn="primary" label="save" type="submit" />
               <CustomButton
                 btn="secondary"

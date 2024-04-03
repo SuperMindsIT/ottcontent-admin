@@ -39,7 +39,9 @@ const useWallpapersApi = () => {
   const putData = async (id, wallpaperData, thumbnailData) => {
     try {
       setIsLoading(true);
-      const response = await appsApi.put(`/wallpapers/${id}`, wallpaperData);
+      let response;
+      response = await appsApi.post(`/wallpapers/${id}/image`, thumbnailData);
+      response = await appsApi.put(`/wallpapers/${id}`, wallpaperData);
       // console.log("Wallpaper updated successfully:", response.data);
       // await appsApi.put(`/games/${id}/thumbnail`, thumbnailData);
       // console.log("Thumbnail updated successfully");
@@ -78,6 +80,19 @@ const useWallpapersApi = () => {
     }
   };
 
+  const deleteImageById = async (id) => {
+    try {
+      setIsLoading(true);
+      const response = await appsApi.delete(`/wallpapers/${id}/image`);
+      // console.log("Game image deleted successfully:", response.data);
+      getDataById(id);
+    } catch (error) {
+      console.error("Error posting game:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -90,6 +105,7 @@ const useWallpapersApi = () => {
     deleteData,
     getDataById,
     putData,
+    deleteImageById,
   };
 };
 

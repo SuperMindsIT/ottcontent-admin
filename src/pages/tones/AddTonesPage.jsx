@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Card, CardContent, Stack, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import InputBox from "../../components/InputBox";
 import * as yup from "yup";
@@ -7,13 +7,14 @@ import UploadFile from "../../components/UploadFile";
 import CustomButton from "../../components/CustomButton";
 import useTonesApi from "../../api/useTonesApi";
 import { useNavigate } from "react-router-dom";
+// import { Audio } from "@mui/material";
 
 const validationSchema = yup.object({
   name: yup.string("Enter the name of tone").required("Name is required"),
 });
 
 const AddTonesPage = () => {
-  const { postData } = useTonesApi();
+  const { postData, isLoading } = useTonesApi();
   const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -31,6 +32,9 @@ const AddTonesPage = () => {
       formData.append("audio", selectedFile);
       // console.log(formData, "form data in tones after posting");
       await postData(data, formData);
+      {
+        !isLoading && navigate("/tones");
+      }
     },
   });
 
@@ -75,11 +79,34 @@ const AddTonesPage = () => {
             />
             <UploadFile
               label="Upload Tone (max 10mb)*"
-              sx={{ mt: "22px", mb: "151px" }}
+              sx={{ mt: "22px", mb: "40px" }}
               selectedFile={selectedFile}
               setSelectedFile={setSelectedFile}
             />
-            <Stack direction="row" spacing={2}>
+            {/* {selectedFile && (
+              <Box sx={{ mt: 2, mb: "151px" }}>
+                <Typography sx={{ color: "#fff", mb: 1 }}>
+                  Selected Audio:
+                </Typography>
+                <Audio
+                  controls
+                  src={URL.createObjectURL(selectedFile)}
+                  style={{ width: "100%" }}
+                />
+              </Box>
+            )} */}
+            {selectedFile && (
+              <Box sx={{ mt: 2, mb: "50px" }}>
+                <audio
+                  controls
+                  src={URL.createObjectURL(selectedFile)}
+                  style={{ width: "100%" }}
+                >
+                  Your browser does not support the audio element.
+                </audio>
+              </Box>
+            )}
+            <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
               <CustomButton btn="primary" label="save" type="submit" />
               <CustomButton
                 btn="secondary"
