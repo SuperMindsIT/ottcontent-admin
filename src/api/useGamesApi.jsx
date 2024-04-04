@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { appsApi } from "./api";
+import { toast } from "react-toastify";
 
 const useGamesApi = () => {
   const [data, setData] = useState([]);
@@ -27,10 +28,10 @@ const useGamesApi = () => {
         `/games/${response.data.id}/thumbnail`,
         thumbnailData
       );
-      // console.log("Game posted successfully:", response.data);
-      // fetchData(); // Refresh data after posting
+      toast.success("Game Created Successfully", "success");
+      toast.success(response.data.message, "success");
     } catch (error) {
-      console.error("Error posting game:", error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }

@@ -11,6 +11,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+:root {
+  --toastify-color-dark: #1a1a1a;
+  --toastify-color-success: #1088fa;
+  --toastify-color-error: #ff2b16;
+}
+
 body {
   margin: 0;
   padding: 0;

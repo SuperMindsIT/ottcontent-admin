@@ -2,6 +2,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Routes, Route } from "react-router-dom";
 import { ProtectedLayout } from "./layouts/ProtectedLayout";
 import { LoginLayout } from "./layouts/LoginLayout";
+import { ToastContainer } from "react-toastify";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import GamesPage from "./pages/games/GamesPage";
@@ -16,12 +17,27 @@ import EditWallpapersPage from "./pages/wallpapers/EditWallpapersPage";
 import FitnessPage from "./pages/fitness/FitnessPage";
 import AddFitnessPage from "./pages/fitness/AddFitnessPage";
 import EditFitnessPage from "./pages/fitness/EditFitnessPage";
+import "react-toastify/dist/ReactToastify.css";
+import "./index.css";
 
 const defaultTheme = createTheme();
 
 const App = () => {
   return (
     <ThemeProvider theme={defaultTheme}>
+      <ToastContainer
+        astContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <Routes>
         <Route element={<LoginLayout />}>
           <Route path="/" element={<LoginPage />} />

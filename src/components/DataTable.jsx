@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 
 export default function DataTable(props) {
   const { rows, columns, isLoading } = props;
-  console.log(rows, "rows data");
 
   return (
     <div style={{ height: 525, width: "100%" }}>
