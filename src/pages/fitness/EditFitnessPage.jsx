@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, Card, CardMedia } from "@mui/material";
 import { useFormik } from "formik";
 import { ContentState, EditorState, convertFromHTML } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
@@ -24,7 +24,8 @@ const validationSchema = yup.object({
 const EditFitnessPage = () => {
   const { fitnessId } = useParams();
   const navigate = useNavigate();
-  const { putData, getDataById, fitnessById, isLoading } = useFitnessApi();
+  const { putData, getDataById, deleteImageById, fitnessById, isLoading } =
+    useFitnessApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -67,7 +68,7 @@ const EditFitnessPage = () => {
   useEffect(() => {
     getDataById(fitnessId);
     // console.log(fitnessById, "fitness in edit fitness");
-  }, [fitnessId]);
+  }, []);
 
   useEffect(() => {
     if (fitnessById) {
@@ -100,7 +101,8 @@ const EditFitnessPage = () => {
       const formData = new FormData();
       formData.append("image", selectedFile);
       //   console.log(data, "data in fitness");
-      await putData(fitnessId, data, formData);
+      const fitnessIntId = parseInt(fitnessId, 10);
+      await putData(fitnessIntId, data, formData);
       {
         !isLoading && navigate("/fitness");
       }
@@ -120,6 +122,9 @@ const EditFitnessPage = () => {
         description_gr: fitnessById.description_gr || "",
         content_gr: fitnessById.content_gr || "",
       });
+      if (fitnessById.image) {
+        setSelectedFile(fitnessById.image);
+      }
     }
   }, [fitnessById]);
 
@@ -132,6 +137,32 @@ const EditFitnessPage = () => {
 
   const handleCancel = () => {
     navigate("/fitness");
+  };
+
+  const handleDeleteImage = async (id) => {
+    try {
+      await deleteImageById(id);
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
+  };
+
+  const customToolbarOptions = {
+    options: ["inline", "blockType", "list"], // Include list options
+    inline: {
+      options: ["bold"], // Show only bold and italic options
+    },
+    blockType: {
+      inDropdown: true, // Ensure blockType selection is in a dropdown
+      options: ["Normal", "H1", "H2"], // Specify block types you want
+      // onClick: toggleBlockType,
+    },
+    list: {
+      options: ["unordered", "ordered"],
+      className: undefined,
+      dropdownClassName: undefined,
+    },
   };
 
   return (
@@ -157,12 +188,45 @@ const EditFitnessPage = () => {
         }}
       >
         <Box>
-          <UploadFile
+          {/* <UploadFile
             label="Upload Cover (1920x756)*"
             sx={{ mb: 2 }}
             selectedFile={selectedFile}
             setSelectedFile={setSelectedFile}
-          />
+          /> */}
+          {selectedFile && selectedFile !== "Not available" ? (
+            <Box sx={{ mt: "22px", mb: "120px" }}>
+              <Card sx={{ maxWidth: 404, mb: "20px" }}>
+                {typeof selectedFile === "string" ? (
+                  <CardMedia
+                    component="img"
+                    height={200}
+                    image={selectedFile}
+                    alt="Uploaded Image"
+                  />
+                ) : (
+                  <CardMedia
+                    component="img"
+                    height={200}
+                    image={URL.createObjectURL(selectedFile)}
+                    alt="Uploaded Image"
+                  />
+                )}
+              </Card>
+              <CustomButton
+                btn="secondary"
+                label="Delete Image"
+                onClick={() => handleDeleteImage(fitnessId)}
+              />
+            </Box>
+          ) : (
+            <UploadFile
+              label="Upload Cover (1920x756)*"
+              sx={{ mb: 2 }}
+              selectedFile={selectedFile}
+              setSelectedFile={setSelectedFile}
+            />
+          )}
           <Dropdown
             language={language}
             setLanguage={setLanguage}
@@ -196,6 +260,7 @@ const EditFitnessPage = () => {
               wrapperClassName="demo-wrapper"
               editorClassName="demo-editor"
               onEditorStateChange={onEditorStateChange}
+              toolbar={customToolbarOptions}
             />
             <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
               <CustomButton btn="primary" label="save" type="submit" />

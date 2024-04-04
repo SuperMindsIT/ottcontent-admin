@@ -11,7 +11,6 @@ const useGamesApi = () => {
     try {
       setIsLoading(true);
       const { data } = await appsApi.get("/games");
-      // console.log(data, "games data");
       setData(data);
       setIsLoading(false);
     } catch (error) {
@@ -30,6 +29,7 @@ const useGamesApi = () => {
       );
       toast.success("Game Created Successfully", "success");
       toast.success(response.data.message, "success");
+      fetchData();
     } catch (error) {
       toast.error(error.response.data.message, "error");
     } finally {
@@ -41,15 +41,13 @@ const useGamesApi = () => {
     try {
       setIsLoading(true);
       let response;
-      response = await appsApi.post(`/games/${id}/thumbnail`, thumbnailData);
       response = await appsApi.put(`/games/${id}`, gameData);
-
-      // console.log("Game updated successfully:", response.data);
-      // await appsApi.put(`/games/${id}/thumbnail`, thumbnailData);
-      // console.log("Thumbnail updated successfully");
+      response = await appsApi.post(`/games/${id}/thumbnail`, thumbnailData);
+      toast.success("Game Updated Successfully", "success");
+      toast.success(response.data.message, "success");
       fetchData(); // Refresh data after updating
     } catch (error) {
-      console.error("Error updating game:", error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -59,10 +57,10 @@ const useGamesApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.delete(`/games/${id}`);
-      // console.log("Game deleted successfully:", response.data);
+      toast.success("Game Deleted Successfully", "success");
       fetchData(); // Refresh data after posting
     } catch (error) {
-      console.error("Error posting game:", error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -72,11 +70,9 @@ const useGamesApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.get(`/games/${id}`);
-      // console.log("Game data by id:", response.data);
       setGameById(response?.data);
-      // fetchData(); // Refresh data after posting
     } catch (error) {
-      console.error("Error posting game:", error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -86,10 +82,10 @@ const useGamesApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.delete(`/games/${id}/thumbnail`);
-      // console.log("Game image deleted successfully:", response.data);
+      toast.success(response.data.message, "success");
       getDataById(id);
     } catch (error) {
-      console.error("Error posting game:", error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }

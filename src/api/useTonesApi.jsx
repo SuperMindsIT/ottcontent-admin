@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { appsApi } from "./api";
+import { toast } from "react-toastify";
 
 const useTonesApi = () => {
   const [data, setData] = useState([]);
@@ -18,19 +19,6 @@ const useTonesApi = () => {
     }
   };
 
-  //   const postData = async (gameData) => {
-  //     try {
-  //       setIsLoading(true);
-  //       const response = await appsApi.post("/tones", gameData);
-  //       console.log("Tone posted successfully:", response.data);
-  //       fetchData(); // Refresh data after posting
-  //     } catch (error) {
-  //       console.error("Error posting Tone:", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
   const postData = async (toneData, audioData) => {
     try {
       setIsLoading(true);
@@ -40,10 +28,11 @@ const useTonesApi = () => {
         `/tones/${response.data.id}/audio`,
         audioData
       );
-      // console.log("Tone posted successfully:", response.data);
+      toast.success("Tone Created Successfully", "success");
+      toast.success(response.data.message, "success");
       fetchData(); // Refresh data after posting
     } catch (error) {
-      console.error("Error posting tone:", error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -53,14 +42,13 @@ const useTonesApi = () => {
     try {
       setIsLoading(true);
       let response;
-      response = await appsApi.post(`/tones/${id}/audio`, audioData);
       response = await appsApi.put(`/tones/${id}`, toneData);
-      // console.log("Tone updated successfully:", response.data);
-      // await appsApi.put(`/games/${id}/thumbnail`, thumbnailData);
-      // console.log("Thumbnail updated successfully");
+      response = await appsApi.post(`/tones/${id}/audio`, audioData);
+      toast.success("Tone Updated Successfully", "success");
+      toast.success(response.data.message, "success");
       fetchData(); // Refresh data after updating
     } catch (error) {
-      console.error("Error updating tone:", error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -70,10 +58,10 @@ const useTonesApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.delete(`/tones/${id}`);
-      // console.log("Tone deleted successfully:", response.data);
+      toast.success("Tone Deleted Successfully", "success");
       fetchData(); // Refresh data after posting
     } catch (error) {
-      console.error("Error posting tone:", error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +75,7 @@ const useTonesApi = () => {
       setToneById(response?.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
-      console.error("Error posting tone:", error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -97,10 +85,10 @@ const useTonesApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.delete(`/tones/${id}/audio`);
-      // console.log("Game image deleted successfully:", response.data);
+      toast.success(response.data.message, "success");
       getDataById(id);
     } catch (error) {
-      console.error("Error posting tone:", error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
