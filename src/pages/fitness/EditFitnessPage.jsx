@@ -25,8 +25,14 @@ const validationSchema = yup.object({
 const EditFitnessPage = () => {
   const { fitnessId } = useParams();
   const navigate = useNavigate();
-  const { putData, getDataById, deleteImageById, fitnessById, isLoading } =
-    useFitnessApi();
+  const {
+    putData,
+    getDataById,
+    deleteImageById,
+    hasApiErrors,
+    fitnessById,
+    isLoading,
+  } = useFitnessApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -108,7 +114,13 @@ const EditFitnessPage = () => {
       }
       await putData(fitnessIntId, data, formData);
       {
-        !isLoading && navigate("/fitness");
+        if (
+          !isLoading &&
+          !hasApiErrors() &&
+          (selectedFile !== "Not available" || selectedFile !== null)
+        ) {
+          navigate("/fitness");
+        }
       }
     },
   });

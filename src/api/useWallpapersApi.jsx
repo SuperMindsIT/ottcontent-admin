@@ -6,6 +6,12 @@ const useWallpapersApi = () => {
   const [data, setData] = useState([]);
   const [wallpaperById, setWallpaperById] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchDataError, setFetchDataError] = useState(null);
+  const [postDataError, setPostDataError] = useState(null);
+  const [putDataError, setPutDataError] = useState(null);
+  const [deleteDataError, setDeleteDataError] = useState(null);
+  const [getDataByIdError, setGetDataByIdError] = useState(null);
+  const [deleteImageByIdError, setDeleteImageByIdError] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -15,6 +21,7 @@ const useWallpapersApi = () => {
       setData(data);
       setIsLoading(false);
     } catch (error) {
+      setFetchDataError(error);
       console.error(error);
     }
   };
@@ -24,15 +31,17 @@ const useWallpapersApi = () => {
       setIsLoading(true);
       let response;
       response = await appsApi.post("/wallpapers", wallpaperData);
+      const intid = parseInt(response?.data?.id);
       response = await appsApi.post(
-        `/wallpapers/${response.data.id}/image`,
+        `/wallpapers/${intid}/image`,
         thumbnailData
       );
       toast.success("Wallpaper Created Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData(); // Refresh data after posting
-      getDataById(response?.data?.id);
+      getDataById(intid);
     } catch (error) {
+      setPostDataError(error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -40,16 +49,21 @@ const useWallpapersApi = () => {
   };
 
   const putData = async (id, wallpaperData, thumbnailData) => {
+    const intid = parseInt(id);
     try {
       setIsLoading(true);
       let response;
-      response = await appsApi.put(`/wallpapers/${id}`, wallpaperData);
-      response = await appsApi.post(`/wallpapers/${id}/image`, thumbnailData);
+      response = await appsApi.put(`/wallpapers/${intid}`, wallpaperData);
+      response = await appsApi.post(
+        `/wallpapers/${intid}/image`,
+        thumbnailData
+      );
       toast.success("Game Updated Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData();
-      getDataById(id);
+      getDataById(intid);
     } catch (error) {
+      setPutDataError(error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -57,12 +71,14 @@ const useWallpapersApi = () => {
   };
 
   const deleteData = async (id) => {
+    const intid = parseInt(id);
     try {
       setIsLoading(true);
-      const response = await appsApi.delete(`/wallpapers/${id}`);
+      const response = await appsApi.delete(`/wallpapers/${intid}`);
       toast.success("Wallpaper Deleted Successfully", "success");
       fetchData(); // Refresh data after posting
     } catch (error) {
+      setDeleteDataError(error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -70,13 +86,15 @@ const useWallpapersApi = () => {
   };
 
   const getDataById = async (id) => {
+    const intid = parseInt(id);
     try {
       setIsLoading(true);
-      const response = await appsApi.get(`/wallpapers/${id}`);
+      const response = await appsApi.get(`/wallpapers/${intid}`);
       // console.log("Wallpaper data by id:", response.data);
       setWallpaperById(response?.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
+      setGetDataByIdError(error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -84,16 +102,31 @@ const useWallpapersApi = () => {
   };
 
   const deleteImageById = async (id) => {
+    const intid = parseInt(id);
     try {
       setIsLoading(true);
-      const response = await appsApi.delete(`/wallpapers/${id}/image`);
+      const response = await appsApi.delete(`/wallpapers/${intid}/image`);
       toast.success(response.data.message, "success");
-      getDataById(id);
+      getDataById(intid);
     } catch (error) {
+      setDeleteImageByIdError(error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const hasApiErrors = () => {
+    const errors = [
+      fetchDataError,
+      postDataError,
+      putDataError,
+      deleteDataError,
+      deleteImageByIdError,
+      getDataByIdError,
+    ];
+
+    return errors.some((error) => error && error.length > 0);
   };
 
   useEffect(() => {
@@ -104,6 +137,7 @@ const useWallpapersApi = () => {
     data,
     isLoading,
     wallpaperById,
+    hasApiErrors,
     postData,
     deleteData,
     getDataById,

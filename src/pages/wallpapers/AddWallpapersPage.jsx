@@ -13,7 +13,7 @@ const validationSchema = yup.object({
 });
 
 const AddWallpapersPage = () => {
-  const { postData, isLoading } = useWallpapersApi();
+  const { postData, isLoading, hasApiErrors } = useWallpapersApi();
   const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -31,7 +31,14 @@ const AddWallpapersPage = () => {
       formData.append("image", selectedFile);
       await postData(data, formData);
       {
-        !isLoading && navigate("/tones");
+        // Navigate only if loading is finished and there are no API errors
+        if (
+          !isLoading &&
+          !hasApiErrors() &&
+          (selectedFile !== "Not available" || selectedFile !== null)
+        ) {
+          navigate("/wallpapers");
+        }
       }
     },
   });

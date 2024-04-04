@@ -68,8 +68,13 @@ body {
 .rdw-option-wrapper > img {
   fill: white !important;
   color: white !important;
+  filter: invert(99%) sepia(6%) saturate(14%) hue-rotate(158deg)
+    brightness(105%) contrast(100%);
 }
 
+.rdw-dropdown-carettoopen {
+  border-top: 6px solid white;
+}
 /* .css-nx53lr {
   margin: 60px 88px;
   width: 100%;

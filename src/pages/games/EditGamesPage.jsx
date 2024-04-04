@@ -17,8 +17,14 @@ const validationSchema = yup.object({
 
 const EditGamesPage = () => {
   const { gameId } = useParams();
-  const { putData, getDataById, deleteImageById, gameById, isLoading } =
-    useGamesApi();
+  const {
+    putData,
+    getDataById,
+    deleteImageById,
+    hasApiErrors,
+    gameById,
+    isLoading,
+  } = useGamesApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
@@ -43,12 +49,22 @@ const EditGamesPage = () => {
       formData.append("thumbnail", selectedFile);
 
       const gameIdInt = parseInt(gameId, 10);
-      if (deleteItemConfirm) {
+      if (
+        deleteItemConfirm &&
+        (selectedFile !== "Not available" || selectedFile !== null)
+      ) {
         await handleDeleteImage(gameIdInt);
       }
       await putData(gameIdInt, data, formData);
       {
-        !isLoading && navigate("/games");
+        // Navigate only if loading is finished and there are no API errors
+        if (
+          !isLoading &&
+          !hasApiErrors() &&
+          (selectedFile !== "Not available" || selectedFile !== null)
+        ) {
+          navigate("/games");
+        }
       }
     },
   });

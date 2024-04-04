@@ -16,8 +16,14 @@ const validationSchema = yup.object({
 
 const EditTonesPage = () => {
   const { toneId } = useParams();
-  const { putData, getDataById, deleteToneById, toneById, isLoading } =
-    useTonesApi();
+  const {
+    putData,
+    getDataById,
+    deleteToneById,
+    hasApiErrors,
+    toneById,
+    isLoading,
+  } = useTonesApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
@@ -45,7 +51,13 @@ const EditTonesPage = () => {
       }
       await putData(toneIntId, data, formData);
       {
-        !isLoading && navigate("/tones");
+        if (
+          !isLoading &&
+          !hasApiErrors() &&
+          (selectedFile !== "Not available" || selectedFile !== null)
+        ) {
+          navigate("/tones");
+        }
       }
     },
   });

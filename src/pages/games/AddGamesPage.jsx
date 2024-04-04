@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  Box,
-  Stack,
-  Typography,
-  Card,
-  CardContent,
-  CardMedia,
-} from "@mui/material";
+import { Box, Stack, Typography, Card, CardMedia } from "@mui/material";
 import { useFormik } from "formik";
 import InputBox from "../../components/InputBox";
 import * as yup from "yup";
@@ -21,7 +14,7 @@ const validationSchema = yup.object({
 });
 
 const AddGamesPage = () => {
-  const { postData, isLoading } = useGamesApi();
+  const { postData, isLoading, hasApiErrors } = useGamesApi();
   const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -42,7 +35,10 @@ const AddGamesPage = () => {
       console.log(typeof selectedFile);
       await postData(data, formData);
       {
-        !isLoading && navigate("/games");
+        // Navigate only if loading is finished and there are no API errors
+        if (!isLoading && !hasApiErrors()) {
+          navigate("/games");
+        }
       }
     },
   });
