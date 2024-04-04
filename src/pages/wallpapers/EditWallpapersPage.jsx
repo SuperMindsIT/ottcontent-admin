@@ -16,8 +16,14 @@ const validationSchema = yup.object({
 
 const EditWallpapersPage = () => {
   const { wallpaperId } = useParams();
-  const { putData, getDataById, deleteImageById, wallpaperById, isLoading } =
-    useWallpapersApi();
+  const {
+    putData,
+    getDataById,
+    deleteImageById,
+    hasApiErrors,
+    wallpaperById,
+    isLoading,
+  } = useWallpapersApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
@@ -44,7 +50,13 @@ const EditWallpapersPage = () => {
       }
       await putData(wallpaperIntId, data, formData);
       {
-        !isLoading && navigate("/wallpapers");
+        if (
+          !isLoading &&
+          !hasApiErrors() &&
+          (selectedFile !== "Not available" || selectedFile !== null)
+        ) {
+          navigate("/wallpapers");
+        }
       }
     },
   });

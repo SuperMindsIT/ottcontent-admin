@@ -22,7 +22,7 @@ const validationSchema = yup.object({
 });
 
 const AddFitnessPage = () => {
-  const { postData, isLoading } = useFitnessApi();
+  const { postData, isLoading, hasApiErrors } = useFitnessApi();
   const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -83,7 +83,13 @@ const AddFitnessPage = () => {
       // console.log(data, "data in fitness");
       await postData(data, formData);
       {
-        !isLoading && navigate("/fitness");
+        if (
+          !isLoading &&
+          !hasApiErrors() &&
+          (selectedFile !== "Not available" || selectedFile !== null)
+        ) {
+          navigate("/fitness");
+        }
       }
     },
   });

@@ -14,7 +14,7 @@ const validationSchema = yup.object({
 });
 
 const AddTonesPage = () => {
-  const { postData, isLoading } = useTonesApi();
+  const { postData, isLoading, hasApiErrors } = useTonesApi();
   const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -33,7 +33,14 @@ const AddTonesPage = () => {
       // console.log(formData, "form data in tones after posting");
       await postData(data, formData);
       {
-        !isLoading && navigate("/tones");
+        // Navigate only if loading is finished and there are no API errors
+        if (
+          !isLoading &&
+          !hasApiErrors() &&
+          (selectedFile !== "Not available" || selectedFile !== null)
+        ) {
+          navigate("/tones");
+        }
       }
     },
   });
@@ -83,18 +90,6 @@ const AddTonesPage = () => {
               selectedFile={selectedFile}
               setSelectedFile={setSelectedFile}
             />
-            {/* {selectedFile && (
-              <Box sx={{ mt: 2, mb: "151px" }}>
-                <Typography sx={{ color: "#fff", mb: 1 }}>
-                  Selected Audio:
-                </Typography>
-                <Audio
-                  controls
-                  src={URL.createObjectURL(selectedFile)}
-                  style={{ width: "100%" }}
-                />
-              </Box>
-            )} */}
             {selectedFile && (
               <Box sx={{ mt: 2, mb: "50px" }}>
                 <audio

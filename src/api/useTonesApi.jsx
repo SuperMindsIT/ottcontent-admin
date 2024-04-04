@@ -6,6 +6,12 @@ const useTonesApi = () => {
   const [data, setData] = useState([]);
   const [toneById, setToneById] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchDataError, setFetchDataError] = useState(null);
+  const [postDataError, setPostDataError] = useState(null);
+  const [putDataError, setPutDataError] = useState(null);
+  const [deleteDataError, setDeleteDataError] = useState(null);
+  const [getDataByIdError, setGetDataByIdError] = useState(null);
+  const [deleteImageByIdError, setDeleteImageByIdError] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -15,6 +21,7 @@ const useTonesApi = () => {
       setData(data);
       setIsLoading(false);
     } catch (error) {
+      setFetchDataError(error);
       console.error(error);
     }
   };
@@ -24,15 +31,14 @@ const useTonesApi = () => {
       setIsLoading(true);
       let response;
       response = await appsApi.post("/tones", toneData);
-      response = await appsApi.post(
-        `/tones/${response.data.id}/audio`,
-        audioData
-      );
+      const intid = parseInt(response?.data?.id);
+      response = await appsApi.post(`/tones/${intid}/audio`, audioData);
       toast.success("Tone Created Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData(); // Refresh data after posting
-      getDataById(response?.data?.id);
+      getDataById(intid);
     } catch (error) {
+      setPostDataError(error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -40,15 +46,16 @@ const useTonesApi = () => {
   };
 
   const putData = async (id, toneData, audioData) => {
+    const intid = parseInt(id);
     try {
       setIsLoading(true);
       let response;
-      response = await appsApi.put(`/tones/${id}`, toneData);
-      response = await appsApi.post(`/tones/${id}/audio`, audioData);
+      response = await appsApi.put(`/tones/${intid}`, toneData);
+      response = await appsApi.post(`/tones/${intid}/audio`, audioData);
       toast.success("Tone Updated Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData(); // Refresh data after updating
-      getDataById(id);
+      getDataById(intid);
     } catch (error) {
       toast.error(error.response.data.message, "error");
     } finally {
@@ -57,12 +64,14 @@ const useTonesApi = () => {
   };
 
   const deleteData = async (id) => {
+    const intid = parseInt(id);
     try {
       setIsLoading(true);
-      const response = await appsApi.delete(`/tones/${id}`);
+      const response = await appsApi.delete(`/tones/${intid}`);
       toast.success("Tone Deleted Successfully", "success");
       fetchData(); // Refresh data after posting
     } catch (error) {
+      setDeleteDataError(error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -70,13 +79,15 @@ const useTonesApi = () => {
   };
 
   const getDataById = async (id) => {
+    const intid = parseInt(id);
     try {
       setIsLoading(true);
-      const response = await appsApi.get(`/tones/${id}`);
+      const response = await appsApi.get(`/tones/${intid}`);
       // console.log("Tone data by id:", response.data);
       setToneById(response?.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
+      setGetDataByIdError(error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -84,16 +95,31 @@ const useTonesApi = () => {
   };
 
   const deleteToneById = async (id) => {
+    const intid = parseInt(id);
     try {
       setIsLoading(true);
-      const response = await appsApi.delete(`/tones/${id}/audio`);
+      const response = await appsApi.delete(`/tones/${intid}/audio`);
       toast.success(response.data.message, "success");
-      getDataById(id);
+      getDataById(intid);
     } catch (error) {
+      setDeleteImageByIdError(error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const hasApiErrors = () => {
+    const errors = [
+      fetchDataError,
+      postDataError,
+      putDataError,
+      deleteDataError,
+      deleteImageByIdError,
+      getDataByIdError,
+    ];
+
+    return errors.some((error) => error && error.length > 0);
   };
 
   useEffect(() => {
@@ -104,6 +130,7 @@ const useTonesApi = () => {
     data,
     isLoading,
     toneById,
+    hasApiErrors,
     postData,
     deleteData,
     putData,
