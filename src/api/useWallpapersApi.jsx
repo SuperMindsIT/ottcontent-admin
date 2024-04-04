@@ -31,6 +31,7 @@ const useWallpapersApi = () => {
       toast.success("Wallpaper Created Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData(); // Refresh data after posting
+      getDataById(response?.data?.id);
     } catch (error) {
       toast.error(error.response.data.message, "error");
     } finally {
@@ -47,6 +48,7 @@ const useWallpapersApi = () => {
       toast.success("Game Updated Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData();
+      getDataById(id);
     } catch (error) {
       toast.error(error.response.data.message, "error");
     } finally {

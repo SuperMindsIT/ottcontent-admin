@@ -75,7 +75,7 @@ const AddTonesPage = () => {
               onBlur={formik.handleBlur}
               error={formik.touched.name}
               errors={formik.errors.name}
-              placeholder="Tone name*"
+              placeholder="Name*"
             />
             <UploadFile
               label="Upload Tone (max 10mb)*"

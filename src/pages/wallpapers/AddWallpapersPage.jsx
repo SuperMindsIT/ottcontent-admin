@@ -13,7 +13,7 @@ const validationSchema = yup.object({
 });
 
 const AddWallpapersPage = () => {
-  const { postData } = useWallpapersApi();
+  const { postData, isLoading } = useWallpapersApi();
   const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -30,6 +30,9 @@ const AddWallpapersPage = () => {
       const formData = new FormData();
       formData.append("image", selectedFile);
       await postData(data, formData);
+      {
+        !isLoading && navigate("/tones");
+      }
     },
   });
   const handleCancel = () => {
@@ -69,7 +72,7 @@ const AddWallpapersPage = () => {
               onBlur={formik.handleBlur}
               error={formik.touched.name}
               errors={formik.errors.name}
-              placeholder="Wallpaper name*"
+              placeholder="Name*"
             />
             <UploadFile
               label="Upload Wallpaper (max 10 mb)*"

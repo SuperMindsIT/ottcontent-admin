@@ -2,6 +2,8 @@ import { Button, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
 import useFitnessApi from "../../api/useFitnessApi";
+import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
+import { useState } from "react";
 
 const FitnessPage = () => {
   let navigate = useNavigate();
@@ -10,6 +12,23 @@ const FitnessPage = () => {
 
   const handleFitnessClick = (fitnessId) => {
     navigate(`/fitness/${fitnessId}`);
+  };
+
+  // for delete dialog
+  const [deleteId, setDeleteId] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleDeleteClick = (gameId) => {
+    setDeleteId(gameId);
+    setOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    deleteData(deleteId);
+    setOpen(false);
   };
 
   const columns = [
@@ -43,7 +62,7 @@ const FitnessPage = () => {
             </Button>
             <Button
               sx={{ px: 0, minWidth: 0 }}
-              onClick={() => deleteData(params.id)}
+              onClick={() => handleDeleteClick(params.id)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -64,6 +83,15 @@ const FitnessPage = () => {
                 </g>
               </svg>
             </Button>
+            <DeleteConfirmationDialog
+              open={open}
+              onClose={handleClose}
+              onConfirm={handleDeleteConfirm}
+              deleteItem={"Delete Fitness Workout?"}
+              deleteMessage={
+                "Are you sure you want to delete this Fitness Workout?"
+              }
+            />
           </Stack>
         );
       },

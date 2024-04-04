@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
 
 const validationSchema = yup.object({
   title_en: yup.string().required("Title in English is required"),
@@ -102,6 +103,9 @@ const EditFitnessPage = () => {
       formData.append("image", selectedFile);
       //   console.log(data, "data in fitness");
       const fitnessIntId = parseInt(fitnessId, 10);
+      if (deleteItemConfirm) {
+        await handleDeleteImage(fitnessId);
+      }
       await putData(fitnessIntId, data, formData);
       {
         !isLoading && navigate("/fitness");
@@ -165,6 +169,21 @@ const EditFitnessPage = () => {
     },
   };
 
+  // for delete dialog
+  const [open, setOpen] = useState(false);
+  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleDeleteClick = () => {
+    setOpen(true);
+  };
+  const handleDeleteConfirm = () => {
+    setSelectedFile(null);
+    setDeleteItemConfirm(true);
+    setOpen(false);
+  };
+
   return (
     <div>
       <Typography
@@ -216,7 +235,7 @@ const EditFitnessPage = () => {
               <CustomButton
                 btn="secondary"
                 label="Delete Image"
-                onClick={() => handleDeleteImage(fitnessId)}
+                onClick={() => handleDeleteClick(fitnessId)}
               />
             </Box>
           ) : (
@@ -261,6 +280,15 @@ const EditFitnessPage = () => {
               editorClassName="demo-editor"
               onEditorStateChange={onEditorStateChange}
               toolbar={customToolbarOptions}
+            />
+            <DeleteConfirmationDialog
+              open={open}
+              onClose={handleClose}
+              onConfirm={handleDeleteConfirm}
+              deleteItem={"Delete Cover Image?"}
+              deleteMessage={
+                "Are you sure you want to delete this Cover Image?"
+              }
             />
             <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
               <CustomButton btn="primary" label="save" type="submit" />

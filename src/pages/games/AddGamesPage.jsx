@@ -84,7 +84,7 @@ const AddGamesPage = () => {
               onBlur={formik.handleBlur}
               error={formik.touched.name}
               errors={formik.errors.name}
-              placeholder="Game name*"
+              placeholder="Name*"
             />
             <InputBox
               id="iframe"

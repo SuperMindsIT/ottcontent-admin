@@ -29,6 +29,7 @@ const useFitnessApi = () => {
       );
       toast.success("Fitness Workout Created Successfully", "success");
       toast.success(response.data.message, "success");
+      getDataById(response?.data?.id);
       fetchData(); // Refresh data after posting
     } catch (error) {
       toast.error(error.response.data.message, "error");
@@ -45,6 +46,7 @@ const useFitnessApi = () => {
       response = await appsApi.post(`/fitness/${id}/image`, thumbnailData);
       toast.success("Fitness Workout Updated Successfully", "success");
       toast.success(response.data.message, "success");
+      getDataById(id);
       fetchData(); // Refresh data after updating
     } catch (error) {
       toast.error(error.response.data.message, "error");

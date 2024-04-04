@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Box,
-  Stack,
-  Typography,
-  Card,
-  CardContent,
-  CardMedia,
-} from "@mui/material";
+import { Box, Stack, Typography, Card, CardMedia } from "@mui/material";
 import { useFormik } from "formik";
 import InputBox from "../../components/InputBox";
 import * as yup from "yup";
@@ -15,6 +8,7 @@ import CustomButton from "../../components/CustomButton";
 import useWallpapersApi from "../../api/useWallpapersApi";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
 
 const validationSchema = yup.object({
   name: yup.string("Enter the name of wallpaper").required("Name is required"),
@@ -45,6 +39,9 @@ const EditWallpapersPage = () => {
       const formData = new FormData();
       formData.append("image", selectedFile);
       const wallpaperIntId = parseInt(wallpaperId, 10);
+      if (deleteItemConfirm) {
+        await handleDeleteImage(wallpaperId);
+      }
       await putData(wallpaperIntId, data, formData);
       {
         !isLoading && navigate("/wallpapers");
@@ -74,6 +71,21 @@ const EditWallpapersPage = () => {
 
   const handleCancel = () => {
     navigate("/wallpapers");
+  };
+
+  // for delete dialog
+  const [open, setOpen] = useState(false);
+  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleDeleteClick = () => {
+    setOpen(true);
+  };
+  const handleDeleteConfirm = () => {
+    setSelectedFile(null);
+    setDeleteItemConfirm(true);
+    setOpen(false);
   };
 
   return (
@@ -109,7 +121,7 @@ const EditWallpapersPage = () => {
               onBlur={formik.handleBlur}
               error={formik.touched.name}
               errors={formik.errors.name}
-              placeholder="Wallpaper name*"
+              placeholder="Name*"
             />
             {selectedFile && selectedFile !== "Not available" ? (
               <Box sx={{ mt: "22px", mb: "20px" }}>
@@ -133,7 +145,7 @@ const EditWallpapersPage = () => {
                 <CustomButton
                   btn="secondary"
                   label="Delete Image"
-                  onClick={() => handleDeleteImage(wallpaperId)}
+                  onClick={() => handleDeleteClick(wallpaperId)}
                 />
               </Box>
             ) : (
@@ -144,12 +156,13 @@ const EditWallpapersPage = () => {
                 setSelectedFile={setSelectedFile}
               />
             )}
-            {/* <UploadFile
-              label="Upload Wallpaper Icon (440x280)*"
-              sx={{ mt: "22px", mb: "151px" }}
-              selectedFile={selectedFile}
-              setSelectedFile={setSelectedFile}
-            /> */}
+            <DeleteConfirmationDialog
+              open={open}
+              onClose={handleClose}
+              onConfirm={handleDeleteConfirm}
+              deleteItem={"Delete Image?"}
+              deleteMessage={"Are you sure you want to delete this Image?"}
+            />
             <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
               <CustomButton btn="primary" label="save" type="submit" />
               <CustomButton

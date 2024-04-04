@@ -30,6 +30,7 @@ const useGamesApi = () => {
       toast.success("Game Created Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData();
+      getDataById(response?.data?.id);
     } catch (error) {
       toast.error(error.response.data.message, "error");
     } finally {
@@ -46,6 +47,7 @@ const useGamesApi = () => {
       toast.success("Game Updated Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData(); // Refresh data after updating
+      getDataById(id);
     } catch (error) {
       toast.error(error.response.data.message, "error");
     } finally {

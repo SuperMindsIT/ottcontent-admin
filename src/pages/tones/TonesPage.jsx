@@ -2,6 +2,8 @@ import { Button, Stack } from "@mui/material";
 import MainLayout from "../../layouts/MainLayout";
 import { useNavigate } from "react-router-dom";
 import useTonesApi from "../../api/useTonesApi";
+import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
+import { useState } from "react";
 
 const TonesPage = () => {
   let navigate = useNavigate();
@@ -14,6 +16,23 @@ const TonesPage = () => {
   };
 
   // console.log(data, "tones in tones page");
+
+  // for delete dialog
+  const [deleteId, setDeleteId] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleDeleteClick = (gameId) => {
+    setDeleteId(gameId);
+    setOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    deleteData(deleteId);
+    setOpen(false);
+  };
 
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },
@@ -46,7 +65,7 @@ const TonesPage = () => {
             </Button>
             <Button
               sx={{ px: 0, minWidth: 0 }}
-              onClick={() => deleteData(params.id)}
+              onClick={() => handleDeleteClick(params.id)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -67,6 +86,13 @@ const TonesPage = () => {
                 </g>
               </svg>
             </Button>
+            <DeleteConfirmationDialog
+              open={open}
+              onClose={handleClose}
+              onConfirm={handleDeleteConfirm}
+              deleteItem={"Delete Tone?"}
+              deleteMessage={"Are you sure you want to delete this Tone?"}
+            />
           </Stack>
         );
       },
