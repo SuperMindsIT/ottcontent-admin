@@ -3,6 +3,7 @@ import MainLayout from "../../layouts/MainLayout";
 import { useNavigate } from "react-router-dom";
 import useGamesApi from "../../api/useGamesApi";
 import { useState } from "react";
+import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
 
 const GamesPage = () => {
   let navigate = useNavigate();
@@ -105,31 +106,13 @@ const GamesPage = () => {
                 </g>
               </svg>
             </Button>
-            {open && (
-              <Box
-                onClick={handleClose}
-                sx={{
-                  width: 400,
-                  position: "absolute",
-                  top: "20%",
-                  right: "5%",
-                  // left: "50%",
-                  textAlign: "center",
-                  background: "black",
-                }}
-              >
-                <h2 id="parent-modal-title">Delete Game?</h2>
-                <p id="parent-modal-description">
-                  Are you sure you want to delete this game?
-                </p>
-                <Button onClick={handleClose} color="primary">
-                  Cancel
-                </Button>
-                <Button onClick={handleDeleteConfirm} color="primary">
-                  Delete
-                </Button>
-              </Box>
-            )}
+            <DeleteConfirmationDialog
+              open={open}
+              onClose={handleClose}
+              onConfirm={handleDeleteConfirm}
+              deleteItem={"Delete Game?"}
+              deleteMessage={"Are you sure you want to delete this Game?"}
+            />
           </Stack>
         );
       },

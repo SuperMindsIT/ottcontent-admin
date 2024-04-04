@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Box,
-  Stack,
-  Typography,
-  Card,
-  CardContent,
-  CardMedia,
-} from "@mui/material";
+import { Box, Stack, Typography, Card, CardMedia } from "@mui/material";
 import { useFormik } from "formik";
 import InputBox from "../../components/InputBox";
 import * as yup from "yup";
@@ -15,6 +8,7 @@ import CustomButton from "../../components/CustomButton";
 import useGamesApi from "../../api/useGamesApi";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
 
 const validationSchema = yup.object({
   name: yup.string("Enter the name of game").required("Name is required"),
@@ -46,19 +40,24 @@ const EditGamesPage = () => {
         iframe: values.iframe,
       };
       const formData = new FormData();
-      // if (selectedFile instanceof File) {
-      //   formData.append("thumbnail", selectedFile);
-      // }
       formData.append("thumbnail", selectedFile);
 
       const gameIdInt = parseInt(gameId, 10);
+      if (deleteItemConfirm) {
+        await handleDeleteImage(gameIdInt);
+      }
       await putData(gameIdInt, data, formData);
       {
         !isLoading && navigate("/games");
       }
-      // console.log(formData);
     },
   });
+
+  // // When a new file is uploaded, make sure the selectedFile state is updated
+  // const handleFileUpload = (file) => {
+  //   setSelectedFile(file);
+  //   console.log("File uploaded:", file);
+  // };
 
   useEffect(() => {
     if (gameById) {
@@ -70,15 +69,11 @@ const EditGamesPage = () => {
         setSelectedFile(gameById.thumbnail);
       }
     }
-    // console.log("use effect 2 is running");
   }, [gameById]);
 
   const handleCancel = () => {
     navigate("/games");
   };
-  // const handleDeleteImage = (id) => {
-  //   deleteImageById(id);
-  // };
 
   const handleDeleteImage = async (id) => {
     try {
@@ -87,6 +82,21 @@ const EditGamesPage = () => {
     } catch (error) {
       console.error("Error deleting image:", error);
     }
+  };
+
+  // for delete dialog
+  const [open, setOpen] = useState(false);
+  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleDeleteClick = () => {
+    setOpen(true);
+  };
+  const handleDeleteConfirm = () => {
+    setSelectedFile(null);
+    setDeleteItemConfirm(true);
+    setOpen(false);
   };
 
   return (
@@ -122,7 +132,7 @@ const EditGamesPage = () => {
               onBlur={formik.handleBlur}
               error={formik.touched.name}
               errors={formik.errors.name}
-              placeholder="Game name*"
+              placeholder="Name*"
             />
             <InputBox
               id="iframe"
@@ -157,7 +167,7 @@ const EditGamesPage = () => {
                 <CustomButton
                   btn="secondary"
                   label="Delete Image"
-                  onClick={() => handleDeleteImage(gameId)}
+                  onClick={() => handleDeleteClick(gameId)}
                 />
               </Box>
             ) : (
@@ -168,6 +178,13 @@ const EditGamesPage = () => {
                 setSelectedFile={setSelectedFile}
               />
             )}
+            <DeleteConfirmationDialog
+              open={open}
+              onClose={handleClose}
+              onConfirm={handleDeleteConfirm}
+              deleteItem={"Delete Image?"}
+              deleteMessage={"Are you sure you want to delete this Image?"}
+            />
             <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
               <CustomButton btn="primary" label="save" type="submit" />
               <CustomButton

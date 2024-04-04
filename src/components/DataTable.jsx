@@ -24,10 +24,10 @@ export default function DataTable(props) {
           columns={columns}
           initialState={{
             pagination: {
-              paginationModel: { page: 0, pageSize: 10 },
+              paginationModel: { page: 0, pageSize: 15 },
             },
           }}
-          pageSizeOptions={[10, 15, 20]}
+          pageSizeOptions={[15, 20, 25]}
           rowHeight={40}
           autoHeight
           getRowId={(row) => row.id}

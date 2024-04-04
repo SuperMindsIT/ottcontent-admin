@@ -8,6 +8,7 @@ import CustomButton from "../../components/CustomButton";
 import useTonesApi from "../../api/useTonesApi";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
 
 const validationSchema = yup.object({
   name: yup.string("Enter the name of tone").required("Tone is required"),
@@ -38,6 +39,9 @@ const EditTonesPage = () => {
       };
       const formData = new FormData();
       formData.append("audio", selectedFile);
+      if (deleteItemConfirm) {
+        await handleDeleteTone(toneId);
+      }
       await putData(toneId, data, formData);
       {
         !isLoading && navigate("/tones");
@@ -67,6 +71,21 @@ const EditTonesPage = () => {
     } catch (error) {
       console.error("Error deleting tone:", error);
     }
+  };
+
+  // for delete dialog
+  const [open, setOpen] = useState(false);
+  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleDeleteClick = () => {
+    setOpen(true);
+  };
+  const handleDeleteConfirm = () => {
+    setSelectedFile(null);
+    setDeleteItemConfirm(true);
+    setOpen(false);
   };
 
   return (
@@ -102,7 +121,7 @@ const EditTonesPage = () => {
               onBlur={formik.handleBlur}
               error={formik.touched.name}
               errors={formik.errors.name}
-              placeholder="Tone name*"
+              placeholder="Name*"
             />
             {/* <UploadFile
               label="Upload Tone (max 10mb)*"
@@ -137,7 +156,7 @@ const EditTonesPage = () => {
                 <CustomButton
                   btn="secondary"
                   label="Delete Tone"
-                  onClick={() => handleDeleteTone(toneId)}
+                  onClick={() => handleDeleteClick(toneId)}
                 />
               </Box>
             ) : (
@@ -148,6 +167,13 @@ const EditTonesPage = () => {
                 setSelectedFile={setSelectedFile}
               />
             )}
+            <DeleteConfirmationDialog
+              open={open}
+              onClose={handleClose}
+              onConfirm={handleDeleteConfirm}
+              deleteItem={"Delete Audio?"}
+              deleteMessage={"Are you sure you want to delete this Audio?"}
+            />
             <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
               <CustomButton btn="primary" label="save" type="submit" />
               <CustomButton

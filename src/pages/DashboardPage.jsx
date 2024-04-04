@@ -42,14 +42,16 @@ const DashboardPage = () => {
         columns={{ xs: 4, sm: 8, md: 12, lg: 16 }}
       >
         {boxes.map((item, index) => (
-          <Grid item={item} xs={2} sm={4} md={4} key={index}>
+          <Grid item={item} xs={2} sm={3} md={4} key={index}>
             <Box
               sx={{
                 border: 1,
                 borderColor: "#2E2E2E",
                 backgroundColor: "#1A1A1A",
                 borderRadius: "16px",
-                width: "252px",
+                width: "auto",
+                minWidth: "180px",
+                maxWidth: "252px",
                 height: "238px",
                 display: "flex",
                 flexDirection: "column",
