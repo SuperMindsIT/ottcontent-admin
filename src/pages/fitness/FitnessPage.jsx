@@ -33,7 +33,7 @@ const FitnessPage = () => {
 
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },
-    { field: "title_en", headerName: "Title", flex: 1 },
+    { field: "title_en", headerName: "Name", flex: 1 },
     {
       field: "actions",
       headerName: "Actions",

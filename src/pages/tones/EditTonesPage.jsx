@@ -39,10 +39,11 @@ const EditTonesPage = () => {
       };
       const formData = new FormData();
       formData.append("audio", selectedFile);
+      const toneIntId = parseInt(toneId, 10);
       if (deleteItemConfirm) {
-        await handleDeleteTone(toneId);
+        await handleDeleteTone(toneIntId);
       }
-      await putData(toneId, data, formData);
+      await putData(toneIntId, data, formData);
       {
         !isLoading && navigate("/tones");
       }

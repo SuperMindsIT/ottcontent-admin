@@ -36,7 +36,7 @@ const GamesPage = () => {
 
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },
-    { field: "title", headerName: "Title", flex: 1 },
+    { field: "title", headerName: "Name", flex: 1 },
     {
       field: "iframe",
       headerName: "iframe",
