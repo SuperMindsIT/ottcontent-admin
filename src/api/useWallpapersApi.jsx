@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { appsApi } from "./api";
+import { toast } from "react-toastify";
 
 const useWallpapersApi = () => {
   const [data, setData] = useState([]);
@@ -27,10 +28,11 @@ const useWallpapersApi = () => {
         `/wallpapers/${response.data.id}/image`,
         thumbnailData
       );
-      // console.log("Wallpaper posted successfully:", response.data);
+      toast.success("Wallpaper Created Successfully", "success");
+      toast.success(response.data.message, "success");
       fetchData(); // Refresh data after posting
     } catch (error) {
-      console.error("Error posting wallpaper:", error.response.data.message);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -40,14 +42,13 @@ const useWallpapersApi = () => {
     try {
       setIsLoading(true);
       let response;
-      response = await appsApi.post(`/wallpapers/${id}/image`, thumbnailData);
       response = await appsApi.put(`/wallpapers/${id}`, wallpaperData);
-      // console.log("Wallpaper updated successfully:", response.data);
-      // await appsApi.put(`/games/${id}/thumbnail`, thumbnailData);
-      // console.log("Thumbnail updated successfully");
-      fetchData(); // Refresh data after updating
+      response = await appsApi.post(`/wallpapers/${id}/image`, thumbnailData);
+      toast.success("Game Updated Successfully", "success");
+      toast.success(response.data.message, "success");
+      fetchData();
     } catch (error) {
-      console.error("Error updating wallpaper:", error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -57,10 +58,10 @@ const useWallpapersApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.delete(`/wallpapers/${id}`);
-      // console.log("Wallpaper deleted successfully:", response.data);
+      toast.success("Wallpaper Deleted Successfully", "success");
       fetchData(); // Refresh data after posting
     } catch (error) {
-      console.error("Error posting wallpaper:", error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +75,7 @@ const useWallpapersApi = () => {
       setWallpaperById(response?.data);
       fetchData(); // Refresh data after posting
     } catch (error) {
-      console.error("Error posting wallpaper:", error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -84,10 +85,10 @@ const useWallpapersApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.delete(`/wallpapers/${id}/image`);
-      // console.log("Game image deleted successfully:", response.data);
+      toast.success(response.data.message, "success");
       getDataById(id);
     } catch (error) {
-      console.error("Error posting game:", error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Card, CardMedia, Stack, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import { EditorState, RichUtils } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
@@ -89,19 +89,21 @@ const AddFitnessPage = () => {
   });
 
   const toggleBlockType = (blockType) => {
-    onEditorStateChange(RichUtils.toggleBlockType(editorState, blockType));
+    const newState = RichUtils.toggleBlockType(editorState, blockType);
+    if (newState) {
+      setEditorState(newState);
+    }
   };
 
   const customToolbarOptions = {
     options: ["inline", "blockType", "list"], // Include list options
     inline: {
-      options: ["bold", "italic"], // Show only bold and italic options
+      options: ["bold"], // Show only bold and italic options
     },
     blockType: {
-      options: ["Normal", "HeaderOne", "HeaderTwo"], // Show Normal, H1, and H2 options
-      className: undefined,
-      dropdownClassName: undefined,
-      onClick: toggleBlockType,
+      inDropdown: true, // Ensure blockType selection is in a dropdown
+      options: ["Normal", "H1", "H2"], // Specify block types you want
+      // onClick: toggleBlockType,
     },
     list: {
       options: ["unordered", "ordered"],
@@ -149,6 +151,16 @@ const AddFitnessPage = () => {
           selectedFile={selectedFile}
           setSelectedFile={setSelectedFile}
         />
+        {selectedFile && (
+          <Card sx={{ maxWidth: 400, mb: "50px" }}>
+            <CardMedia
+              component="img"
+              height={200}
+              image={URL.createObjectURL(selectedFile)}
+              alt="Uploaded Image"
+            />
+          </Card>
+        )}
         <Dropdown
           language={language}
           setLanguage={setLanguage}
@@ -193,7 +205,7 @@ const AddFitnessPage = () => {
               wrapperClassName="demo-wrapper"
               editorClassName="demo-editor"
               onEditorStateChange={onEditorStateChange}
-              // toolbar={customToolbarOptions}
+              toolbar={customToolbarOptions}
             />
             {/* <textarea
               id="content"
