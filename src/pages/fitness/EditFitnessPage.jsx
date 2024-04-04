@@ -104,7 +104,7 @@ const EditFitnessPage = () => {
       //   console.log(data, "data in fitness");
       const fitnessIntId = parseInt(fitnessId, 10);
       if (deleteItemConfirm) {
-        await handleDeleteImage(fitnessId);
+        await handleDeleteImage(fitnessIntId);
       }
       await putData(fitnessIntId, data, formData);
       {

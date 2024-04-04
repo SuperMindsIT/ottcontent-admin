@@ -48,6 +48,32 @@ body {
   box-shadow: 1px 1px 0px #bfbdbd;
   background-color: #403e4c;
 }
+
+.rdw-dropdown-optionwrapper {
+  background: #403e4c;
+}
+
+.rdw-dropdownoption-active {
+  background: #403e4c87;
+}
+
+.css-nx53lr {
+  margin-top: 60px !important;
+  margin-bottom: 144px;
+  margin-left: 88px;
+  margin-right: 88px;
+  width: 100%;
+}
+
+.rdw-option-wrapper > img {
+  fill: white !important;
+  color: white !important;
+}
+
+/* .css-nx53lr {
+  margin: 60px 88px;
+  width: 100%;
+} */
 /* 
 .rdw-dropdown-wrapper {
   background: #403e4c;

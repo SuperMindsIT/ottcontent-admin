@@ -40,7 +40,7 @@ const EditWallpapersPage = () => {
       formData.append("image", selectedFile);
       const wallpaperIntId = parseInt(wallpaperId, 10);
       if (deleteItemConfirm) {
-        await handleDeleteImage(wallpaperId);
+        await handleDeleteImage(wallpaperIntId);
       }
       await putData(wallpaperIntId, data, formData);
       {
