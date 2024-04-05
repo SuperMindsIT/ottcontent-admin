@@ -34,7 +34,7 @@ const useGamesApi = () => {
       //   throw new Error("Thumbnail image is required to create a game.");
       // }
       let response;
-      if (thumbnailData) {
+      if (thumbnailData && !hasApiErrors()) {
         response = await appsApi.post("/games", gameData);
       }
       const intid = parseInt(response?.data?.id);
@@ -57,7 +57,9 @@ const useGamesApi = () => {
     try {
       setIsLoading(true);
       let response;
-      response = await appsApi.put(`/games/${intid}`, gameData);
+      if (thumbnailData && !hasApiErrors()) {
+        response = await appsApi.put(`/games/${intid}`, gameData);
+      }
       response = await appsApi.post(`/games/${intid}/thumbnail`, thumbnailData);
       toast.success("Game Updated Successfully", "success");
       toast.success(response.data.message, "success");

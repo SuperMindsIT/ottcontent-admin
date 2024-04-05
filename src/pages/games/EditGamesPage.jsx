@@ -55,11 +55,13 @@ const EditGamesPage = () => {
       ) {
         await handleDeleteImage(gameIdInt);
       }
-      await putData(gameIdInt, data, formData);
+      const result = await putData(gameIdInt, data, formData);
+
       {
         // Navigate only if loading is finished and there are no API errors
         if (
           !isLoading &&
+          result &&
           !hasApiErrors() &&
           (selectedFile !== "Not available" || selectedFile !== null)
         ) {

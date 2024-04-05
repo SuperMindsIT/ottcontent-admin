@@ -33,12 +33,11 @@ const AddGamesPage = () => {
       const formData = new FormData();
       formData.append("thumbnail", selectedFile);
       console.log(typeof selectedFile);
-      await postData(data, formData);
-      {
-        // Navigate only if loading is finished and there are no API errors
-        if (!isLoading && !hasApiErrors()) {
-          navigate("/games");
-        }
+      const result = await postData(data, formData); // Capture the result of postData
+
+      // Navigate only if postData was successful and there are no API errors
+      if (result && !isLoading && !hasApiErrors()) {
+        navigate("/games");
       }
     },
   });

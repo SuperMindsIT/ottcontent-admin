@@ -19,6 +19,10 @@ import AddFitnessPage from "./pages/fitness/AddFitnessPage";
 import EditFitnessPage from "./pages/fitness/EditFitnessPage";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
+import RecipesPage from "./pages/recipes/RecipesPage";
+import RecipesByCategoryPage from "./pages/recipes/RecipesByCategoryPage";
+import AddRecipesPage from "./pages/recipes/AddRecipesPage";
+import EditRecipesPage from "./pages/recipes/EditRecipesPage";
 
 const defaultTheme = createTheme();
 
@@ -48,11 +52,13 @@ const App = () => {
           <Route path="/tones" element={<TonesPage />} />
           <Route path="/wallpapers" element={<WallpapersPage />} />
           <Route path="/fitness" element={<FitnessPage />} />
+          <Route path="/recipes" element={<RecipesPage />} />
           {/* add section */}
           <Route path="/games/add" element={<AddGamesPage />} />
           <Route path="/tones/add" element={<AddTonesPage />} />
           <Route path="/wallpapers/add" element={<AddWallpapersPage />} />
           <Route path="/fitness/add" element={<AddFitnessPage />} />
+          <Route path="/recipes/add" element={<AddRecipesPage />} />
           {/* id section */}
           <Route path="/games/:gameId" element={<EditGamesPage />} />
           <Route path="/tones/:toneId" element={<EditTonesPage />} />
@@ -61,6 +67,11 @@ const App = () => {
             element={<EditWallpapersPage />}
           />
           <Route path="/fitness/:fitnessId" element={<EditFitnessPage />} />
+          <Route
+            path="/recipes/:recipeId"
+            element={<RecipesByCategoryPage />}
+          />
+          <Route path="/recipes/edit/:recipeId" element={<EditRecipesPage />} />
         </Route>
       </Routes>
     </ThemeProvider>
