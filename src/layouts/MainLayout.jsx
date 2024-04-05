@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 
 const MainLayout = (props) => {
   const { title, onAddClick, rows, columns, isLoading } = props;
+  console.log(rows, "row data");
 
   return (
     <div>
