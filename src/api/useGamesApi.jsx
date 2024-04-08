@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { appsApi } from "./api";
 import { toast } from "react-toastify";
 
@@ -6,12 +6,7 @@ const useGamesApi = () => {
   const [data, setData] = useState([]);
   const [gameById, setGameById] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [fetchDataError, setFetchDataError] = useState(null);
-  const [postDataError, setPostDataError] = useState(null);
-  const [putDataError, setPutDataError] = useState(null);
-  const [deleteDataError, setDeleteDataError] = useState(null);
-  const [getDataByIdError, setGetDataByIdError] = useState(null);
-  const [deleteImageByIdError, setDeleteImageByIdError] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const fetchData = async () => {
     try {
@@ -20,7 +15,7 @@ const useGamesApi = () => {
       setData(data);
       setIsLoading(false);
     } catch (error) {
-      setFetchDataError(error);
+      setErrors((prevErrors) => ({ ...prevErrors, fetchData: error }));
       console.error(error);
     }
   };
@@ -45,7 +40,7 @@ const useGamesApi = () => {
       fetchData();
       getDataById(intid);
     } catch (error) {
-      setPostDataError(error);
+      setErrors((prevErrors) => ({ ...prevErrors, postData: error }));
       toast.error(error.response?.data?.message || error.message, "error");
     } finally {
       setIsLoading(false);
@@ -66,7 +61,7 @@ const useGamesApi = () => {
       fetchData(); // Refresh data after updating
       getDataById(intid);
     } catch (error) {
-      setPutDataError(error);
+      setErrors((prevErrors) => ({ ...prevErrors, putData: error }));
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -81,7 +76,7 @@ const useGamesApi = () => {
       toast.success("Game Deleted Successfully", "success");
       fetchData(); // Refresh data after posting
     } catch (error) {
-      setDeleteDataError(error);
+      setErrors((prevErrors) => ({ ...prevErrors, deleteData: error }));
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -95,7 +90,7 @@ const useGamesApi = () => {
       const response = await appsApi.get(`/games/${intid}`);
       setGameById(response?.data);
     } catch (error) {
-      setGetDataByIdError(error);
+      setErrors((prevErrors) => ({ ...prevErrors, getDataById: error }));
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -110,25 +105,16 @@ const useGamesApi = () => {
       toast.success(response.data.message, "success");
       getDataById(intid);
     } catch (error) {
-      setDeleteImageByIdError(error);
+      setErrors((prevErrors) => ({ ...prevErrors, deleteImageById: error }));
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const hasApiErrors = () => {
-    const errors = [
-      fetchDataError,
-      postDataError,
-      putDataError,
-      deleteDataError,
-      deleteImageByIdError,
-      getDataByIdError,
-    ];
-
-    return errors.some((error) => error && error.length > 0);
-  };
+  const hasApiErrors = useCallback(() => {
+    return Object.values(errors).some((error) => error != null);
+  }, [errors]);
 
   useEffect(() => {
     fetchData();

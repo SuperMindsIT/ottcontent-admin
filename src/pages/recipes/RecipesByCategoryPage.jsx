@@ -1,7 +1,6 @@
 import { Button, Link, Stack, Box } from "@mui/material";
 import MainLayout from "../../layouts/MainLayout";
 import { useNavigate, useParams } from "react-router-dom";
-import useGamesApi from "../../api/useGamesApi";
 import useRecipesApi from "../../api/useRecipesApi";
 import { useEffect, useState } from "react";
 import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
@@ -29,8 +28,8 @@ const RecipesByCategoryPage = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [open, setOpen] = useState(false);
 
-  const handleDeleteClick = (gameId) => {
-    setDeleteId(gameId);
+  const handleDeleteClick = (recipeId) => {
+    setDeleteId(recipeId);
     setOpen(true);
   };
 
@@ -52,6 +51,10 @@ const RecipesByCategoryPage = () => {
     navigate(`recipes/${recipeId}`);
   };
 
+  const handleEdit = (recipeId) => {
+    navigate(`/subcategory/edit/${recipeId}`);
+  };
+
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },
     { field: "title_en", headerName: "Name", flex: 1 },
@@ -64,7 +67,7 @@ const RecipesByCategoryPage = () => {
           <Stack direction="row" spacing={2}>
             <Button
               sx={{ px: 0, minWidth: 0 }}
-              onClick={() => handleViewAll(params.id)}
+              onClick={() => handleEdit(params.id)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -125,7 +128,7 @@ const RecipesByCategoryPage = () => {
       rows={dataById}
       columns={columns}
       isLoading={isLoading}
-      onAddClick={() => navigate("/games/add")}
+      onAddClick={() => navigate(`/recipes/${recipeId}/add`)}
     />
   );
 };

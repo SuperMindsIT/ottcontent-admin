@@ -1,7 +1,6 @@
 import { Button, Link, Stack, Box } from "@mui/material";
 import MainLayout from "../../layouts/MainLayout";
 import { useNavigate } from "react-router-dom";
-import useGamesApi from "../../api/useGamesApi";
 import useRecipesApi from "../../api/useRecipesApi";
 import { useState } from "react";
 import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
@@ -14,8 +13,8 @@ const RecipesPage = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [open, setOpen] = useState(false);
 
-  const handleDeleteClick = (gameId) => {
-    setDeleteId(gameId);
+  const handleDeleteClick = (recipeId) => {
+    setDeleteId(recipeId);
     setOpen(true);
   };
 
@@ -29,11 +28,6 @@ const RecipesPage = () => {
   };
 
   console.log(data, "data in recipe main page");
-
-  // const handleGameClick = (gameId) => {
-  //   // Navigate to the route for the clicked game
-  //   navigate(`/games/${gameId}`);
-  // };
 
   const handleViewAll = (recipeId) => {
     navigate(`/recipes/${recipeId}`);
@@ -118,8 +112,8 @@ const RecipesPage = () => {
               open={open}
               onClose={handleClose}
               onConfirm={handleDeleteConfirm}
-              deleteItem={"Delete Game?"}
-              deleteMessage={"Are you sure you want to delete this Game?"}
+              deleteItem={"Delete Recipe?"}
+              deleteMessage={"Are you sure you want to delete this Recipe?"}
             />
           </Stack>
         );
