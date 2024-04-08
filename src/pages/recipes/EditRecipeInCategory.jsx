@@ -10,111 +10,142 @@ import { useNavigate } from "react-router-dom";
 import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
 import useRecipesApi from "../../api/useRecipesApi";
 import Dropdown from "../../components/Dropdown";
+import { Editor } from "react-draft-wysiwyg";
+import { EditorState } from "draft-js";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { convertToRaw } from "draft-js";
+import draftToHtml from "draftjs-to-html";
 
 const validationSchema = yup.object({
   title_en: yup.string().required("Title in English is required"),
-  description_en: yup.string().required("Description in English is required"),
+  content_en: yup.string().required("content in English is required"),
 });
 
-const EditRecipesPage = () => {
-  const { recipeId } = useParams();
+const EditRecipeInCategory = () => {
+  const { subcategoryId } = useParams();
+
   const {
-    putData,
+    putCategoryData,
     isLoading,
-    categoryDetails,
+    subCategoryDetails,
     hasApiErrors,
     deleteCoverById,
-    deleteThumbnailById,
-    fetchCategoryData,
+    fetchSubCategoryData,
     // getDataDetailsById,
   } = useRecipesApi();
 
   const [selectedCover, setSelectedCover] = useState(null);
-  const [selectedThumbnail, setSelectedThumbnail] = useState(null);
   const [language, setLanguage] = useState("en");
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+
+  const onEditorStateChange = (editorState) => {
+    setEditorState(editorState);
+    // console.log(editorState, "editor state");
+    // Convert ContentState to raw format
+    const rawContentState = convertToRaw(editorState.getCurrentContent());
+
+    // Convert rawContentState to HTML
+    const htmlContent = draftToHtml(rawContentState);
+    // console.log(editorState);
+    formik.setFieldValue(`content_${language}`, htmlContent);
+  };
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (recipeId) {
-      fetchCategoryData(recipeId);
-      // getDataDetailsById(recipeId);
-      console.log(categoryDetails, "category details in edit category page");
+    if (subcategoryId) {
+      fetchSubCategoryData(subcategoryId);
+      // getDataDetailsById(subcategoryId);
+      console.log(
+        subCategoryDetails,
+        "sub-category details in edit category page"
+      );
 
       console.log(language, "language in edit page");
     }
-  }, []);
+  }, [subcategoryId]);
 
   useEffect(() => {
-    if (categoryDetails) {
+    if (subCategoryDetails) {
       // Update form values and files if data is loaded
       formik.setValues({
-        title_en: categoryDetails.title_en || "",
-        description_en: categoryDetails.description_en || "",
+        title_en: subCategoryDetails.title_en || "",
+        content_en: subCategoryDetails.content_en || "",
         // set other language fields if necessary
       });
-      setSelectedCover(categoryDetails.cover);
-      setSelectedThumbnail(categoryDetails.thumbnail);
+      setSelectedCover(subCategoryDetails.cover);
     }
-  }, [categoryDetails]);
+  }, [subCategoryDetails]);
 
   const updateValuesForLanguages = (values, language) => {
     const data = {
       title_en: values.title_en,
-      description_en: values.description_en,
+      content_en: values.content_en,
       title_es: values.title_es,
-      description_es: values.description_es,
+      content_es: values.content_es,
       title_gr: values.title_gr,
-      description_gr: values.description_gr,
+      content_gr: values.content_gr,
       visible: 1,
     };
 
     // Update values for the selected language
     data[`title_${language}`] = values[`title_${language}`];
-    data[`description_${language}`] = values[`description_${language}`];
+    data[`content_${language}`] = values[`content_${language}`];
     return data;
   };
 
   const formik = useFormik({
     initialValues: {
       title_en: "",
-      description_en: "",
+      content_en: "",
       title_es: "",
-      description_es: "",
+      content_es: "",
       title_gr: "",
-      description_gr: "",
+      content_gr: "",
       visible: 1,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const data = updateValuesForLanguages(values, language);
-      const recipeIdInt = parseInt(recipeId, 10);
+      const subcategoryIdInt = parseInt(subcategoryId);
+      console.log(subcategoryIdInt, "int id subcategory");
       if (
         deleteCoverConfirm &&
         (selectedCover !== "not available" || selectedCover !== null)
       ) {
-        await handleDeleteCover(recipeIdInt);
+        await handleDeleteCover(subcategoryIdInt);
       }
-      if (
-        deleteThumbnailConfirm &&
-        (selectedThumbnail !== "not available" || selectedThumbnail !== null)
-      ) {
-        await handleDeleteThumbnail(recipeIdInt);
-      }
-      await putData(recipeIdInt, data, selectedCover, selectedThumbnail);
+
+      await putCategoryData(subcategoryIdInt, data, selectedCover);
       {
         // Navigate only if loading is finished and there are no API errors
         if (
           !isLoading &&
           !hasApiErrors() &&
-          (selectedCover !== "Not available" || selectedCover !== null) &&
-          (selectedThumbnail !== "Not available" || selectedThumbnail !== null)
+          (selectedCover !== "Not available" || selectedCover !== null)
         ) {
-          navigate("/recipes");
+          navigate(`/recipes/${subCategoryDetails?.parent_id}`);
         }
       }
     },
   });
+
+  const customToolbarOptions = {
+    options: ["inline", "blockType", "list"], // Include list options
+    inline: {
+      options: ["bold"], // Show only bold and italic options
+    },
+    blockType: {
+      inDropdown: true, // Ensure blockType selection is in a dropdown
+      options: ["Normal", "H1", "H2"], // Specify block types you want
+      // onClick: toggleBlockType,
+    },
+    list: {
+      options: ["unordered", "ordered"],
+      className: undefined,
+      dropdownClassName: undefined,
+    },
+  };
 
   const handleValueUpdate = (fieldName, value) => {
     formik.setValues((prevValues) => ({
@@ -126,14 +157,14 @@ const EditRecipesPage = () => {
   // Use useEffect to update formik values when the language changes
   useEffect(() => {
     const newTitle = formik.values[`title_${language}`] || "";
-    const newDescription = formik.values[`description_${language}`] || "";
+    const newcontent = formik.values[`content_${language}`] || "";
 
     formik.setFieldValue(`title_${language}`, newTitle);
-    formik.setFieldValue(`description_${language}`, newDescription);
+    formik.setFieldValue(`content_${language}`, newcontent);
   }, [language]);
 
   const handleCancel = () => {
-    navigate("/recipes");
+    navigate(`/recipes/${subCategoryDetails?.parent_id}`);
   };
 
   const handleDeleteCover = async (id) => {
@@ -144,15 +175,6 @@ const EditRecipesPage = () => {
       console.error("Error deleting Cover:", error);
     }
   };
-  const handleDeleteThumbnail = async (id) => {
-    try {
-      await deleteThumbnailById(id);
-      setSelectedCover(null);
-    } catch (error) {
-      console.error("Error deleting Cover:", error);
-    }
-  };
-
   // for delete dialog cover
   const [openCover, setOpenCover] = useState(false);
   const [deleteCoverConfirm, setDeleteCoverConfirm] = useState(false);
@@ -168,21 +190,6 @@ const EditRecipesPage = () => {
     setOpenCover(false);
   };
 
-  // for delete dialog thumbnail
-  const [openThumbnail, setOpenThumbnail] = useState(false);
-  const [deleteThumbnailConfirm, setDeleteThumbnailConfirm] = useState(false);
-  const handleCloseThumbnail = () => {
-    setOpenThumbnail(false);
-  };
-  const handleDeleteThumbnailClick = () => {
-    setOpenThumbnail(true);
-  };
-  const handleDeleteThumbnailConfirm = () => {
-    setSelectedThumbnail(null);
-    setDeleteThumbnailConfirm(true);
-    setOpenThumbnail(false);
-  };
-
   return (
     <div>
       <Typography
@@ -193,7 +200,7 @@ const EditRecipesPage = () => {
           mb: 5,
         }}
       >
-        Edit Category
+        Edit SubCategory
       </Typography>
       <Box
         sx={{
@@ -215,21 +222,21 @@ const EditRecipesPage = () => {
                       component="img"
                       height={200}
                       image={selectedCover}
-                      alt="Uploaded Image"
+                      alt="Uploaded Cover"
                     />
                   ) : (
                     <CardMedia
                       component="img"
                       height={200}
                       image={URL.createObjectURL(selectedCover)}
-                      alt="Uploaded Image"
+                      alt="Uploaded Cover"
                     />
                   )}
                 </Card>
                 <CustomButton
                   btn="secondary"
                   label="Delete Image"
-                  onClick={() => handleDeleteCoverClick(recipeId)}
+                  onClick={() => handleDeleteCoverClick(subcategoryId)}
                 />
               </Box>
             ) : (
@@ -238,39 +245,6 @@ const EditRecipesPage = () => {
                 sx={{ mt: "22px", mb: "120px" }}
                 selectedFile={selectedCover}
                 setSelectedFile={setSelectedCover}
-              />
-            )}
-            {selectedThumbnail && selectedThumbnail !== "Not available" ? (
-              <Box sx={{ mt: "22px", mb: "120px" }}>
-                <Card sx={{ maxWidth: 404, mb: "20px" }}>
-                  {typeof selectedThumbnail === "string" ? (
-                    <CardMedia
-                      component="img"
-                      height={200}
-                      image={selectedThumbnail}
-                      alt="Uploaded Image"
-                    />
-                  ) : (
-                    <CardMedia
-                      component="img"
-                      height={200}
-                      image={URL.createObjectURL(selectedThumbnail)}
-                      alt="Uploaded Image"
-                    />
-                  )}
-                </Card>
-                <CustomButton
-                  btn="secondary"
-                  label="Delete Image"
-                  onClick={() => handleDeleteThumbnailClick(recipeId)}
-                />
-              </Box>
-            ) : (
-              <UploadFile
-                label="Upload Thumbnail(440x280)*"
-                sx={{ mt: "22px", mb: "120px" }}
-                selectedFile={selectedThumbnail}
-                setSelectedFile={setSelectedThumbnail}
               />
             )}
             <Dropdown
@@ -299,16 +273,12 @@ const EditRecipesPage = () => {
                 errors={formik.errors[`title_${language}`]}
                 placeholder="Title*"
               />
-              <InputBox
-                id="description"
-                name={`description_${language}`}
-                type="text"
-                value={formik.values[`description_${language}`]}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched[`description_${language}`]}
-                errors={formik.errors[`description_${language}`]}
-                placeholder="Description*"
+              <Editor
+                editorState={editorState}
+                wrapperClassName="demo-wrapper"
+                editorClassName="demo-editor"
+                onEditorStateChange={onEditorStateChange}
+                toolbar={customToolbarOptions}
               />
             </Box>
             <DeleteConfirmationDialog
@@ -317,13 +287,6 @@ const EditRecipesPage = () => {
               onConfirm={handleDeleteCoverConfirm}
               deleteItem={"Delete Cover?"}
               deleteMessage={"Are you sure you want to delete this Cover?"}
-            />
-            <DeleteConfirmationDialog
-              open={openThumbnail}
-              onClose={handleCloseThumbnail}
-              onConfirm={handleDeleteThumbnailConfirm}
-              deleteItem={"Delete Thumbnail?"}
-              deleteMessage={"Are you sure you want to delete this Thumbnail?"}
             />
             <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
               <CustomButton btn="primary" label="save" type="submit" />
@@ -340,4 +303,4 @@ const EditRecipesPage = () => {
   );
 };
 
-export default EditRecipesPage;
+export default EditRecipeInCategory;

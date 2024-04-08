@@ -94,12 +94,12 @@ const AddFitnessPage = () => {
     },
   });
 
-  const toggleBlockType = (blockType) => {
-    const newState = RichUtils.toggleBlockType(editorState, blockType);
-    if (newState) {
-      setEditorState(newState);
-    }
-  };
+  // const toggleBlockType = (blockType) => {
+  //   const newState = RichUtils.toggleBlockType(editorState, blockType);
+  //   if (newState) {
+  //     setEditorState(newState);
+  //   }
+  // };
 
   const customToolbarOptions = {
     options: ["inline", "blockType", "list"], // Include list options
@@ -213,22 +213,6 @@ const AddFitnessPage = () => {
               onEditorStateChange={onEditorStateChange}
               toolbar={customToolbarOptions}
             />
-            {/* <textarea
-              id="content"
-              name={`content_${language}`}
-              value={formik.values[`content_${language}`]}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              placeholder="Content*"
-              style={{
-                width: "100%",
-                minHeight: "200px",
-                border: "1px solid #ccc",
-                borderRadius: "5px",
-                padding: "10px",
-                marginTop: "10px",
-              }}
-            /> */}
           </Box>
           <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
             <CustomButton btn="primary" label="save" type="submit" />

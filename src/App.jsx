@@ -23,6 +23,8 @@ import RecipesPage from "./pages/recipes/RecipesPage";
 import RecipesByCategoryPage from "./pages/recipes/RecipesByCategoryPage";
 import AddRecipesPage from "./pages/recipes/AddRecipesPage";
 import EditRecipesPage from "./pages/recipes/EditRecipesPage";
+import EditRecipeInCategory from "./pages/recipes/EditRecipeInCategory";
+import AddRecipesInCategoryPage from "./pages/recipes/AddRecipesInCategoryPage";
 
 const defaultTheme = createTheme();
 
@@ -59,6 +61,10 @@ const App = () => {
           <Route path="/wallpapers/add" element={<AddWallpapersPage />} />
           <Route path="/fitness/add" element={<AddFitnessPage />} />
           <Route path="/recipes/add" element={<AddRecipesPage />} />
+          <Route
+            path="/recipes/:recipeId/add"
+            element={<AddRecipesInCategoryPage />}
+          />
           {/* id section */}
           <Route path="/games/:gameId" element={<EditGamesPage />} />
           <Route path="/tones/:toneId" element={<EditTonesPage />} />
@@ -67,11 +73,17 @@ const App = () => {
             element={<EditWallpapersPage />}
           />
           <Route path="/fitness/:fitnessId" element={<EditFitnessPage />} />
+          <Route path="/recipes/edit/:recipeId" element={<EditRecipesPage />} />
+
+          {/* subcategory section for recipe */}
           <Route
             path="/recipes/:recipeId"
             element={<RecipesByCategoryPage />}
           />
-          <Route path="/recipes/edit/:recipeId" element={<EditRecipesPage />} />
+          <Route
+            path="/subcategory/edit/:subcategoryId"
+            element={<EditRecipeInCategory />}
+          />
         </Route>
       </Routes>
     </ThemeProvider>

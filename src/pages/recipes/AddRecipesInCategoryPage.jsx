@@ -1,65 +1,100 @@
 import { useEffect, useState } from "react";
 import { Box, Stack, Typography, Card, CardMedia } from "@mui/material";
 import { useFormik } from "formik";
+import { EditorState, RichUtils } from "draft-js";
+import { Editor } from "react-draft-wysiwyg";
 import InputBox from "../../components/InputBox";
 import * as yup from "yup";
 import UploadFile from "../../components/UploadFile";
 import CustomButton from "../../components/CustomButton";
 import useRecipesApi from "../../api/useRecipesApi";
-import { useNavigate } from "react-router-dom";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { convertToRaw } from "draft-js";
+import draftToHtml from "draftjs-to-html";
+import { useNavigate, useParams } from "react-router-dom";
 import Dropdown from "../../components/Dropdown";
 
 const validationSchema = yup.object({
   title_en: yup.string().required("Title in English is required"),
-  description_en: yup.string().required("Description in English is required"),
+  content_en: yup.string().required("Content in English is required"),
 });
 
-const AddRecipesPage = () => {
-  const { postData, isLoading, hasApiErrors } = useRecipesApi();
+const AddRecipesInCategoryPage = () => {
+  const { recipeId } = useParams();
+  const { postCategoryData, isLoading, hasApiErrors } = useRecipesApi();
   const navigate = useNavigate();
   const [language, setLanguage] = useState("en");
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+
+  const onEditorStateChange = (editorState) => {
+    setEditorState(editorState);
+    // console.log(editorState, "editor state");
+    // Convert ContentState to raw format
+    const rawContentState = convertToRaw(editorState.getCurrentContent());
+
+    // Convert rawContentState to HTML
+    const htmlContent = draftToHtml(rawContentState);
+    // console.log(editorState);
+    formik.setFieldValue(`content_${language}`, htmlContent);
+  };
 
   const [selectedCover, setSelectedCover] = useState(null);
-  const [selectedThumbnail, setSelectedThumbnail] = useState(null);
 
   const updateValuesForLanguages = (values, language) => {
     const data = {
       title_en: values.title_en,
-      description_en: values.description_en,
+      content_en: values.content_en,
       title_es: values.title_es,
-      description_es: values.description_es,
+      content_es: values.content_es,
       title_gr: values.title_gr,
-      description_gr: values.description_gr,
+      content_gr: values.content_gr,
     };
 
     // Update values for the selected language
     data[`title_${language}`] = values[`title_${language}`];
-    data[`description_${language}`] = values[`description_${language}`];
+    data[`content_${language}`] = values[`content_${language}`];
     return data;
   };
 
   const formik = useFormik({
     initialValues: {
       title_en: "",
-      description_en: "",
+      content_en: "",
       title_es: "",
-      description_es: "",
+      content_es: "",
       title_gr: "",
-      description_gr: "",
+      content_gr: "",
       visible: 1,
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const data = updateValuesForLanguages(values, language);
-      await postData(data, selectedCover, selectedThumbnail);
+      await postCategoryData(recipeId, data, selectedCover);
       {
         // Navigate only if loading is finished and there are no API errors
         if (!isLoading && !hasApiErrors()) {
-          navigate("/recipes");
+          navigate(`/recipes/${recipeId}`);
         }
       }
     },
   });
+
+  const customToolbarOptions = {
+    options: ["inline", "blockType", "list"], // Include list options
+    inline: {
+      options: ["bold"], // Show only bold and italic options
+    },
+    blockType: {
+      inDropdown: true, // Ensure blockType selection is in a dropdown
+      options: ["Normal", "H1", "H2"], // Specify block types you want
+      // onClick: toggleBlockType,
+    },
+    list: {
+      options: ["unordered", "ordered"],
+      className: undefined,
+      dropdownClassName: undefined,
+    },
+  };
 
   const handleValueUpdate = (fieldName, value) => {
     formik.setValues((prevValues) => ({
@@ -71,14 +106,14 @@ const AddRecipesPage = () => {
   // Use useEffect to update formik values when the language changes
   useEffect(() => {
     const newTitle = formik.values[`title_${language}`] || "";
-    const newDescription = formik.values[`description_${language}`] || "";
+    const newcontent = formik.values[`content_${language}`] || "";
 
     formik.setFieldValue(`title_${language}`, newTitle);
-    formik.setFieldValue(`description_${language}`, newDescription);
+    formik.setFieldValue(`content_${language}`, newcontent);
   }, [language]);
 
   const handleCancel = () => {
-    navigate("/recipes");
+    navigate(`/recipes/${recipeId}`);
   };
 
   return (
@@ -91,7 +126,7 @@ const AddRecipesPage = () => {
           mb: 5,
         }}
       >
-        + Add Recipe Category
+        + Add Recipe SubCategory
       </Typography>
       <Box
         sx={{
@@ -106,7 +141,7 @@ const AddRecipesPage = () => {
         <Box>
           <form onSubmit={formik.handleSubmit}>
             <UploadFile
-              label="Upload Cover (460x303)*"
+              label="Upload Cover (1920x756)*"
               sx={{ mt: "22px", mb: "50px" }}
               selectedFile={selectedCover}
               setSelectedFile={setSelectedCover}
@@ -117,22 +152,6 @@ const AddRecipesPage = () => {
                   component="img"
                   height={200}
                   image={URL.createObjectURL(selectedCover)}
-                  alt="Uploaded Image"
-                />
-              </Card>
-            )}
-            <UploadFile
-              label="Upload Thumbnail (1920x756)*"
-              sx={{ mt: "22px", mb: "50px" }}
-              selectedFile={selectedThumbnail}
-              setSelectedFile={setSelectedThumbnail}
-            />
-            {selectedThumbnail && (
-              <Card sx={{ maxWidth: 400, mb: "50px" }}>
-                <CardMedia
-                  component="img"
-                  height={200}
-                  image={URL.createObjectURL(selectedThumbnail)}
                   alt="Uploaded Image"
                 />
               </Card>
@@ -163,16 +182,12 @@ const AddRecipesPage = () => {
                 errors={formik.errors[`title_${language}`]}
                 placeholder="Title*"
               />
-              <InputBox
-                id="description"
-                name={`description_${language}`}
-                type="text"
-                value={formik.values[`description_${language}`]}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched[`description_${language}`]}
-                errors={formik.errors[`description_${language}`]}
-                placeholder="Description*"
+              <Editor
+                editorState={editorState}
+                wrapperClassName="demo-wrapper"
+                editorClassName="demo-editor"
+                onEditorStateChange={onEditorStateChange}
+                toolbar={customToolbarOptions}
               />
             </Box>
             <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
@@ -190,4 +205,4 @@ const AddRecipesPage = () => {
   );
 };
 
-export default AddRecipesPage;
+export default AddRecipesInCategoryPage;

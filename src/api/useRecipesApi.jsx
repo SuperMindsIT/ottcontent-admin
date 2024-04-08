@@ -4,20 +4,13 @@ import { toast } from "react-toastify";
 
 const useRecipesApi = () => {
   const [data, setData] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
+  const [subCategoryDetails, setSubCategoryDetails] = useState([]);
   const [categoryDetails, setCategoryDetails] = useState([]);
   const [dataById, setDataById] = useState([]);
   const [dataDetailsById, setDataDetailsById] = useState([]);
   const [recipeCategory, setRecipeCategoryById] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  // const [fetchDataError, setFetchDataError] = useState(null);
-  // const [postDataError, setPostDataError] = useState(null);
-  // const [putDataError, setPutDataError] = useState(null);
-  // const [deleteDataError, setDeleteDataError] = useState(null);
-  // const [getDataByIdError, setGetDataByIdError] = useState(null);
-  // const [deleteCoverByIdError, setDeleteCoverByIdError] = useState(null);
-  // const [deleteThumbnailByIdError, setDeleteThumbnailByIdError] =
-  //   useState(null);
-  // const [getDataDetailsByIdError, setGetDataDetailsByIdError] = useState(null);
 
   const [errors, setErrors] = useState({});
 
@@ -28,7 +21,7 @@ const useRecipesApi = () => {
       const { data } = await appsApi.get("/recipes/categories");
       setData(data);
     } catch (error) {
-      setFetchDataError(error);
+      toast.error(error.response.data.message, "error");
       console.error("Error fetching data:", error);
       setErrors((prevErrors) => ({ ...prevErrors, fetchData: error }));
     }
@@ -43,7 +36,7 @@ const useRecipesApi = () => {
       const { data } = await appsApi.get(`/recipes/categories/${intid}`);
       setCategoryDetails(data);
     } catch (error) {
-      setFetchDataError(error);
+      toast.error(error.response.data.message, "error");
       console.error("Error fetching data:", error);
       setErrors((prevErrors) => ({ ...prevErrors, fetchCategoryData: error }));
     }
@@ -59,17 +52,27 @@ const useRecipesApi = () => {
         response = await appsApi.post("/recipes/categories", recipesData);
       }
       const intid = parseInt(response?.data?.id);
-      response = await appsApi.post(
-        `/recipes/categories/${intid}/cover`,
-        coverData
-      );
-      response = await appsApi.post(
-        `/recipes/categories/${intid}/thumbnail`,
-        thumbnailData
-      );
-      toast.success("Fitness Workout Created Successfully", "success");
+
+      if (coverData !== null || coverData !== "Not available") {
+        let coverFormData = new FormData();
+        coverFormData.append("cover", coverData);
+        response = await appsApi.post(
+          `/recipes/categories/${intid}/cover`,
+          coverFormData
+        );
+      }
+
+      if (thumbnailData !== null || thumbnailData !== "Not available") {
+        let thumbnailFormData = new FormData();
+        thumbnailFormData.append("thumbnail", thumbnailData);
+        response = await appsApi.post(
+          `/recipes/categories/${intid}/thumbnail`,
+          thumbnailFormData
+        );
+      }
+      toast.success("Recipe Category Created Successfully", "success");
       toast.success(response.data.message, "success");
-      getDataById(intid);
+      // getDataById(intid);
       fetchData(); // Refresh data after posting
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, postData: error }));
@@ -79,41 +82,9 @@ const useRecipesApi = () => {
     }
   };
 
-  //   // Add recipe category
-  // const postData = async (recipesData, coverData, thumbnailData) => {
-  //   setIsLoading(true);
-  //   try {
-  //     const formData = new FormData();
-
-  //     // Append text fields to formData
-  //     Object.keys(recipesData).forEach(key => {
-  //       formData.append(key, recipesData[key]);
-  //     });
-
-  //     // Append files to formData
-  //     if (coverFile) {
-  //       formData.append("cover", coverFile);
-  //     }
-  //     if (thumbnailFile) {
-  //       formData.append("thumbnail", thumbnailFile);
-  //     }
-
-  //     const response = await appsApi.post("/recipes/categories", formData);
-  //     toast.success("Recipe Created Successfully");
-  //     fetchData(); // Refresh data after posting
-
-  //     return response; // Return the response for further processing
-  //   } catch (error) {
-  //     console.error("Error posting data:", error);
-  //     setPostDataError(error);
-  //     toast.error("Error creating recipe");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
   // edit recipe category
   const putData = async (id, recipesData, coverData, thumbnailData) => {
+    console.log(recipesData, coverData, thumbnailData, "kejd lkedh ");
     const intid = parseInt(id);
     try {
       setIsLoading(true);
@@ -124,17 +95,26 @@ const useRecipesApi = () => {
           recipesData
         );
       }
-      response = await appsApi.post(
-        `/recipes/categories/${intid}/cover`,
-        coverData
-      );
-      response = await appsApi.post(
-        `/recipes/categories/${intid}/thumbnail`,
-        thumbnailData
-      );
+      if (coverData) {
+        let coverFormData = new FormData();
+        coverFormData.append("cover", coverData);
+        response = await appsApi.post(
+          `/recipes/categories/${intid}/cover`,
+          coverFormData
+        );
+      }
+
+      if (thumbnailData) {
+        let thumbnailFormData = new FormData();
+        thumbnailFormData.append("thumbnail", thumbnailData);
+        response = await appsApi.post(
+          `/recipes/categories/${intid}/thumbnail`,
+          thumbnailFormData
+        );
+      }
       toast.success("Fitness Workout Updated Successfully", "success");
       toast.success(response.data.message, "success");
-      getDataById(intid);
+      // getDataById(intid);
       fetchData(); // Refresh data after updating
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, putData: error }));
@@ -155,27 +135,6 @@ const useRecipesApi = () => {
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, deleteData: error }));
       console.error("Error deleting recipe category:", error);
-      toast.error(error.response.data.message, "error");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // fetch recipes from category
-  const getDataById = async (id) => {
-    const intid = parseInt(id);
-    try {
-      setIsLoading(true);
-      const response = await appsApi.get(
-        `/recipes/categories/${intid}/subcategories`
-      );
-      setRecipeCategoryById(response?.data);
-      fetchData(); // Refresh data after posting
-      setDataById(response?.data);
-      // return response?.data;
-    } catch (error) {
-      setErrors((prevErrors) => ({ ...prevErrors, getDataById: error }));
-      console.error("Error getting recipe category by id:", error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -240,6 +199,111 @@ const useRecipesApi = () => {
     }
   };
 
+  // for subcategories
+  const fetchSubCategoryData = async (id) => {
+    const intid = parseInt(id);
+    setIsLoading(true);
+    try {
+      const { data } = await appsApi.get(`/recipes/sub-categories/${intid}`);
+      setSubCategoryDetails(data);
+    } catch (error) {
+      toast.error(error.response.data.message, "error");
+      console.error("Error fetching data:", error);
+      setErrors((prevErrors) => ({ ...prevErrors, fetchCategoryData: error }));
+    }
+    setIsLoading(false);
+  };
+
+  // fetch recipes (subcategories) from category
+  const getDataById = async (id) => {
+    const intid = parseInt(id);
+    try {
+      setIsLoading(true);
+      const response = await appsApi.get(
+        `/recipes/categories/${intid}/subcategories`
+      );
+      setRecipeCategoryById(response?.data);
+      fetchData(); // Refresh data after posting
+      setDataById(response?.data);
+      // return response?.data;
+    } catch (error) {
+      setErrors((prevErrors) => ({ ...prevErrors, getDataById: error }));
+      console.error("Error getting recipe category by id:", error);
+      toast.error(error.response.data.message, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // get sucategoryDetails
+
+  // add recipe subcategory
+  const postCategoryData = async (id, recipesData, coverData) => {
+    const intId = parseInt(id);
+    try {
+      setIsLoading(true);
+      let response;
+      if (coverData && !hasApiErrors()) {
+        response = await appsApi.post(
+          `/recipes/categories/${intId}/subcategories`,
+          recipesData
+        );
+      }
+      const intid = parseInt(response?.data?.id);
+
+      if (coverData !== null || coverData !== "Not available") {
+        let coverFormData = new FormData();
+        coverFormData.append("cover", coverData);
+        response = await appsApi.post(
+          `/recipes/sub-categories/${intid}/cover`,
+          coverFormData
+        );
+      }
+      toast.success("Recipe Category Created Successfully", "success");
+      toast.success(response.data.message, "success");
+      // getDataById(intid);
+      fetchData(); // Refresh data after posting
+    } catch (error) {
+      setErrors((prevErrors) => ({ ...prevErrors, postData: error }));
+      toast.error(error.response.data.message, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // edit recipe subcategory
+  const putCategoryData = async (id, recipesData, coverData) => {
+    const intId = parseInt(id);
+    try {
+      setIsLoading(true);
+      let response;
+      if (coverData && !hasApiErrors()) {
+        response = await appsApi.put(
+          `/recipes/sub-categories/${intId}`,
+          recipesData
+        );
+      }
+
+      if (coverData !== null || coverData !== "Not available") {
+        let coverFormData = new FormData();
+        coverFormData.append("cover", coverData);
+        response = await appsApi.post(
+          `/recipes/sub-categories/${intId}/cover`,
+          coverFormData
+        );
+      }
+      toast.success("Recipe Category Updated Successfully", "success");
+      toast.success(response.data.message, "success");
+      // getDataById(intid);
+      fetchData(); // Refresh data after posting
+    } catch (error) {
+      setErrors((prevErrors) => ({ ...prevErrors, postData: error }));
+      toast.error(error.response.data.message, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // const hasApiErrors = () => {
   //   const errors = [
   //     fetchDataError,
@@ -256,6 +320,7 @@ const useRecipesApi = () => {
   // };
 
   const hasApiErrors = useCallback(() => {
+    console.log(errors, "errors in hasApi ");
     return Object.values(errors).some((error) => error != null);
   }, [errors]);
 
@@ -266,6 +331,7 @@ const useRecipesApi = () => {
   return {
     data,
     categoryDetails,
+    subCategoryDetails,
     dataById,
     dataDetailsById,
     isLoading,
@@ -279,6 +345,9 @@ const useRecipesApi = () => {
     deleteCoverById,
     deleteThumbnailById,
     fetchCategoryData,
+    postCategoryData,
+    fetchSubCategoryData,
+    putCategoryData,
   };
 };
 

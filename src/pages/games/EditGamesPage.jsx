@@ -61,7 +61,6 @@ const EditGamesPage = () => {
         // Navigate only if loading is finished and there are no API errors
         if (
           !isLoading &&
-          result &&
           !hasApiErrors() &&
           (selectedFile !== "Not available" || selectedFile !== null)
         ) {

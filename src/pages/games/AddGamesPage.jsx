@@ -36,7 +36,7 @@ const AddGamesPage = () => {
       const result = await postData(data, formData); // Capture the result of postData
 
       // Navigate only if postData was successful and there are no API errors
-      if (result && !isLoading && !hasApiErrors()) {
+      if (!isLoading && !hasApiErrors()) {
         navigate("/games");
       }
     },
