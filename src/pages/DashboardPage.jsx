@@ -79,6 +79,7 @@ const DashboardPage = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
+                cursor: "pointer",
               }}
               onClick={() => handleNavigate(item.navigateTo)}
             >
