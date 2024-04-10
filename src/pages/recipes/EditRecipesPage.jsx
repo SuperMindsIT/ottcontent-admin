@@ -35,29 +35,6 @@ const EditRecipesPage = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (recipeId) {
-      fetchCategoryData(recipeId);
-      // getDataDetailsById(recipeId);
-      console.log(categoryDetails, "category details in edit category page");
-
-      console.log(language, "language in edit page");
-    }
-  }, []);
-
-  useEffect(() => {
-    if (categoryDetails) {
-      // Update form values and files if data is loaded
-      formik.setValues({
-        title_en: categoryDetails.title_en || "",
-        description_en: categoryDetails.description_en || "",
-        // set other language fields if necessary
-      });
-      setSelectedCover(categoryDetails.cover);
-      setSelectedThumbnail(categoryDetails.thumbnail);
-    }
-  }, [categoryDetails]);
-
   const updateValuesForLanguages = (values, language) => {
     const data = {
       title_en: values.title_en,
@@ -74,6 +51,16 @@ const EditRecipesPage = () => {
     data[`description_${language}`] = values[`description_${language}`];
     return data;
   };
+
+  useEffect(() => {
+    if (recipeId) {
+      fetchCategoryData(recipeId);
+      // getDataDetailsById(recipeId);
+      console.log(categoryDetails, "category details in edit category page");
+
+      // console.log(language, "language in edit page");
+    }
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -116,21 +103,32 @@ const EditRecipesPage = () => {
     },
   });
 
+  useEffect(() => {
+    if (categoryDetails) {
+      // Update form values and files if data is loaded
+      formik.setValues({
+        title_en: categoryDetails.title_en || "",
+        description_en: categoryDetails.description_en || "",
+        title_es: categoryDetails.title_es || "",
+        description_es: categoryDetails.description_es || "",
+        title_gr: categoryDetails.title_gr || "",
+        description_gr: categoryDetails.description_gr || "",
+      });
+      if (categoryDetails.cover) {
+        setSelectedCover(categoryDetails.cover);
+      }
+      if (categoryDetails.thumbnail) {
+        setSelectedThumbnail(categoryDetails.thumbnail);
+      }
+    }
+  }, [categoryDetails]);
+
   const handleValueUpdate = (fieldName, value) => {
     formik.setValues((prevValues) => ({
       ...prevValues,
       [fieldName]: value,
     }));
   };
-
-  // Use useEffect to update formik values when the language changes
-  useEffect(() => {
-    const newTitle = formik.values[`title_${language}`] || "";
-    const newDescription = formik.values[`description_${language}`] || "";
-
-    formik.setFieldValue(`title_${language}`, newTitle);
-    formik.setFieldValue(`description_${language}`, newDescription);
-  }, [language]);
 
   const handleCancel = () => {
     navigate("/recipes");

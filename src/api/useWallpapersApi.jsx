@@ -32,10 +32,12 @@ const useWallpapersApi = () => {
       let response;
       response = await appsApi.post("/wallpapers", wallpaperData);
       const intid = parseInt(response?.data?.id);
-      response = await appsApi.post(
-        `/wallpapers/${intid}/image`,
-        thumbnailData
-      );
+      if (thumbnailData !== null || thumbnailData !== "Not available") {
+        response = await appsApi.post(
+          `/wallpapers/${intid}/image`,
+          thumbnailData
+        );
+      }
       toast.success("Wallpaper Created Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData(); // Refresh data after posting
@@ -54,10 +56,12 @@ const useWallpapersApi = () => {
       setIsLoading(true);
       let response;
       response = await appsApi.put(`/wallpapers/${intid}`, wallpaperData);
-      response = await appsApi.post(
-        `/wallpapers/${intid}/image`,
-        thumbnailData
-      );
+      if (thumbnailData !== null || thumbnailData !== "Not available") {
+        response = await appsApi.post(
+          `/wallpapers/${intid}/image`,
+          thumbnailData
+        );
+      }
       toast.success("Game Updated Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData();

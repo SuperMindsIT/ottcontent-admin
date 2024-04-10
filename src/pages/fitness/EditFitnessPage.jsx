@@ -219,12 +219,6 @@ const EditFitnessPage = () => {
         }}
       >
         <Box>
-          {/* <UploadFile
-            label="Upload Cover (1920x756)*"
-            sx={{ mb: 2 }}
-            selectedFile={selectedFile}
-            setSelectedFile={setSelectedFile}
-          /> */}
           {selectedFile && selectedFile !== "Not available" ? (
             <Box sx={{ mt: "22px", mb: "120px" }}>
               <Card sx={{ maxWidth: 404, mb: "20px" }}>
