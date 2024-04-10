@@ -7,7 +7,6 @@ import UploadFile from "../../components/UploadFile";
 import CustomButton from "../../components/CustomButton";
 import useTonesApi from "../../api/useTonesApi";
 import { useNavigate } from "react-router-dom";
-// import { Audio } from "@mui/material";
 
 const validationSchema = yup.object({
   name: yup.string("Enter the name of tone").required("Name is required"),
@@ -30,14 +29,11 @@ const AddTonesPage = () => {
       };
       const formData = new FormData();
       formData.append("audio", selectedFile);
-      // console.log(formData, "form data in tones after posting");
-      const result = await postData(data, formData);
+      await postData(data, formData);
       {
-        // Navigate only if loading is finished and there are no API errors
         if (
           !isLoading &&
           !hasApiErrors() &&
-          result &&
           (selectedFile !== "Not available" || selectedFile !== null)
         ) {
           navigate("/tones");

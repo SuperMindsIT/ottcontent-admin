@@ -94,13 +94,6 @@ const AddFitnessPage = () => {
     },
   });
 
-  // const toggleBlockType = (blockType) => {
-  //   const newState = RichUtils.toggleBlockType(editorState, blockType);
-  //   if (newState) {
-  //     setEditorState(newState);
-  //   }
-  // };
-
   const customToolbarOptions = {
     options: ["inline", "blockType", "list"], // Include list options
     inline: {

@@ -8,9 +8,10 @@ import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog"
 const RecipesPage = () => {
   let navigate = useNavigate();
 
-  const { data, isLoading, deleteData, getDataById } = useRecipesApi();
-
+  const { data, isLoading, deleteData } = useRecipesApi();
   const [deleteId, setDeleteId] = useState(null);
+
+  // for delet dialog
   const [open, setOpen] = useState(false);
 
   const handleDeleteClick = (recipeId) => {
@@ -26,8 +27,6 @@ const RecipesPage = () => {
   const handleClose = () => {
     setOpen(false);
   };
-
-  console.log(data, "data in recipe main page");
 
   const handleViewAll = (recipeId) => {
     navigate(`/recipes/${recipeId}`);

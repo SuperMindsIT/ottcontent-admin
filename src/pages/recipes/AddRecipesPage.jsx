@@ -51,10 +51,9 @@ const AddRecipesPage = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const data = updateValuesForLanguages(values, language);
-      const result = await postData(data, selectedCover, selectedThumbnail);
+      await postData(data, selectedCover, selectedThumbnail);
       {
-        // Navigate only if loading is finished and there are no API errors
-        if (!isLoading && !hasApiErrors() && result) {
+        if (!isLoading && !hasApiErrors()) {
           navigate("/recipes");
         }
       }

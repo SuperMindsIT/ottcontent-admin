@@ -13,9 +13,8 @@ const validationSchema = yup.object({
 });
 
 const AddWallpapersPage = () => {
-  const { postData, isLoading, hasApiErrors } = useWallpapersApi();
   const navigate = useNavigate();
-
+  const { postData, isLoading, hasApiErrors } = useWallpapersApi();
   const [selectedFile, setSelectedFile] = useState(null);
 
   const formik = useFormik({
@@ -29,13 +28,11 @@ const AddWallpapersPage = () => {
       };
       const formData = new FormData();
       formData.append("image", selectedFile);
-      const result = await postData(data, formData);
+      await postData(data, formData);
       {
-        // Navigate only if loading is finished and there are no API errors
         if (
           !isLoading &&
           !hasApiErrors() &&
-          result &&
           (selectedFile !== "Not available" || selectedFile !== null)
         ) {
           navigate("/wallpapers");

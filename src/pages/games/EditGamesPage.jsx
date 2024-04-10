@@ -26,8 +26,11 @@ const EditGamesPage = () => {
     isLoading,
   } = useGamesApi();
 
-  const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
+  const [selectedFile, setSelectedFile] = useState(null);
+  // for delete dialog
+  const [open, setOpen] = useState(false);
+  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
 
   useEffect(() => {
     getDataById(gameId);
@@ -55,14 +58,13 @@ const EditGamesPage = () => {
       ) {
         await handleDeleteImage(gameIdInt);
       }
-      const result = await putData(gameIdInt, data, formData);
+      await putData(gameIdInt, data, formData);
 
       {
         // Navigate only if loading is finished and there are no API errors
         if (
           !isLoading &&
           !hasApiErrors() &&
-          result &&
           (selectedFile !== "Not available" || selectedFile !== null)
         ) {
           navigate("/games");
@@ -70,12 +72,6 @@ const EditGamesPage = () => {
       }
     },
   });
-
-  // // When a new file is uploaded, make sure the selectedFile state is updated
-  // const handleFileUpload = (file) => {
-  //   setSelectedFile(file);
-  //   console.log("File uploaded:", file);
-  // };
 
   useEffect(() => {
     if (gameById) {
@@ -103,8 +99,6 @@ const EditGamesPage = () => {
   };
 
   // for delete dialog
-  const [open, setOpen] = useState(false);
-  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
   const handleClose = () => {
     setOpen(false);
   };

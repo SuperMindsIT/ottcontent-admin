@@ -37,6 +37,9 @@ const EditFitnessPage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [language, setLanguage] = useState("en");
+  // for delete dialog
+  const [open, setOpen] = useState(false);
+  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
 
   // editor
   const onEditorStateChange = (editorState) => {
@@ -107,7 +110,6 @@ const EditFitnessPage = () => {
       //   console.log("Form submitted with values:", values);
       const formData = new FormData();
       formData.append("image", selectedFile);
-      //   console.log(data, "data in fitness");
       const fitnessIntId = parseInt(fitnessId, 10);
       if (deleteItemConfirm) {
         await handleDeleteImage(fitnessIntId);
@@ -182,8 +184,6 @@ const EditFitnessPage = () => {
   };
 
   // for delete dialog
-  const [open, setOpen] = useState(false);
-  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
   const handleClose = () => {
     setOpen(false);
   };

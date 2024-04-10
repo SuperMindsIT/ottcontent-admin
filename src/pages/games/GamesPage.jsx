@@ -9,8 +9,7 @@ const GamesPage = () => {
   let navigate = useNavigate();
 
   const { data, isLoading, deleteData } = useGamesApi();
-  console.log(data, "data in games page");
-
+  // for delete dialog
   const [deleteId, setDeleteId] = useState(null);
   const [open, setOpen] = useState(false);
 

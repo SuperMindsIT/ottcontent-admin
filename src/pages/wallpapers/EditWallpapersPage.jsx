@@ -25,12 +25,14 @@ const EditWallpapersPage = () => {
     isLoading,
   } = useWallpapersApi();
 
-  const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
+  const [selectedFile, setSelectedFile] = useState(null);
+  // for delete dialog
+  const [open, setOpen] = useState(false);
+  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
 
   useEffect(() => {
     getDataById(wallpaperId);
-    // console.log(wallpaperById, "wallpaper in edit wallpaper");
   }, []);
 
   const formik = useFormik({
@@ -87,8 +89,6 @@ const EditWallpapersPage = () => {
   };
 
   // for delete dialog
-  const [open, setOpen] = useState(false);
-  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
   const handleClose = () => {
     setOpen(false);
   };

@@ -26,11 +26,16 @@ const EditRecipesPage = () => {
     deleteCoverById,
     deleteThumbnailById,
     fetchCategoryData,
-    // getDataDetailsById,
   } = useRecipesApi();
 
   const [selectedCover, setSelectedCover] = useState(null);
   const [selectedThumbnail, setSelectedThumbnail] = useState(null);
+  // for delete dialog thumbnail
+  const [openThumbnail, setOpenThumbnail] = useState(false);
+  const [deleteThumbnailConfirm, setDeleteThumbnailConfirm] = useState(false);
+  // for delete dialog cover
+  const [openCover, setOpenCover] = useState(false);
+  const [deleteCoverConfirm, setDeleteCoverConfirm] = useState(false);
   const [language, setLanguage] = useState("en");
 
   const navigate = useNavigate();
@@ -55,10 +60,7 @@ const EditRecipesPage = () => {
   useEffect(() => {
     if (recipeId) {
       fetchCategoryData(recipeId);
-      // getDataDetailsById(recipeId);
       console.log(categoryDetails, "category details in edit category page");
-
-      // console.log(language, "language in edit page");
     }
   }, []);
 
@@ -88,18 +90,12 @@ const EditRecipesPage = () => {
       ) {
         await handleDeleteThumbnail(recipeIdInt);
       }
-      const result = await putData(
-        recipeIdInt,
-        data,
-        selectedCover,
-        selectedThumbnail
-      );
+      await putData(recipeIdInt, data, selectedCover, selectedThumbnail);
       {
         // Navigate only if loading is finished and there are no API errors
         if (
           !isLoading &&
           !hasApiErrors() &&
-          result &&
           (selectedCover !== "Not available" || selectedCover !== null) &&
           (selectedThumbnail !== "Not available" || selectedThumbnail !== null)
         ) {
@@ -140,26 +136,7 @@ const EditRecipesPage = () => {
     navigate("/recipes");
   };
 
-  const handleDeleteCover = async (id) => {
-    try {
-      await deleteCoverById(id);
-      setSelectedCover(null);
-    } catch (error) {
-      console.error("Error deleting Cover:", error);
-    }
-  };
-  const handleDeleteThumbnail = async (id) => {
-    try {
-      await deleteThumbnailById(id);
-      setSelectedCover(null);
-    } catch (error) {
-      console.error("Error deleting Cover:", error);
-    }
-  };
-
   // for delete dialog cover
-  const [openCover, setOpenCover] = useState(false);
-  const [deleteCoverConfirm, setDeleteCoverConfirm] = useState(false);
   const handleCloseCover = () => {
     setOpenCover(false);
   };
@@ -172,9 +149,16 @@ const EditRecipesPage = () => {
     setOpenCover(false);
   };
 
+  const handleDeleteCover = async (id) => {
+    try {
+      await deleteCoverById(id);
+      setSelectedCover(null);
+    } catch (error) {
+      console.error("Error deleting Cover:", error);
+    }
+  };
+
   // for delete dialog thumbnail
-  const [openThumbnail, setOpenThumbnail] = useState(false);
-  const [deleteThumbnailConfirm, setDeleteThumbnailConfirm] = useState(false);
   const handleCloseThumbnail = () => {
     setOpenThumbnail(false);
   };
@@ -185,6 +169,15 @@ const EditRecipesPage = () => {
     setSelectedThumbnail(null);
     setDeleteThumbnailConfirm(true);
     setOpenThumbnail(false);
+  };
+
+  const handleDeleteThumbnail = async (id) => {
+    try {
+      await deleteThumbnailById(id);
+      setSelectedCover(null);
+    } catch (error) {
+      console.error("Error deleting Cover:", error);
+    }
   };
 
   return (
