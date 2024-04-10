@@ -4,6 +4,7 @@ import useGamesApi from "../api/useGamesApi";
 import useRecipesApi from "../api/useRecipesApi";
 import useTonesApi from "../api/useTonesApi";
 import useWallpapersApi from "../api/useWallpapersApi";
+import { useNavigate } from "react-router-dom";
 
 const DashboardPage = () => {
   const { data: fitnessData } = useFitnessApi();
@@ -12,34 +13,44 @@ const DashboardPage = () => {
   const { data: tonesData } = useTonesApi();
   const { data: wallpapersData } = useWallpapersApi();
 
+  const navigate = useNavigate();
+
   const boxes = [
     {
       icon: "",
       total: fitnessData?.length,
       label: "Fitness",
+      navigateTo: "/fitness",
     },
     {
       icon: "",
       total: gamesData?.length,
       label: "Games",
+      navigateTo: "/games",
     },
     {
       icon: "",
       total: recipesData?.length,
       label: "Recipes",
+      navigateTo: "/recipes",
     },
     {
       icon: "",
       total: tonesData?.length,
       label: "Tones",
+      navigateTo: "/tones",
     },
     {
       icon: "",
       total: wallpapersData?.length,
       label: "Wallpapers",
+      navigateTo: "/wallpapers",
     },
   ];
 
+  const handleNavigate = (routeName) => {
+    navigate(routeName);
+  };
   return (
     <Box>
       <Typography
@@ -69,6 +80,7 @@ const DashboardPage = () => {
                 alignItems: "center",
                 justifyContent: "center",
               }}
+              onClick={() => handleNavigate(item.navigateTo)}
             >
               <Box
                 sx={{

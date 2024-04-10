@@ -51,15 +51,21 @@ export default function DataTable(props) {
                   height: "46px",
                 },
                 "& .MuiInputBase-input": {
-                  padding: "18px 0px",
+                  padding: "18px 12px 18px 0px",
                   height: 0,
                 },
                 "& .MuiFormHelperText-root": {
                   position: "absolute",
-                  // bottom: "-24px",
                 },
                 "& .MuiInputLabel-root": {
                   color: "#fff", // Make label text white
+                },
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor: "rgba(255, 255, 255, 0.7)", // Change focus border color to white
+                    borderRadius: "68px", // Maintain the border-radius on focus
+                    border: "0px",
+                  },
                 },
                 "& ::placeholder": {
                   opacity: 0.7,

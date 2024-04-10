@@ -11,7 +11,7 @@ import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog"
 import useRecipesApi from "../../api/useRecipesApi";
 import Dropdown from "../../components/Dropdown";
 import { Editor } from "react-draft-wysiwyg";
-import { EditorState } from "draft-js";
+import { EditorState, ContentState, convertFromHTML } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
@@ -23,16 +23,15 @@ const validationSchema = yup.object({
 
 const EditRecipeInCategory = () => {
   const { subcategoryId } = useParams();
+  const navigate = useNavigate();
 
   const {
     putCategoryData,
     isLoading,
     subCategoryDetails,
     hasApiErrors,
-    deleteCoverById,
     deleteSubcategoryCoverById,
     fetchSubCategoryData,
-    // getDataDetailsById,
   } = useRecipesApi();
 
   const [selectedCover, setSelectedCover] = useState(null);
@@ -51,33 +50,6 @@ const EditRecipeInCategory = () => {
     formik.setFieldValue(`content_${language}`, htmlContent);
   };
 
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (subcategoryId) {
-      fetchSubCategoryData(subcategoryId);
-      // getDataDetailsById(subcategoryId);
-      console.log(
-        subCategoryDetails,
-        "sub-category details in edit category page"
-      );
-
-      console.log(language, "language in edit page");
-    }
-  }, [subcategoryId]);
-
-  useEffect(() => {
-    if (subCategoryDetails) {
-      // Update form values and files if data is loaded
-      formik.setValues({
-        title_en: subCategoryDetails.title_en || "",
-        content_en: subCategoryDetails.content_en || "",
-        // set other language fields if necessary
-      });
-      setSelectedCover(subCategoryDetails.cover);
-    }
-  }, [subCategoryDetails]);
-
   const updateValuesForLanguages = (values, language) => {
     const data = {
       title_en: values.title_en,
@@ -94,6 +66,31 @@ const EditRecipeInCategory = () => {
     data[`content_${language}`] = values[`content_${language}`];
     return data;
   };
+
+  useEffect(() => {
+    if (subcategoryId) {
+      fetchSubCategoryData(subcategoryId);
+      // getDataDetailsById(subcategoryId);
+      console.log(
+        subCategoryDetails,
+        "sub-category details in edit category page"
+      );
+
+      console.log(language, "language in edit page");
+    }
+  }, [subcategoryId]);
+
+  useEffect(() => {
+    if (subCategoryDetails) {
+      const htmlContent = subCategoryDetails[`content_${language}`] || "";
+      const blocksFromHTML = convertFromHTML(htmlContent);
+      const contentState = ContentState.createFromBlockArray(
+        blocksFromHTML.contentBlocks,
+        blocksFromHTML.entityMap
+      );
+      setEditorState(EditorState.createWithContent(contentState));
+    }
+  }, [subCategoryDetails, language]);
 
   const formik = useFormik({
     initialValues: {
@@ -131,6 +128,41 @@ const EditRecipeInCategory = () => {
     },
   });
 
+  useEffect(() => {
+    if (subCategoryDetails) {
+      // Update form values and files if data is loaded
+      formik.setValues({
+        title_en: subCategoryDetails.title_en || "",
+        content_en: subCategoryDetails.content_en || "",
+        title_es: subCategoryDetails.title_es || "",
+        content_es: subCategoryDetails.content_es || "",
+        title_gr: subCategoryDetails.title_gr || "",
+        content_gr: subCategoryDetails.content_gr || "",
+      });
+      setSelectedCover(subCategoryDetails.cover);
+    }
+  }, [subCategoryDetails]);
+
+  const handleValueUpdate = (fieldName, value) => {
+    formik.setValues((prevValues) => ({
+      ...prevValues,
+      [fieldName]: value,
+    }));
+  };
+
+  const handleCancel = () => {
+    navigate(`/recipes/${subCategoryDetails?.parent_id}`);
+  };
+
+  const handleDeleteCover = async (id) => {
+    try {
+      await deleteSubcategoryCoverById(id);
+      setSelectedCover(null);
+    } catch (error) {
+      console.error("Error deleting Cover:", error);
+    }
+  };
+
   const customToolbarOptions = {
     options: ["inline", "blockType", "list"], // Include list options
     inline: {
@@ -148,34 +180,6 @@ const EditRecipeInCategory = () => {
     },
   };
 
-  const handleValueUpdate = (fieldName, value) => {
-    formik.setValues((prevValues) => ({
-      ...prevValues,
-      [fieldName]: value,
-    }));
-  };
-
-  // Use useEffect to update formik values when the language changes
-  useEffect(() => {
-    const newTitle = formik.values[`title_${language}`] || "";
-    const newcontent = formik.values[`content_${language}`] || "";
-
-    formik.setFieldValue(`title_${language}`, newTitle);
-    formik.setFieldValue(`content_${language}`, newcontent);
-  }, [language]);
-
-  const handleCancel = () => {
-    navigate(`/recipes/${subCategoryDetails?.parent_id}`);
-  };
-
-  const handleDeleteCover = async (id) => {
-    try {
-      await deleteSubcategoryCoverById(id);
-      setSelectedCover(null);
-    } catch (error) {
-      console.error("Error deleting Cover:", error);
-    }
-  };
   // for delete dialog cover
   const [openCover, setOpenCover] = useState(false);
   const [deleteCoverConfirm, setDeleteCoverConfirm] = useState(false);
