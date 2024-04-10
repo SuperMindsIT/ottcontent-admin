@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Stack, Typography, Card, CardMedia } from "@mui/material";
 import { useFormik } from "formik";
-import { EditorState, RichUtils } from "draft-js";
+import { EditorState } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import InputBox from "../../components/InputBox";
 import * as yup from "yup";
@@ -28,10 +28,8 @@ const AddRecipesInCategoryPage = () => {
 
   const onEditorStateChange = (editorState) => {
     setEditorState(editorState);
-    // console.log(editorState, "editor state");
     // Convert ContentState to raw format
     const rawContentState = convertToRaw(editorState.getCurrentContent());
-
     // Convert rawContentState to HTML
     const htmlContent = draftToHtml(rawContentState);
     // console.log(editorState);
@@ -69,10 +67,10 @@ const AddRecipesInCategoryPage = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const data = updateValuesForLanguages(values, language);
-      const result = await postCategoryData(recipeId, data, selectedCover);
+      await postCategoryData(recipeId, data, selectedCover);
       {
         // Navigate only if loading is finished and there are no API errors
-        if (!isLoading && !hasApiErrors() && result) {
+        if (!isLoading && !hasApiErrors()) {
           navigate(`/recipes/${recipeId}`);
         }
       }
@@ -87,7 +85,6 @@ const AddRecipesInCategoryPage = () => {
     blockType: {
       inDropdown: true, // Ensure blockType selection is in a dropdown
       options: ["Normal", "H1", "H2"], // Specify block types you want
-      // onClick: toggleBlockType,
     },
     list: {
       options: ["unordered", "ordered"],

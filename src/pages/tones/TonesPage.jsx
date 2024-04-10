@@ -7,20 +7,17 @@ import { useState } from "react";
 
 const TonesPage = () => {
   let navigate = useNavigate();
-
   const { data, isLoading, deleteData } = useTonesApi();
+  // for delete dialog
+  const [deleteId, setDeleteId] = useState(null);
+  const [open, setOpen] = useState(false);
 
   const handleToneClick = (toneId) => {
     // Navigate to the route for the clicked tone
     navigate(`/tones/${toneId}`);
   };
 
-  // console.log(data, "tones in tones page");
-
   // for delete dialog
-  const [deleteId, setDeleteId] = useState(null);
-  const [open, setOpen] = useState(false);
-
   const handleClose = () => {
     setOpen(false);
   };

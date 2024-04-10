@@ -25,6 +25,10 @@ const EditRecipeInCategory = () => {
   const { subcategoryId } = useParams();
   const navigate = useNavigate();
 
+  // for delete dialog cover
+  const [openCover, setOpenCover] = useState(false);
+  const [deleteCoverConfirm, setDeleteCoverConfirm] = useState(false);
+
   const {
     putCategoryData,
     isLoading,
@@ -40,13 +44,10 @@ const EditRecipeInCategory = () => {
 
   const onEditorStateChange = (editorState) => {
     setEditorState(editorState);
-    // console.log(editorState, "editor state");
     // Convert ContentState to raw format
     const rawContentState = convertToRaw(editorState.getCurrentContent());
-
     // Convert rawContentState to HTML
     const htmlContent = draftToHtml(rawContentState);
-    // console.log(editorState);
     formik.setFieldValue(`content_${language}`, htmlContent);
   };
 
@@ -114,17 +115,12 @@ const EditRecipeInCategory = () => {
         await handleDeleteCover(subcategoryIdInt);
       }
 
-      const result = await putCategoryData(
-        subcategoryIdInt,
-        data,
-        selectedCover
-      );
+      await putCategoryData(subcategoryIdInt, data, selectedCover);
       {
         // Navigate only if loading is finished and there are no API errors
         if (
           !isLoading &&
           !hasApiErrors() &&
-          result &&
           (selectedCover !== "Not available" || selectedCover !== null)
         ) {
           navigate(`/recipes/${subCategoryDetails?.parent_id}`);
@@ -176,7 +172,6 @@ const EditRecipeInCategory = () => {
     blockType: {
       inDropdown: true, // Ensure blockType selection is in a dropdown
       options: ["Normal", "H1", "H2"], // Specify block types you want
-      // onClick: toggleBlockType,
     },
     list: {
       options: ["unordered", "ordered"],
@@ -186,8 +181,6 @@ const EditRecipeInCategory = () => {
   };
 
   // for delete dialog cover
-  const [openCover, setOpenCover] = useState(false);
-  const [deleteCoverConfirm, setDeleteCoverConfirm] = useState(false);
   const handleCloseCover = () => {
     setOpenCover(false);
   };

@@ -51,7 +51,6 @@ const useGamesApi = () => {
       }
       const intid = parseInt(response?.data?.id);
       await postThumbnail(intid, thumbnailData);
-      // console.log(thumbnailData, "thumbnail data");
       toast.success("Game Created Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData();

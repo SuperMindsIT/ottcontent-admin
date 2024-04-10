@@ -49,6 +49,7 @@ const useFitnessApi = () => {
     try {
       setIsLoading(true);
       let response;
+      console.log(thumbnailData, "thumbnail in putData");
       response = await appsApi.put(`/fitness/${intid}`, fitnessData);
       response = await appsApi.post(`/fitness/${intid}/image`, thumbnailData);
       toast.success("Fitness Workout Updated Successfully", "success");

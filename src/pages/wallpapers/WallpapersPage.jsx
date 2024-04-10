@@ -9,15 +9,15 @@ const WallpapersPage = () => {
   let navigate = useNavigate();
 
   const { data, isLoading, deleteData } = useWallpapersApi();
-  const handleWallpaperClick = (wallpaperId) => {
-    // Navigate to the route for the clicked game
-    navigate(`/wallpapers/${wallpaperId}`);
-  };
-
   // for delete dialog
   const [deleteId, setDeleteId] = useState(null);
   const [open, setOpen] = useState(false);
 
+  const handleWallpaperClick = (wallpaperId) => {
+    navigate(`/wallpapers/${wallpaperId}`);
+  };
+
+  // for delete dialog
   const handleClose = () => {
     setOpen(false);
   };
@@ -34,26 +34,6 @@ const WallpapersPage = () => {
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },
     { field: "title", headerName: "Name", flex: 1 },
-    // {
-    //   field: "iframe",
-    //   headerName: "iframe",
-    //   sortable: false,
-    //   renderCell: (params) => (
-    //     <Link
-    //       sx={{
-    //         textDecoration: "none",
-    //         color: "#0E8BFF",
-    //         fontWeight: 500,
-    //         textDecorationLine: "underline",
-    //       }}
-    //       target="_blank"
-    //       href={`${params.row.iframe}`}
-    //     >
-    //       LINK
-    //     </Link>
-    //   ),
-    //   flex: 1,
-    // },
     {
       field: "actions",
       headerName: "Actions",

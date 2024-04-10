@@ -25,13 +25,14 @@ const EditTonesPage = () => {
     isLoading,
   } = useTonesApi();
 
-  const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
+  const [selectedFile, setSelectedFile] = useState(null);
+  // for delete dialog
+  const [open, setOpen] = useState(false);
+  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
 
   useEffect(() => {
     getDataById(toneId);
-    // console.log(toneId, "tone id kudg kefgh ");
-    // console.log(toneById, "tone in edit tone");
   }, []);
 
   const formik = useFormik({
@@ -88,8 +89,6 @@ const EditTonesPage = () => {
   };
 
   // for delete dialog
-  const [open, setOpen] = useState(false);
-  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
   const handleClose = () => {
     setOpen(false);
   };

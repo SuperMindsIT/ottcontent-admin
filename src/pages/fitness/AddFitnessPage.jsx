@@ -31,13 +31,11 @@ const AddFitnessPage = () => {
 
   const onEditorStateChange = (editorState) => {
     setEditorState(editorState);
-    // console.log(editorState, "editor state");
     // Convert ContentState to raw format
     const rawContentState = convertToRaw(editorState.getCurrentContent());
 
     // Convert rawContentState to HTML
     const htmlContent = draftToHtml(rawContentState);
-    // console.log(editorState);
     formik.setFieldValue(`content_${language}`, htmlContent);
   };
 
@@ -80,7 +78,6 @@ const AddFitnessPage = () => {
       // console.log("Form submitted with values:", values);
       const formData = new FormData();
       formData.append("image", selectedFile);
-      // console.log(data, "data in fitness");
       await postData(data, formData);
       {
         if (
@@ -93,13 +90,6 @@ const AddFitnessPage = () => {
       }
     },
   });
-
-  // const toggleBlockType = (blockType) => {
-  //   const newState = RichUtils.toggleBlockType(editorState, blockType);
-  //   if (newState) {
-  //     setEditorState(newState);
-  //   }
-  // };
 
   const customToolbarOptions = {
     options: ["inline", "blockType", "list"], // Include list options

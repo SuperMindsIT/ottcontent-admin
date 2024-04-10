@@ -9,6 +9,10 @@ const RecipesByCategoryPage = () => {
   let navigate = useNavigate();
   const { recipeId } = useParams();
 
+  // for delete dialog
+  const [deleteId, setDeleteId] = useState(null);
+  const [open, setOpen] = useState(false);
+
   const {
     isLoading,
     deleteData,
@@ -25,9 +29,6 @@ const RecipesByCategoryPage = () => {
     console.log(dataDetailsById, "data details by id");
   }, []);
 
-  const [deleteId, setDeleteId] = useState(null);
-  const [open, setOpen] = useState(false);
-
   const handleDeleteClick = (recipeId) => {
     setDeleteId(recipeId);
     setOpen(true);
@@ -41,11 +42,6 @@ const RecipesByCategoryPage = () => {
   const handleClose = () => {
     setOpen(false);
   };
-
-  //   const handleGameClick = (gameId) => {
-  //     // Navigate to the route for the clicked game
-  //     navigate(`/games/${gameId}`);
-  //   };
 
   const handleViewAll = (recipeId) => {
     navigate(`recipes/${recipeId}`);
