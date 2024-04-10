@@ -17,7 +17,6 @@ const useWallpapersApi = () => {
     try {
       setIsLoading(true);
       const { data } = await appsApi.get("/wallpapers");
-      // console.log(data, "games data");
       setData(data);
       setIsLoading(false);
     } catch (error) {
@@ -94,7 +93,6 @@ const useWallpapersApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.get(`/wallpapers/${intid}`);
-      // console.log("Wallpaper data by id:", response.data);
       setWallpaperById(response?.data);
       fetchData(); // Refresh data after posting
     } catch (error) {

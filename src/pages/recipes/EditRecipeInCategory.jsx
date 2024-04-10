@@ -48,7 +48,6 @@ const EditRecipeInCategory = () => {
     const rawContentState = convertToRaw(editorState.getCurrentContent());
     // Convert rawContentState to HTML
     const htmlContent = draftToHtml(rawContentState);
-    // console.log(editorState);
     formik.setFieldValue(`content_${language}`, htmlContent);
   };
 

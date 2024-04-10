@@ -17,7 +17,6 @@ const useTonesApi = () => {
     try {
       setIsLoading(true);
       const { data } = await appsApi.get("/tones");
-      //   console.log(data, "tones data");
       setData(data);
       setIsLoading(false);
     } catch (error) {
@@ -83,7 +82,6 @@ const useTonesApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.get(`/tones/${intid}`);
-      // console.log("Tone data by id:", response.data);
       setToneById(response?.data);
       fetchData(); // Refresh data after posting
     } catch (error) {

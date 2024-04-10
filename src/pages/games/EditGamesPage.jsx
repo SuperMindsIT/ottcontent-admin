@@ -34,7 +34,6 @@ const EditGamesPage = () => {
 
   useEffect(() => {
     getDataById(gameId);
-    // console.log(gameById, "game in edit game");
   }, []);
 
   const formik = useFormik({

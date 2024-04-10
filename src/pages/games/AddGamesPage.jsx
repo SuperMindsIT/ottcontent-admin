@@ -32,7 +32,6 @@ const AddGamesPage = () => {
       };
       const formData = new FormData();
       formData.append("thumbnail", selectedFile);
-      // console.log(typeof selectedFile);
       await postData(data, formData); // Capture the result of postData
 
       console.log(result, "result in add games page");

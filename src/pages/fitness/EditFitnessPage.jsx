@@ -77,7 +77,6 @@ const EditFitnessPage = () => {
 
   useEffect(() => {
     getDataById(fitnessId);
-    // console.log(fitnessById, "fitness in edit fitness");
   }, []);
 
   useEffect(() => {
@@ -107,7 +106,6 @@ const EditFitnessPage = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const data = updateValuesForLanguages(values, language);
-      //   console.log("Form submitted with values:", values);
       const formData = new FormData();
       formData.append("image", selectedFile);
       const fitnessIntId = parseInt(fitnessId, 10);
