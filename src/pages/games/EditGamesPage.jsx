@@ -62,6 +62,7 @@ const EditGamesPage = () => {
         if (
           !isLoading &&
           !hasApiErrors() &&
+          result &&
           (selectedFile !== "Not available" || selectedFile !== null)
         ) {
           navigate("/games");

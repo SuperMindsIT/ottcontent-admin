@@ -49,11 +49,12 @@ const EditTonesPage = () => {
       if (deleteItemConfirm) {
         await handleDeleteTone(toneIntId);
       }
-      await putData(toneIntId, data, formData);
+      const result = await putData(toneIntId, data, formData);
       {
         if (
           !isLoading &&
           !hasApiErrors() &&
+          result &&
           (selectedFile !== "Not available" || selectedFile !== null)
         ) {
           navigate("/tones");

@@ -29,12 +29,13 @@ const AddWallpapersPage = () => {
       };
       const formData = new FormData();
       formData.append("image", selectedFile);
-      await postData(data, formData);
+      const result = await postData(data, formData);
       {
         // Navigate only if loading is finished and there are no API errors
         if (
           !isLoading &&
           !hasApiErrors() &&
+          result &&
           (selectedFile !== "Not available" || selectedFile !== null)
         ) {
           navigate("/wallpapers");

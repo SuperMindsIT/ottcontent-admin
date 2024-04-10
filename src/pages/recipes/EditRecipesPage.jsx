@@ -88,12 +88,18 @@ const EditRecipesPage = () => {
       ) {
         await handleDeleteThumbnail(recipeIdInt);
       }
-      await putData(recipeIdInt, data, selectedCover, selectedThumbnail);
+      const result = await putData(
+        recipeIdInt,
+        data,
+        selectedCover,
+        selectedThumbnail
+      );
       {
         // Navigate only if loading is finished and there are no API errors
         if (
           !isLoading &&
           !hasApiErrors() &&
+          result &&
           (selectedCover !== "Not available" || selectedCover !== null) &&
           (selectedThumbnail !== "Not available" || selectedThumbnail !== null)
         ) {

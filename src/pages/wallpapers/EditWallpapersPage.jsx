@@ -48,11 +48,12 @@ const EditWallpapersPage = () => {
       if (deleteItemConfirm) {
         await handleDeleteImage(wallpaperIntId);
       }
-      await putData(wallpaperIntId, data, formData);
+      const result = await putData(wallpaperIntId, data, formData);
       {
         if (
           !isLoading &&
           !hasApiErrors() &&
+          result &&
           (selectedFile !== "Not available" || selectedFile !== null)
         ) {
           navigate("/wallpapers");
