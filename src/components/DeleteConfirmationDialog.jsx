@@ -1,4 +1,5 @@
 import { Button, Box } from "@mui/material";
+import CustomButton from "./CustomButton";
 
 const DeleteConfirmationDialog = ({
   open,
@@ -27,12 +28,14 @@ const DeleteConfirmationDialog = ({
     >
       <h2 id="parent-modal-title">{deleteItem}</h2>
       <p id="parent-modal-description">{deleteMessage}</p>
-      <Button onClick={onClose} color="primary">
-        Cancel
-      </Button>
-      <Button onClick={onConfirm} color="primary">
-        Delete
-      </Button>
+
+      <Box sx={{ display: "flex", justifyContent: "center", gap: "15px" }}>
+        <Button onClick={onClose} color="primary">
+          Cancel
+        </Button>
+
+        <CustomButton btn="primary" label="Delete" onClick={onConfirm} />
+      </Box>
     </Box>
   );
 };
