@@ -3,7 +3,7 @@ import DataTable from "../components/DataTable";
 import PropTypes from "prop-types";
 
 const MainLayout = (props) => {
-  const { title, onAddClick, rows, columns, isLoading } = props;
+  const { title, onAddClick, rows, columns, isLoading, searchFields } = props;
   console.log(rows, "row data");
 
   return (
@@ -29,7 +29,13 @@ const MainLayout = (props) => {
           + Add
         </Button>
       </Box>
-      <DataTable rows={rows} columns={columns} isLoading={isLoading} />
+      {/* <DataTable rows={rows} columns={columns} isLoading={isLoading} /> */}
+      <DataTable
+        rows={rows}
+        columns={columns}
+        isLoading={isLoading}
+        searchFields={searchFields}
+      />
     </div>
   );
 };

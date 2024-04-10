@@ -105,6 +105,7 @@ const FitnessPage = () => {
       columns={columns}
       isLoading={isLoading}
       onAddClick={() => navigate("/fitness/add")}
+      searchFields={["title_en"]}
     />
   );
 };

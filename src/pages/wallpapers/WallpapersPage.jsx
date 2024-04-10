@@ -123,6 +123,7 @@ const WallpapersPage = () => {
       columns={columns}
       isLoading={isLoading}
       onAddClick={() => navigate("/wallpapers/add")}
+      searchFields={["title"]}
     />
   );
 };

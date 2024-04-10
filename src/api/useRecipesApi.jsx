@@ -277,7 +277,10 @@ const useRecipesApi = () => {
     try {
       setIsLoading(true);
       let response;
-      if (coverData && !hasApiErrors()) {
+      if (
+        (coverData !== null || coverData !== "Not available") &&
+        !hasApiErrors()
+      ) {
         response = await appsApi.put(
           `/recipes/sub-categories/${intId}`,
           recipesData
@@ -298,6 +301,24 @@ const useRecipesApi = () => {
       fetchData(); // Refresh data after posting
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, postData: error }));
+      toast.error(error.response.data.message, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deleteSubcategoryCoverById = async (id) => {
+    const intid = parseInt(id);
+    try {
+      setIsLoading(true);
+      const response = await appsApi.delete(
+        `/recipes/sub-categories/${intid}/cover`
+      );
+      toast.success(response.data.message, "success");
+      // getDataById(intid);
+    } catch (error) {
+      setErrors((prevErrors) => ({ ...prevErrors, deleteCoverById: error }));
+      console.error("Error posting game:", error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -348,6 +369,7 @@ const useRecipesApi = () => {
     postCategoryData,
     fetchSubCategoryData,
     putCategoryData,
+    deleteSubcategoryCoverById,
   };
 };
 

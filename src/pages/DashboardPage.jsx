@@ -1,31 +1,42 @@
 import { Box, Grid, Typography } from "@mui/material";
+import useFitnessApi from "../api/useFitnessApi";
+import useGamesApi from "../api/useGamesApi";
+import useRecipesApi from "../api/useRecipesApi";
+import useTonesApi from "../api/useTonesApi";
+import useWallpapersApi from "../api/useWallpapersApi";
 
 const DashboardPage = () => {
+  const { data: fitnessData } = useFitnessApi();
+  const { data: gamesData } = useGamesApi();
+  const { data: recipesData } = useRecipesApi();
+  const { data: tonesData } = useTonesApi();
+  const { data: wallpapersData } = useWallpapersApi();
+
   const boxes = [
     {
       icon: "",
-      total: 110,
-      label: "Total Events",
+      total: fitnessData?.length,
+      label: "Fitness",
     },
     {
       icon: "",
-      total: 3,
-      label: "Live Events",
+      total: gamesData?.length,
+      label: "Games",
     },
     {
       icon: "",
-      total: 0,
-      label: "Private Events",
+      total: recipesData?.length,
+      label: "Recipes",
     },
     {
       icon: "",
-      total: 0,
-      label: "Sold Out Events",
+      total: tonesData?.length,
+      label: "Tones",
     },
     {
       icon: "",
-      total: 107,
-      label: "Cancelled Events",
+      total: wallpapersData?.length,
+      label: "Wallpapers",
     },
   ];
 
