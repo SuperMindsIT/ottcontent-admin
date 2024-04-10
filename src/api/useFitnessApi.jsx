@@ -69,7 +69,7 @@ const useFitnessApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.delete(`/fitness/${intid}`);
-      toast.success("Game Deleted Successfully", "success");
+      toast.success("Fitness Deleted Successfully", "success");
       fetchData(); // Refresh data after posting
     } catch (error) {
       setDeleteDataError(error);
@@ -105,7 +105,7 @@ const useFitnessApi = () => {
       getDataById(intid);
     } catch (error) {
       setDeleteImageByIdError(error);
-      console.error("Error posting game:", error);
+      console.error("Error posting Image:", error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);

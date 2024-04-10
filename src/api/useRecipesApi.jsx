@@ -171,7 +171,7 @@ const useRecipesApi = () => {
       getDataById(intid);
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, deleteCoverById: error }));
-      console.error("Error posting game:", error);
+      console.error("Error posting cover:", error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -318,7 +318,7 @@ const useRecipesApi = () => {
       // getDataById(intid);
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, deleteCoverById: error }));
-      console.error("Error posting game:", error);
+      console.error("Error posting cover:", error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
