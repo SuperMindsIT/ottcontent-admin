@@ -83,3 +83,11 @@ body {
 .rdw-dropdown-wrapper {
   background: #403e4c;
 } */
+
+.rdw-dropdown-optionwrapper:hover {
+  background: #34333e;
+}
+
+.rdw-dropdownoption-active {
+  background: #403e4c4d;
+}
