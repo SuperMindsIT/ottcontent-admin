@@ -30,6 +30,7 @@ const EditRecipeInCategory = () => {
     subCategoryDetails,
     hasApiErrors,
     deleteCoverById,
+    deleteSubcategoryCoverById,
     fetchSubCategoryData,
     // getDataDetailsById,
   } = useRecipesApi();
@@ -169,7 +170,7 @@ const EditRecipeInCategory = () => {
 
   const handleDeleteCover = async (id) => {
     try {
-      await deleteCoverById(id);
+      await deleteSubcategoryCoverById(id);
       setSelectedCover(null);
     } catch (error) {
       console.error("Error deleting Cover:", error);

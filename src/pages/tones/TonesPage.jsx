@@ -106,6 +106,7 @@ const TonesPage = () => {
       columns={columns}
       isLoading={isLoading}
       onAddClick={() => navigate("/tones/add")}
+      searchFields={["title"]}
     />
   );
 };

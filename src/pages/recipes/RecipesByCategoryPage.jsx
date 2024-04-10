@@ -129,6 +129,7 @@ const RecipesByCategoryPage = () => {
       columns={columns}
       isLoading={isLoading}
       onAddClick={() => navigate(`/recipes/${recipeId}/add`)}
+      searchFields={["title_en"]}
     />
   );
 };

@@ -9,6 +9,7 @@ const GamesPage = () => {
   let navigate = useNavigate();
 
   const { data, isLoading, deleteData } = useGamesApi();
+  console.log(data, "data in games page");
 
   const [deleteId, setDeleteId] = useState(null);
   const [open, setOpen] = useState(false);
@@ -31,8 +32,6 @@ const GamesPage = () => {
     // Navigate to the route for the clicked game
     navigate(`/games/${gameId}`);
   };
-
-  console.log(typeof data, "games in games page");
 
   const columns = [
     { field: "createdAt", headerName: "Date Created", flex: 1 },
@@ -126,6 +125,7 @@ const GamesPage = () => {
       columns={columns}
       isLoading={isLoading}
       onAddClick={() => navigate("/games/add")}
+      searchFields={["title"]}
     />
   );
 };
