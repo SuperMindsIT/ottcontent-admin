@@ -61,7 +61,7 @@ const useWallpapersApi = () => {
           thumbnailData
         );
       }
-      toast.success("Game Updated Successfully", "success");
+      toast.success("Wallpaper Updated Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData();
       getDataById(intid);
