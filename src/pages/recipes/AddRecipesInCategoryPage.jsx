@@ -69,10 +69,10 @@ const AddRecipesInCategoryPage = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const data = updateValuesForLanguages(values, language);
-      await postCategoryData(recipeId, data, selectedCover);
+      const result = await postCategoryData(recipeId, data, selectedCover);
       {
         // Navigate only if loading is finished and there are no API errors
-        if (!isLoading && !hasApiErrors()) {
+        if (!isLoading && !hasApiErrors() && result) {
           navigate(`/recipes/${recipeId}`);
         }
       }

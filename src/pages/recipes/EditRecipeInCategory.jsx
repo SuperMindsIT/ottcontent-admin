@@ -114,12 +114,17 @@ const EditRecipeInCategory = () => {
         await handleDeleteCover(subcategoryIdInt);
       }
 
-      await putCategoryData(subcategoryIdInt, data, selectedCover);
+      const result = await putCategoryData(
+        subcategoryIdInt,
+        data,
+        selectedCover
+      );
       {
         // Navigate only if loading is finished and there are no API errors
         if (
           !isLoading &&
           !hasApiErrors() &&
+          result &&
           (selectedCover !== "Not available" || selectedCover !== null)
         ) {
           navigate(`/recipes/${subCategoryDetails?.parent_id}`);

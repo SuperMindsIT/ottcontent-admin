@@ -14,7 +14,7 @@ const validationSchema = yup.object({
 });
 
 const AddGamesPage = () => {
-  const { postData, isLoading, hasApiErrors } = useGamesApi();
+  const { postData, deleteData, isLoading, hasApiErrors } = useGamesApi();
   const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -32,12 +32,17 @@ const AddGamesPage = () => {
       };
       const formData = new FormData();
       formData.append("thumbnail", selectedFile);
-      console.log(typeof selectedFile);
+      // console.log(typeof selectedFile);
       const result = await postData(data, formData); // Capture the result of postData
 
+      console.log(result, "result in add games page");
+
       // Navigate only if postData was successful and there are no API errors
-      if (!isLoading && !hasApiErrors()) {
+      if (!isLoading && !hasApiErrors() && result) {
         navigate("/games");
+      } else {
+        const intId = parseInt(result?.id, 10);
+        deleteData(intId);
       }
     },
   });

@@ -31,12 +31,13 @@ const AddTonesPage = () => {
       const formData = new FormData();
       formData.append("audio", selectedFile);
       // console.log(formData, "form data in tones after posting");
-      await postData(data, formData);
+      const result = await postData(data, formData);
       {
         // Navigate only if loading is finished and there are no API errors
         if (
           !isLoading &&
           !hasApiErrors() &&
+          result &&
           (selectedFile !== "Not available" || selectedFile !== null)
         ) {
           navigate("/tones");
