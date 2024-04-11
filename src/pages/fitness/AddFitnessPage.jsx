@@ -14,6 +14,7 @@ import { convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import { values } from "draft-js/lib/DefaultDraftBlockRenderMap";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const validationSchema = yup.object({
   title_en: yup.string().required("Title in English is required"),
@@ -78,6 +79,10 @@ const AddFitnessPage = () => {
       // console.log("Form submitted with values:", values);
       const formData = new FormData();
       formData.append("image", selectedFile);
+      if (selectedFile === "Not available" || selectedFile === null) {
+        toast.error("image is necessary");
+        return;
+      }
       await postData(data, formData);
       {
         if (

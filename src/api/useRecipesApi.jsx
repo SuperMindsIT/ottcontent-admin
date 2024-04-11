@@ -43,6 +43,65 @@ const useRecipesApi = () => {
     setIsLoading(false);
   };
 
+  const postCategoryThumbnail = async (id, thumbnailData) => {
+    const intId = parseInt(id);
+    let response;
+    try {
+      if (thumbnailData !== null || thumbnailData !== "Not available") {
+        let thumbnailFormData = new FormData();
+        thumbnailFormData.append("thumbnail", thumbnailData);
+        response = await appsApi.post(
+          `/recipes/categories/${intId}/thumbnail`,
+          thumbnailFormData
+        );
+      }
+
+      toast.success("Thumbnail posted successfully", "success");
+      console.log(response, "in thumbnail");
+      return response;
+    } catch (error) {
+      if (response && response?.status !== 409) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          postCategoryCover: error,
+        }));
+        toast.error(error.response?.data?.message || error.message, "error");
+      }
+      // setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
+      // toast.error(error.response?.data?.message || error.message, "error");
+      // throw error; // rethrow the error to handle it in the calling function
+    }
+  };
+
+  const postCategoryCover = async (id, coverData) => {
+    const intId = parseInt(id);
+    let response;
+    try {
+      if (coverData !== null || coverData !== "Not available") {
+        let coverFormData = new FormData();
+        coverFormData.append("cover", coverData);
+        response = await appsApi.post(
+          `/recipes/categories/${intId}/cover`,
+          coverFormData
+        );
+      }
+      toast.success("Cover posted successfully", "success");
+      console.log(response, "in cover");
+      return response;
+    } catch (error) {
+      if (response && response?.status !== 409) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          postCategoryCover: error,
+        }));
+        toast.error(error.response?.data?.message || error.message, "error");
+      }
+      // setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
+      // toast.error(error.response?.data?.message || error.message, "error");
+      // throw error; // rethrow the error to handle it in the calling function
+    }
+  };
+
   // add recipe category
   const postData = async (recipesData, coverData, thumbnailData) => {
     try {
@@ -52,28 +111,11 @@ const useRecipesApi = () => {
         response = await appsApi.post("/recipes/categories", recipesData);
       }
       const intid = parseInt(response?.data?.id);
-
-      if (coverData !== null || coverData !== "Not available") {
-        let coverFormData = new FormData();
-        coverFormData.append("cover", coverData);
-        response = await appsApi.post(
-          `/recipes/categories/${intid}/cover`,
-          coverFormData
-        );
-      }
-
-      if (thumbnailData !== null || thumbnailData !== "Not available") {
-        let thumbnailFormData = new FormData();
-        thumbnailFormData.append("thumbnail", thumbnailData);
-        response = await appsApi.post(
-          `/recipes/categories/${intid}/thumbnail`,
-          thumbnailFormData
-        );
-      }
+      await postCategoryCover(intid, coverData);
+      await postCategoryThumbnail(intid, thumbnailData);
       toast.success("Recipe Category Created Successfully", "success");
       toast.success(response.data.message, "success");
-      // getDataById(intid);
-      fetchData(); // Refresh data after posting
+      // fetchData(); // Refresh data after posting
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, postData: error }));
       toast.error(error.response.data.message, "error");
@@ -96,26 +138,15 @@ const useRecipesApi = () => {
         );
       }
       if (coverData) {
-        let coverFormData = new FormData();
-        coverFormData.append("cover", coverData);
-        response = await appsApi.post(
-          `/recipes/categories/${intid}/cover`,
-          coverFormData
-        );
+        await postCategoryCover(intid, coverData);
       }
 
       if (thumbnailData) {
-        let thumbnailFormData = new FormData();
-        thumbnailFormData.append("thumbnail", thumbnailData);
-        response = await appsApi.post(
-          `/recipes/categories/${intid}/thumbnail`,
-          thumbnailFormData
-        );
+        await postCategoryThumbnail(intid, thumbnailData);
       }
       toast.success("Fitness Workout Updated Successfully", "success");
       toast.success(response.data.message, "success");
-      // getDataById(intid);
-      fetchData(); // Refresh data after updating
+      // fetchData(); // Refresh data after updating
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, putData: error }));
       toast.error(error.response.data.message, "error");
@@ -168,7 +199,7 @@ const useRecipesApi = () => {
         `/recipes/categories/${intid}/cover`
       );
       toast.success(response.data.message, "success");
-      getDataById(intid);
+      // getDataById(intid);
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, deleteCoverById: error }));
       console.error("Error posting cover:", error);
@@ -186,7 +217,7 @@ const useRecipesApi = () => {
         `/recipes/categories/${intid}/thumbnail`
       );
       toast.success(response.data.message, "success");
-      getDataById(intid);
+      // getDataById(intid);
     } catch (error) {
       setErrors((prevErrors) => ({
         ...prevErrors,
@@ -235,7 +266,28 @@ const useRecipesApi = () => {
     }
   };
 
-  // get sucategoryDetails
+  // get subcategoryDetails
+
+  const postSubategoryCover = async (id, coverData) => {
+    const intId = parseInt(id);
+    let response;
+    try {
+      if (coverData !== null || coverData !== "Not available") {
+        let coverFormData = new FormData();
+        coverFormData.append("cover", coverData);
+        response = await appsApi.post(
+          `/recipes/sub-categories/${intId}/cover`,
+          coverFormData
+        );
+      }
+      toast.success("Subcategory Cover posted successfully", "success");
+      return response;
+    } catch (error) {
+      // setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
+      // toast.error(error.response?.data?.message || error.message, "error");
+      // throw error; // rethrow the error to handle it in the calling function
+    }
+  };
 
   // add recipe subcategory
   const postCategoryData = async (id, recipesData, coverData) => {
@@ -252,16 +304,10 @@ const useRecipesApi = () => {
       const intid = parseInt(response?.data?.id);
 
       if (coverData !== null || coverData !== "Not available") {
-        let coverFormData = new FormData();
-        coverFormData.append("cover", coverData);
-        response = await appsApi.post(
-          `/recipes/sub-categories/${intid}/cover`,
-          coverFormData
-        );
+        await postSubategoryCover(intId, coverData);
       }
       toast.success("Recipe Category Created Successfully", "success");
       toast.success(response.data.message, "success");
-      // getDataById(intid);
       fetchData(); // Refresh data after posting
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, postData: error }));
@@ -288,16 +334,11 @@ const useRecipesApi = () => {
       }
 
       if (coverData !== null || coverData !== "Not available") {
-        let coverFormData = new FormData();
-        coverFormData.append("cover", coverData);
-        response = await appsApi.post(
-          `/recipes/sub-categories/${intId}/cover`,
-          coverFormData
-        );
+        await postSubategoryCover(intId, coverData);
       }
+
       toast.success("Recipe Category Updated Successfully", "success");
       toast.success(response.data.message, "success");
-      // getDataById(intid);
       fetchData(); // Refresh data after posting
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, postData: error }));
@@ -315,7 +356,6 @@ const useRecipesApi = () => {
         `/recipes/sub-categories/${intid}/cover`
       );
       toast.success(response.data.message, "success");
-      // getDataById(intid);
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, deleteCoverById: error }));
       console.error("Error posting cover:", error);
