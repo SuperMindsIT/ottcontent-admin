@@ -15,6 +15,7 @@ import { convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
+import { toast } from "react-toastify";
 
 const validationSchema = yup.object({
   title_en: yup.string().required("Title in English is required"),
@@ -35,6 +36,7 @@ const EditFitnessPage = () => {
   } = useFitnessApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFileBackend, setSelectedFileBackend] = useState(null);
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [language, setLanguage] = useState("en");
   // for delete dialog
@@ -44,10 +46,8 @@ const EditFitnessPage = () => {
   // editor
   const onEditorStateChange = (editorState) => {
     setEditorState(editorState);
-    // console.log(editorState, "editor state");
     // Convert ContentState to raw format
     const rawContentState = convertToRaw(editorState.getCurrentContent());
-
     // Convert rawContentState to HTML
     const htmlContent = draftToHtml(rawContentState);
     // console.log(editorState);
@@ -79,15 +79,44 @@ const EditFitnessPage = () => {
     getDataById(fitnessId);
   }, []);
 
+  // useEffect(() => {
+  //   if (fitnessById) {
+  //     const htmlContent = fitnessById[`content_${language}`] || "";
+  //     const blocksFromHTML = convertFromHTML(htmlContent);
+  //     const contentState = ContentState.createFromBlockArray(
+  //       blocksFromHTML.contentBlocks,
+  //       blocksFromHTML.entityMap
+  //     );
+  //     setEditorState(EditorState.createWithContent(contentState));
+  //     setSelectedFileBackend(fitnessById?.image);
+  //   }
+  // }, [fitnessById, language]);
+
   useEffect(() => {
     if (fitnessById) {
-      const htmlContent = fitnessById[`content_${language}`] || "";
-      const blocksFromHTML = convertFromHTML(htmlContent);
+      // Save the current editor content for the previous language before switching
+      if (
+        formik.values[`content_${language}`] !==
+        editorState.getCurrentContent().getPlainText()
+      ) {
+        const currentContent = draftToHtml(
+          convertToRaw(editorState.getCurrentContent())
+        );
+        formik.setFieldValue(`content_${language}`, currentContent);
+      }
+
+      // Update the editor with the content of the newly selected language
+      const newHtmlContent = fitnessById[`content_${language}`] || "";
+      const blocksFromHTML = convertFromHTML(newHtmlContent);
       const contentState = ContentState.createFromBlockArray(
         blocksFromHTML.contentBlocks,
         blocksFromHTML.entityMap
       );
       setEditorState(EditorState.createWithContent(contentState));
+      setSelectedFileBackend(fitnessById?.image);
+
+      // Also update the formik state with the new language content
+      formik.setFieldValue(`content_${language}`, newHtmlContent);
     }
   }, [fitnessById, language]);
 
@@ -103,6 +132,7 @@ const EditFitnessPage = () => {
       description_gr: "",
       content_gr: "",
     },
+    validateOnBlur: true,
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const data = updateValuesForLanguages(values, language);
@@ -111,8 +141,20 @@ const EditFitnessPage = () => {
       const fitnessIntId = parseInt(fitnessId, 10);
       if (deleteItemConfirm) {
         await handleDeleteImage(fitnessIntId);
+        setDeleteItemConfirm(!deleteItemConfirm);
       }
+      if (selectedFile === "Not available" || selectedFile === null) {
+        toast.error("image is necessary");
+        return;
+      }
+
       await putData(fitnessIntId, data, formData);
+
+      console.log(
+        !isLoading &&
+          !hasApiErrors() &&
+          (selectedFile !== "Not available" || selectedFile !== null)
+      );
       {
         if (
           !isLoading &&
@@ -152,6 +194,13 @@ const EditFitnessPage = () => {
   };
 
   const handleCancel = () => {
+    if (
+      selectedFileBackend === "Not available" ||
+      selectedFileBackend === null
+    ) {
+      toast.error("image is necessary");
+      return;
+    }
     navigate("/fitness");
   };
 

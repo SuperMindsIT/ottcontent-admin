@@ -13,6 +13,7 @@ import { convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import { useNavigate, useParams } from "react-router-dom";
 import Dropdown from "../../components/Dropdown";
+import { toast } from "react-toastify";
 
 const validationSchema = yup.object({
   title_en: yup.string().required("Title in English is required"),
@@ -67,6 +68,12 @@ const AddRecipesInCategoryPage = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const data = updateValuesForLanguages(values, language);
+      if (selectedCover === "Not available" || selectedCover === null) {
+        toast.error(
+          "image is necessary , if uploaded please save your changes"
+        );
+        return;
+      }
       await postCategoryData(recipeId, data, selectedCover);
       {
         // Navigate only if loading is finished and there are no API errors

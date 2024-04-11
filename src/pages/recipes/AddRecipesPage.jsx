@@ -8,6 +8,7 @@ import CustomButton from "../../components/CustomButton";
 import useRecipesApi from "../../api/useRecipesApi";
 import { useNavigate } from "react-router-dom";
 import Dropdown from "../../components/Dropdown";
+import { toast } from "react-toastify";
 
 const validationSchema = yup.object({
   title_en: yup.string().required("Title in English is required"),
@@ -51,6 +52,18 @@ const AddRecipesPage = () => {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const data = updateValuesForLanguages(values, language);
+      if (selectedCover === "Not available" || selectedCover === null) {
+        toast.error(
+          "Cover is necessary , if uploaded please save your changes"
+        );
+        return;
+      }
+      if (selectedThumbnail === "Not available" || selectedThumbnail === null) {
+        toast.error(
+          "Thumbnail is necessary , if uploaded please save your changes"
+        );
+        return;
+      }
       await postData(data, selectedCover, selectedThumbnail);
       {
         if (!isLoading && !hasApiErrors()) {
@@ -105,7 +118,7 @@ const AddRecipesPage = () => {
         <Box>
           <form onSubmit={formik.handleSubmit}>
             <UploadFile
-              label="Upload Cover (460x303)*"
+              label="Upload Cover (1920x756)*"
               sx={{ mt: "22px", mb: "50px" }}
               selectedFile={selectedCover}
               setSelectedFile={setSelectedCover}
@@ -121,7 +134,7 @@ const AddRecipesPage = () => {
               </Card>
             )}
             <UploadFile
-              label="Upload Thumbnail (1920x756)*"
+              label="Upload Thumbnail (460x303)*"
               sx={{ mt: "22px", mb: "50px" }}
               selectedFile={selectedThumbnail}
               setSelectedFile={setSelectedThumbnail}

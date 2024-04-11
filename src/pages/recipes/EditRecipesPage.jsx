@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
 import useRecipesApi from "../../api/useRecipesApi";
 import Dropdown from "../../components/Dropdown";
+import { toast } from "react-toastify";
 
 const validationSchema = yup.object({
   title_en: yup.string().required("Title in English is required"),
@@ -30,6 +31,9 @@ const EditRecipesPage = () => {
 
   const [selectedCover, setSelectedCover] = useState(null);
   const [selectedThumbnail, setSelectedThumbnail] = useState(null);
+  const [selectedCoverBackend, setSelectedCoverBackend] = useState(null);
+  const [selectedThumbnailBackend, setSelectedThumbnailBackend] =
+    useState(null);
   // for delete dialog thumbnail
   const [openThumbnail, setOpenThumbnail] = useState(false);
   const [deleteThumbnailConfirm, setDeleteThumbnailConfirm] = useState(false);
@@ -83,12 +87,26 @@ const EditRecipesPage = () => {
         (selectedCover !== "not available" || selectedCover !== null)
       ) {
         await handleDeleteCover(recipeIdInt);
+        setDeleteCoverConfirm(!deleteCoverConfirm);
       }
       if (
         deleteThumbnailConfirm &&
         (selectedThumbnail !== "not available" || selectedThumbnail !== null)
       ) {
         await handleDeleteThumbnail(recipeIdInt);
+        setDeleteThumbnailConfirm(!deleteThumbnailConfirm);
+      }
+      if (selectedCover === "Not available" || selectedCover === null) {
+        toast.error(
+          "Cover is necessary , if uploaded please save your changes"
+        );
+        return;
+      }
+      if (selectedThumbnail === "Not available" || selectedThumbnail === null) {
+        toast.error(
+          "Thumbnail is necessary , if uploaded please save your changes"
+        );
+        return;
       }
       await putData(recipeIdInt, data, selectedCover, selectedThumbnail);
       {
@@ -118,9 +136,11 @@ const EditRecipesPage = () => {
       });
       if (categoryDetails.cover) {
         setSelectedCover(categoryDetails.cover);
+        setSelectedCoverBackend(categoryDetails?.cover);
       }
       if (categoryDetails.thumbnail) {
         setSelectedThumbnail(categoryDetails.thumbnail);
+        setSelectedThumbnailBackend(categoryDetails?.thumbnail);
       }
     }
   }, [categoryDetails]);
@@ -133,6 +153,22 @@ const EditRecipesPage = () => {
   };
 
   const handleCancel = () => {
+    if (
+      selectedCoverBackend === "Not available" ||
+      selectedCoverBackend === null
+    ) {
+      toast.error("Cover is necessary , if uploaded please save your changes");
+      return;
+    }
+    if (
+      selectedThumbnailBackend === "Not available" ||
+      selectedThumbnailBackend === null
+    ) {
+      toast.error(
+        "Thumbnail is necessary , if uploaded please save your changes"
+      );
+      return;
+    }
     navigate("/recipes");
   };
 
@@ -174,7 +210,7 @@ const EditRecipesPage = () => {
   const handleDeleteThumbnail = async (id) => {
     try {
       await deleteThumbnailById(id);
-      setSelectedCover(null);
+      setSelectedThumbnail(null);
     } catch (error) {
       console.error("Error deleting Cover:", error);
     }
@@ -225,7 +261,7 @@ const EditRecipesPage = () => {
                 </Card>
                 <CustomButton
                   btn="secondary"
-                  label="Delete Image"
+                  label="Delete Cover"
                   onClick={() => handleDeleteCoverClick(recipeId)}
                 />
               </Box>
@@ -258,13 +294,13 @@ const EditRecipesPage = () => {
                 </Card>
                 <CustomButton
                   btn="secondary"
-                  label="Delete Image"
+                  label="Delete Thumbnail"
                   onClick={() => handleDeleteThumbnailClick(recipeId)}
                 />
               </Box>
             ) : (
               <UploadFile
-                label="Upload Thumbnail(440x280)*"
+                label="Upload Thumbnail(460x303)*"
                 sx={{ mt: "22px", mb: "120px" }}
                 selectedFile={selectedThumbnail}
                 setSelectedFile={setSelectedThumbnail}

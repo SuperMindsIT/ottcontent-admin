@@ -25,13 +25,29 @@ const useFitnessApi = () => {
     }
   };
 
-  const postData = async (fitnessData, imageData) => {
+  const postThumbnail = async (id, thumbnailData) => {
+    const intId = parseInt(id);
+    try {
+      const response = await appsApi.post(
+        `/fitness/${intId}/image`,
+        thumbnailData
+      );
+      toast.success("Thumbnail posted successfully", "success");
+      return response;
+    } catch (error) {
+      // setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
+      // toast.error(error.response?.data?.message || error.message, "error");
+      // throw error; // rethrow the error to handle it in the calling function
+    }
+  };
+
+  const postData = async (fitnessData, thumbnailData) => {
     try {
       setIsLoading(true);
       let response;
       response = await appsApi.post("/fitness", fitnessData);
       const intid = parseInt(response?.data?.id);
-      response = await appsApi.post(`/fitness/${intid}/image`, imageData);
+      await postThumbnail(intid, thumbnailData);
       toast.success("Fitness Workout Created Successfully", "success");
       toast.success(response.data.message, "success");
       getDataById(intid);
@@ -51,7 +67,7 @@ const useFitnessApi = () => {
       let response;
       console.log(thumbnailData, "thumbnail in putData");
       response = await appsApi.put(`/fitness/${intid}`, fitnessData);
-      response = await appsApi.post(`/fitness/${intid}/image`, thumbnailData);
+      await postThumbnail(intid, thumbnailData);
       toast.success("Fitness Workout Updated Successfully", "success");
       toast.success(response.data.message, "success");
       getDataById(intid);

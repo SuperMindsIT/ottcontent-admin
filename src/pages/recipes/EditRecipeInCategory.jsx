@@ -15,6 +15,7 @@ import { EditorState, ContentState, convertFromHTML } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
+import { toast } from "react-toastify";
 
 const validationSchema = yup.object({
   title_en: yup.string().required("Title in English is required"),
@@ -24,6 +25,10 @@ const validationSchema = yup.object({
 const EditRecipeInCategory = () => {
   const { subcategoryId } = useParams();
   const navigate = useNavigate();
+  const [selectedCover, setSelectedCover] = useState(null);
+  const [selectedCoverBackend, setSelectedCoverBackend] = useState(null);
+  const [language, setLanguage] = useState("en");
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
 
   // for delete dialog cover
   const [openCover, setOpenCover] = useState(false);
@@ -37,19 +42,6 @@ const EditRecipeInCategory = () => {
     deleteSubcategoryCoverById,
     fetchSubCategoryData,
   } = useRecipesApi();
-
-  const [selectedCover, setSelectedCover] = useState(null);
-  const [language, setLanguage] = useState("en");
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
-
-  const onEditorStateChange = (editorState) => {
-    setEditorState(editorState);
-    // Convert ContentState to raw format
-    const rawContentState = convertToRaw(editorState.getCurrentContent());
-    // Convert rawContentState to HTML
-    const htmlContent = draftToHtml(rawContentState);
-    formik.setFieldValue(`content_${language}`, htmlContent);
-  };
 
   const updateValuesForLanguages = (values, language) => {
     const data = {
@@ -81,15 +73,56 @@ const EditRecipeInCategory = () => {
     }
   }, [subcategoryId]);
 
+  // useEffect(() => {
+  //   if (subCategoryDetails) {
+  //     const htmlContent = subCategoryDetails[`content_${language}`] || "";
+  //     const blocksFromHTML = convertFromHTML(htmlContent);
+  //     const contentState = ContentState.createFromBlockArray(
+  //       blocksFromHTML.contentBlocks,
+  //       blocksFromHTML.entityMap
+  //     );
+  //     setEditorState(EditorState.createWithContent(contentState));
+  //   }
+  // }, [subCategoryDetails, language]);
+
+  const onEditorStateChange = (editorState) => {
+    setEditorState(editorState);
+    const currentLanguage = language; // Get the current language
+
+    // Convert ContentState to raw format
+    const rawContentState = convertToRaw(editorState.getCurrentContent());
+    // Convert rawContentState to HTML
+    const htmlContent = draftToHtml(rawContentState);
+
+    // Update content for the current language only
+    formik.setFieldValue(`content_${currentLanguage}`, htmlContent);
+  };
+
   useEffect(() => {
     if (subCategoryDetails) {
-      const htmlContent = subCategoryDetails[`content_${language}`] || "";
-      const blocksFromHTML = convertFromHTML(htmlContent);
+      // Save the current editor content for the previous language before switching
+      if (
+        formik.values[`content_${language}`] !==
+        editorState.getCurrentContent().getPlainText()
+      ) {
+        const currentContent = draftToHtml(
+          convertToRaw(editorState.getCurrentContent())
+        );
+        formik.setFieldValue(`content_${language}`, currentContent);
+      }
+
+      // Update the editor with the content of the newly selected language
+      const newHtmlContent = subCategoryDetails[`content_${language}`] || "";
+      const blocksFromHTML = convertFromHTML(newHtmlContent);
       const contentState = ContentState.createFromBlockArray(
         blocksFromHTML.contentBlocks,
         blocksFromHTML.entityMap
       );
       setEditorState(EditorState.createWithContent(contentState));
+      setSelectedCoverBackend(subCategoryDetails?.cover);
+
+      // Also update the formik state with the new language content
+      formik.setFieldValue(`content_${language}`, newHtmlContent);
     }
   }, [subCategoryDetails, language]);
 
@@ -113,6 +146,14 @@ const EditRecipeInCategory = () => {
         (selectedCover !== "not available" || selectedCover !== null)
       ) {
         await handleDeleteCover(subcategoryIdInt);
+        setDeleteCoverConfirm(!deleteCoverConfirm);
+      }
+
+      if (selectedCover === "Not available" || selectedCover === null) {
+        toast.error(
+          "image is necessary , if uploaded please save your changes"
+        );
+        return;
       }
 
       await putCategoryData(subcategoryIdInt, data, selectedCover);
@@ -152,6 +193,13 @@ const EditRecipeInCategory = () => {
   };
 
   const handleCancel = () => {
+    if (
+      selectedCoverBackend === "Not available" ||
+      selectedCoverBackend === null
+    ) {
+      toast.error("image is necessary");
+      return;
+    }
     navigate(`/recipes/${subCategoryDetails?.parent_id}`);
   };
 
