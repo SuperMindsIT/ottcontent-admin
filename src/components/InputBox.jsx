@@ -17,6 +17,8 @@ const InputBox = (props) => {
   return (
     <TextField
       fullWidth
+      variant="outlined"
+      label={placeholder}
       id={id}
       name={name}
       type={type}
@@ -25,10 +27,9 @@ const InputBox = (props) => {
       onBlur={onBlur}
       error={error && Boolean(errors)}
       helperText={error && errors}
-      placeholder={placeholder}
       sx={{
         backgroundColor: "#403E4C",
-        borderRadius: "68px",
+        borderRadius: "12px",
         mb: error ? 4 : 2,
         "& .MuiOutlinedInput-notchedOutline": {
           border: 0,
@@ -37,20 +38,22 @@ const InputBox = (props) => {
           color: "#fff",
           fontSize: 14,
           letterSpacing: 0,
-          lineHeight: "92.8%",
           fontFamily: "Hanken Grotesk, sans-serif",
-          height: "46px",
-        },
-        "& .MuiInputBase-input": {
-          padding: "18px 21px",
-          height: 0,
         },
         "& .MuiFormHelperText-root": {
           position: "absolute",
           bottom: "-24px",
         },
-        "& ::placeholder": {
-          opacity: 0.7,
+        "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+          borderColor: "#5789ca",
+          borderRadius: "12px",
+        },
+        "& .MuiFormLabel-root": {
+          color: "#fff",
+          fontSize: 14,
+          letterSpacing: 0,
+          fontFamily: "Hanken Grotesk, sans-serif",
+          opacity: "0.7",
         },
       }}
     />

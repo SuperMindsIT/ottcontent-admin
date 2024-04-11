@@ -31,8 +31,8 @@ const useGamesApi = () => {
       toast.success("Thumbnail posted successfully", "success");
       return response;
     } catch (error) {
-      setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
-      toast.error(error.response?.data?.message || error.message, "error");
+      // setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
+      // toast.error(error.response?.data?.message || error.message, "error");
       // throw error; // rethrow the error to handle it in the calling function
     }
   };
