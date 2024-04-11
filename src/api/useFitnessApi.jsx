@@ -35,6 +35,15 @@ const useFitnessApi = () => {
       toast.success("Thumbnail posted successfully", "success");
       return response;
     } catch (error) {
+      if (error?.response?.status === 409) {
+        console.log("image conflict");
+      } else {
+        console.log(error, "statues is nt 409");
+        const errorMessage =
+          error.response.data?.message || "An error occurred";
+        setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
+        toast.error(errorMessage);
+      }
       // setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
       // toast.error(error.response?.data?.message || error.message, "error");
       // throw error; // rethrow the error to handle it in the calling function
