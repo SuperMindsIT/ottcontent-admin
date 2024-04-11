@@ -31,12 +31,10 @@ const useWallpapersApi = () => {
       let response;
       response = await appsApi.post("/wallpapers", wallpaperData);
       const intid = parseInt(response?.data?.id);
-      if (thumbnailData !== null || thumbnailData !== "Not available") {
-        response = await appsApi.post(
-          `/wallpapers/${intid}/image`,
-          thumbnailData
-        );
-      }
+      response = await appsApi.post(
+        `/wallpapers/${intid}/image`,
+        thumbnailData
+      );
       toast.success("Wallpaper Created Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData(); // Refresh data after posting
@@ -55,12 +53,10 @@ const useWallpapersApi = () => {
       setIsLoading(true);
       let response;
       response = await appsApi.put(`/wallpapers/${intid}`, wallpaperData);
-      if (thumbnailData !== null || thumbnailData !== "Not available") {
-        response = await appsApi.post(
-          `/wallpapers/${intid}/image`,
-          thumbnailData
-        );
-      }
+      response = await appsApi.post(
+        `/wallpapers/${intid}/image`,
+        thumbnailData
+      );
       toast.success("Wallpaper Updated Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData();
@@ -77,7 +73,7 @@ const useWallpapersApi = () => {
     const intid = parseInt(id);
     try {
       setIsLoading(true);
-      const response = await appsApi.delete(`/wallpapers/${intid}`);
+      await appsApi.delete(`/wallpapers/${intid}`);
       toast.success("Wallpaper Deleted Successfully", "success");
       fetchData(); // Refresh data after posting
     } catch (error) {

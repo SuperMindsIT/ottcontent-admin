@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
-import { Box, Stack, Typography, Card, CardMedia } from "@mui/material";
+import { useParams, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
+import { toast } from "react-toastify";
+import { Box, Stack, Typography, Card, CardMedia } from "@mui/material";
+import useWallpapersApi from "../../api/useWallpapersApi";
 import InputBox from "../../components/InputBox";
-import * as yup from "yup";
 import UploadFile from "../../components/UploadFile";
 import CustomButton from "../../components/CustomButton";
-import useWallpapersApi from "../../api/useWallpapersApi";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
+import * as yup from "yup";
 
 const validationSchema = yup.object({
   name: yup.string("Enter the name of wallpaper").required("Name is required"),
 });
 
 const EditWallpapersPage = () => {
+  const navigate = useNavigate();
   const { wallpaperId } = useParams();
+
   const {
     putData,
     getDataById,
@@ -25,44 +27,12 @@ const EditWallpapersPage = () => {
     isLoading,
   } = useWallpapersApi();
 
-  const navigate = useNavigate();
-  const [selectedFile, setSelectedFile] = useState(null);
-  // for delete dialog
   const [open, setOpen] = useState(false);
-  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     getDataById(wallpaperId);
   }, []);
-
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-    },
-    validationSchema: validationSchema,
-    onSubmit: async (values) => {
-      const data = {
-        title: values.name,
-      };
-      const formData = new FormData();
-      formData.append("image", selectedFile);
-      const wallpaperIntId = parseInt(wallpaperId, 10);
-      if (deleteItemConfirm) {
-        await handleDeleteImage(wallpaperIntId);
-      }
-      const result = await putData(wallpaperIntId, data, formData);
-      {
-        if (
-          !isLoading &&
-          !hasApiErrors() &&
-          result &&
-          (selectedFile !== "Not available" || selectedFile !== null)
-        ) {
-          navigate("/wallpapers");
-        }
-      }
-    },
-  });
 
   useEffect(() => {
     if (wallpaperById) {
@@ -75,30 +45,46 @@ const EditWallpapersPage = () => {
     }
   }, [wallpaperById]);
 
-  const handleDeleteImage = async (id) => {
-    try {
-      await deleteImageById(id);
-      setSelectedFile(null);
-    } catch (error) {
-      console.error("Error deleting image:", error);
-    }
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
+      const data = {
+        title: values.name,
+      };
+
+      const formData = new FormData();
+      formData.append("image", selectedFile);
+
+      const wallpaperIntId = parseInt(wallpaperId, 10);
+
+      if (selectedFile && selectedFile !== "Not available") {
+        await putData(wallpaperIntId, data, formData);
+        if (!isLoading && !hasApiErrors()) {
+          navigate("/wallpapers");
+        }
+      } else {
+        toast.error("Upload the wallpaper too");
+      }
+    },
+  });
+
+  const handleDeleteConfirm = async () => {
+    const wallpaperIntId = parseInt(wallpaperId, 10);
+
+    await deleteImageById(wallpaperIntId);
+    setSelectedFile(null);
+    setOpen(false);
   };
 
   const handleCancel = () => {
-    navigate("/wallpapers");
-  };
-
-  // for delete dialog
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const handleDeleteClick = () => {
-    setOpen(true);
-  };
-  const handleDeleteConfirm = () => {
-    setSelectedFile(null);
-    setDeleteItemConfirm(true);
-    setOpen(false);
+    if (selectedFile && selectedFile !== "Not available") {
+      navigate("/wallpapers");
+    } else {
+      toast.error("Upload the wallpaper too");
+    }
   };
 
   return (
@@ -158,7 +144,7 @@ const EditWallpapersPage = () => {
                 <CustomButton
                   btn="secondary"
                   label="Delete Image"
-                  onClick={() => handleDeleteClick(wallpaperId)}
+                  onClick={() => setOpen(true)}
                 />
               </Box>
             ) : (
@@ -171,7 +157,7 @@ const EditWallpapersPage = () => {
             )}
             <DeleteConfirmationDialog
               open={open}
-              onClose={handleClose}
+              onClose={() => setOpen(false)}
               onConfirm={handleDeleteConfirm}
               deleteItem={"Delete Image?"}
               deleteMessage={"Are you sure you want to delete this Image?"}

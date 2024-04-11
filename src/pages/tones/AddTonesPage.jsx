@@ -1,20 +1,21 @@
 import { useState } from "react";
-import { Box, Card, CardContent, Stack, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
+import { toast } from "react-toastify";
+import { Box, Stack, Typography } from "@mui/material";
+import useTonesApi from "../../api/useTonesApi";
 import InputBox from "../../components/InputBox";
-import * as yup from "yup";
 import UploadFile from "../../components/UploadFile";
 import CustomButton from "../../components/CustomButton";
-import useTonesApi from "../../api/useTonesApi";
-import { useNavigate } from "react-router-dom";
+import * as yup from "yup";
 
 const validationSchema = yup.object({
   name: yup.string("Enter the name of tone").required("Name is required"),
 });
 
 const AddTonesPage = () => {
-  const { postData, isLoading, hasApiErrors } = useTonesApi();
   const navigate = useNavigate();
+  const { postData, isLoading, hasApiErrors } = useTonesApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -27,24 +28,20 @@ const AddTonesPage = () => {
       const data = {
         title: values.name,
       };
+
       const formData = new FormData();
       formData.append("audio", selectedFile);
-      await postData(data, formData);
-      {
-        if (
-          !isLoading &&
-          !hasApiErrors() &&
-          (selectedFile !== "Not available" || selectedFile !== null)
-        ) {
+
+      if (selectedFile) {
+        await postData(data, formData);
+        if (!isLoading && !hasApiErrors()) {
           navigate("/tones");
         }
+      } else {
+        toast.error("Upload the audio file");
       }
     },
   });
-
-  const handleCancel = () => {
-    navigate("/tones");
-  };
 
   return (
     <div>
@@ -103,7 +100,7 @@ const AddTonesPage = () => {
               <CustomButton
                 btn="secondary"
                 label="cancel"
-                onClick={handleCancel}
+                onClick={() => navigate("/tones")}
               />
             </Stack>
           </form>

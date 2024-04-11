@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Box, Stack, Typography, Card, CardMedia } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
+import { toast } from "react-toastify";
+import { Box, Stack, Typography, Card, CardMedia } from "@mui/material";
+import useGamesApi from "../../api/useGamesApi";
 import InputBox from "../../components/InputBox";
-import * as yup from "yup";
 import UploadFile from "../../components/UploadFile";
 import CustomButton from "../../components/CustomButton";
-import useGamesApi from "../../api/useGamesApi";
-import { useNavigate } from "react-router-dom";
+import * as yup from "yup";
 
 const validationSchema = yup.object({
   name: yup.string("Enter the name of game").required("Name is required"),
@@ -14,8 +15,8 @@ const validationSchema = yup.object({
 });
 
 const AddGamesPage = () => {
-  const { postData, deleteData, isLoading, hasApiErrors } = useGamesApi();
   const navigate = useNavigate();
+  const { postData, isLoading, hasApiErrors } = useGamesApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -30,22 +31,20 @@ const AddGamesPage = () => {
         title: values.name,
         iframe: values.iframe,
       };
+
       const formData = new FormData();
       formData.append("thumbnail", selectedFile);
-      await postData(data, formData); // Capture the result of postData
 
-      console.log(result, "result in add games page");
-
-      // Navigate only if postData was successful and there are no API errors
-      if (!isLoading && !hasApiErrors()) {
-        navigate("/games");
+      if (selectedFile) {
+        await postData(data, formData);
+        if (!isLoading && !hasApiErrors()) {
+          navigate("/games");
+        }
+      } else {
+        toast.error("Upload the image too");
       }
     },
   });
-
-  const handleCancel = () => {
-    navigate("/games");
-  };
 
   return (
     <div>
@@ -114,7 +113,7 @@ const AddGamesPage = () => {
               <CustomButton
                 btn="secondary"
                 label="cancel"
-                onClick={handleCancel}
+                onClick={() => navigate("/games")}
               />
             </Stack>
           </form>

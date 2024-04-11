@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Box, Card, CardMedia, Stack, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
+import { toast } from "react-toastify";
+import { Box, Card, CardMedia, Stack, Typography } from "@mui/material";
+import useWallpapersApi from "../../api/useWallpapersApi";
 import InputBox from "../../components/InputBox";
-import * as yup from "yup";
 import UploadFile from "../../components/UploadFile";
 import CustomButton from "../../components/CustomButton";
-import useWallpapersApi from "../../api/useWallpapersApi";
-import { useNavigate } from "react-router-dom";
+import * as yup from "yup";
 
 const validationSchema = yup.object({
   name: yup.string("Enter the name of wallpaper").required("Name is required"),
@@ -15,6 +16,7 @@ const validationSchema = yup.object({
 const AddWallpapersPage = () => {
   const navigate = useNavigate();
   const { postData, isLoading, hasApiErrors } = useWallpapersApi();
+
   const [selectedFile, setSelectedFile] = useState(null);
 
   const formik = useFormik({
@@ -26,23 +28,20 @@ const AddWallpapersPage = () => {
       const data = {
         title: values.name,
       };
+
       const formData = new FormData();
       formData.append("image", selectedFile);
-      await postData(data, formData);
-      {
-        if (
-          !isLoading &&
-          !hasApiErrors() &&
-          (selectedFile !== "Not available" || selectedFile !== null)
-        ) {
+
+      if (selectedFile) {
+        await postData(data, formData);
+        if (!isLoading && !hasApiErrors()) {
           navigate("/wallpapers");
         }
+      } else {
+        toast.error("Upload the wallpaper");
       }
     },
   });
-  const handleCancel = () => {
-    navigate("/wallpapers");
-  };
 
   return (
     <div>
@@ -100,7 +99,7 @@ const AddWallpapersPage = () => {
               <CustomButton
                 btn="secondary"
                 label="cancel"
-                onClick={handleCancel}
+                onClick={() => navigate("/wallpapers")}
               />
             </Stack>
           </form>

@@ -40,11 +40,6 @@ const useGamesApi = () => {
   const postData = async (gameData, thumbnailData) => {
     try {
       setIsLoading(true);
-      // Check if the thumbnail data is present
-
-      if (thumbnailData === null || thumbnailData === "Not available") {
-        throw new Error("Thumbnail image is required to create a game.");
-      }
       let response;
       if (thumbnailData && !hasApiErrors()) {
         response = await appsApi.post("/games", gameData);
@@ -68,10 +63,7 @@ const useGamesApi = () => {
     try {
       setIsLoading(true);
       let response;
-      if (
-        (thumbnailData !== null || thumbnailData !== "Not available") &&
-        !hasApiErrors()
-      ) {
+      if (thumbnailData && !hasApiErrors()) {
         response = await appsApi.put(`/games/${intid}`, gameData);
         await postThumbnail(intid, thumbnailData);
       }

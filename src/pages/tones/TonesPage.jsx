@@ -1,26 +1,17 @@
-import { Button, Stack } from "@mui/material";
-import MainLayout from "../../layouts/MainLayout";
-import { useNavigate } from "react-router-dom";
-import useTonesApi from "../../api/useTonesApi";
-import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button, Stack } from "@mui/material";
+import useTonesApi from "../../api/useTonesApi";
+import MainLayout from "../../layouts/MainLayout";
+import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
 
 const TonesPage = () => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const { data, isLoading, deleteData } = useTonesApi();
-  // for delete dialog
+
   const [deleteId, setDeleteId] = useState(null);
   const [open, setOpen] = useState(false);
 
-  const handleToneClick = (toneId) => {
-    // Navigate to the route for the clicked tone
-    navigate(`/tones/${toneId}`);
-  };
-
-  // for delete dialog
-  const handleClose = () => {
-    setOpen(false);
-  };
   const handleDeleteClick = (gameId) => {
     setDeleteId(gameId);
     setOpen(true);
@@ -43,7 +34,7 @@ const TonesPage = () => {
           <Stack direction="row" spacing={2}>
             <Button
               sx={{ px: 0, minWidth: 0 }}
-              onClick={() => handleToneClick(params.id)}
+              onClick={() => navigate(`/tones/${params.id}`)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -85,7 +76,7 @@ const TonesPage = () => {
             </Button>
             <DeleteConfirmationDialog
               open={open}
-              onClose={handleClose}
+              onClose={() => setOpen(false)}
               onConfirm={handleDeleteConfirm}
               deleteItem={"Delete Tone?"}
               deleteMessage={"Are you sure you want to delete this Tone?"}

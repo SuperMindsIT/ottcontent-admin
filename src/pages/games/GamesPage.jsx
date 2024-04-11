@@ -1,17 +1,16 @@
-import { Button, Link, Stack, Box } from "@mui/material";
-import MainLayout from "../../layouts/MainLayout";
-import { useNavigate } from "react-router-dom";
-import useGamesApi from "../../api/useGamesApi";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button, Link, Stack } from "@mui/material";
+import useGamesApi from "../../api/useGamesApi";
+import MainLayout from "../../layouts/MainLayout";
 import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
 
 const GamesPage = () => {
-  let navigate = useNavigate();
-
+  const navigate = useNavigate();
   const { data, isLoading, deleteData } = useGamesApi();
-  // for delete dialog
-  const [deleteId, setDeleteId] = useState(null);
+
   const [open, setOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   const handleDeleteClick = (gameId) => {
     setDeleteId(gameId);
@@ -21,15 +20,6 @@ const GamesPage = () => {
   const handleDeleteConfirm = () => {
     deleteData(deleteId);
     setOpen(false);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleGameClick = (gameId) => {
-    // Navigate to the route for the clicked game
-    navigate(`/games/${gameId}`);
   };
 
   const columns = [
@@ -64,7 +54,7 @@ const GamesPage = () => {
           <Stack direction="row" spacing={2}>
             <Button
               sx={{ px: 0, minWidth: 0 }}
-              onClick={() => handleGameClick(params.id)}
+              onClick={() => navigate(`/games/${params.id}`)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -106,7 +96,7 @@ const GamesPage = () => {
             </Button>
             <DeleteConfirmationDialog
               open={open}
-              onClose={handleClose}
+              onClose={() => setOpen(false)}
               onConfirm={handleDeleteConfirm}
               deleteItem={"Delete Game?"}
               deleteMessage={"Are you sure you want to delete this Game?"}

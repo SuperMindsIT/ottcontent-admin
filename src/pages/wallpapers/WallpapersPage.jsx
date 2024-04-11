@@ -1,26 +1,18 @@
 import { useState } from "react";
-import { Button, Stack } from "@mui/material";
-import MainLayout from "../../layouts/MainLayout";
 import { useNavigate } from "react-router-dom";
+import { Button, Stack } from "@mui/material";
 import useWallpapersApi from "../../api/useWallpapersApi";
+import MainLayout from "../../layouts/MainLayout";
 import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
 
 const WallpapersPage = () => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const { data, isLoading, deleteData } = useWallpapersApi();
-  // for delete dialog
-  const [deleteId, setDeleteId] = useState(null);
+
   const [open, setOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
-  const handleWallpaperClick = (wallpaperId) => {
-    navigate(`/wallpapers/${wallpaperId}`);
-  };
-
-  // for delete dialog
-  const handleClose = () => {
-    setOpen(false);
-  };
   const handleDeleteClick = (wallpaperId) => {
     setDeleteId(wallpaperId);
     setOpen(true);
@@ -43,7 +35,7 @@ const WallpapersPage = () => {
           <Stack direction="row" spacing={2}>
             <Button
               sx={{ px: 0, minWidth: 0 }}
-              onClick={() => handleWallpaperClick(params.id)}
+              onClick={() => navigate(`/wallpapers/${params.id}`)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -85,7 +77,7 @@ const WallpapersPage = () => {
             </Button>
             <DeleteConfirmationDialog
               open={open}
-              onClose={handleClose}
+              onClose={() => setOpen(false)}
               onConfirm={handleDeleteConfirm}
               deleteItem={"Delete Image?"}
               deleteMessage={"Are you sure you want to delete this Image?"}

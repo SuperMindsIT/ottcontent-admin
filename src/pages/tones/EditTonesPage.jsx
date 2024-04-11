@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
-import { Box, Stack, Typography } from "@mui/material";
+import { useParams, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
+import { toast } from "react-toastify";
+import { Box, Stack, Typography } from "@mui/material";
+import useTonesApi from "../../api/useTonesApi";
 import InputBox from "../../components/InputBox";
-import * as yup from "yup";
 import UploadFile from "../../components/UploadFile";
 import CustomButton from "../../components/CustomButton";
-import useTonesApi from "../../api/useTonesApi";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import DeleteConfirmationDialog from "../../components/DeleteConfirmationDialog";
+import * as yup from "yup";
 
 const validationSchema = yup.object({
   name: yup.string("Enter the name of tone").required("Tone is required"),
 });
 
 const EditTonesPage = () => {
+  const navigate = useNavigate();
   const { toneId } = useParams();
+
   const {
     putData,
     getDataById,
@@ -25,44 +27,12 @@ const EditTonesPage = () => {
     isLoading,
   } = useTonesApi();
 
-  const navigate = useNavigate();
-  const [selectedFile, setSelectedFile] = useState(null);
-  // for delete dialog
   const [open, setOpen] = useState(false);
-  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     getDataById(toneId);
   }, []);
-
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-    },
-    validationSchema: validationSchema,
-    onSubmit: async (values) => {
-      const data = {
-        title: values.name,
-      };
-      const formData = new FormData();
-      formData.append("audio", selectedFile);
-      const toneIntId = parseInt(toneId, 10);
-      if (deleteItemConfirm) {
-        await handleDeleteTone(toneIntId);
-      }
-      const result = await putData(toneIntId, data, formData);
-      {
-        if (
-          !isLoading &&
-          !hasApiErrors() &&
-          result &&
-          (selectedFile !== "Not available" || selectedFile !== null)
-        ) {
-          navigate("/tones");
-        }
-      }
-    },
-  });
 
   useEffect(() => {
     if (toneById) {
@@ -75,30 +45,46 @@ const EditTonesPage = () => {
     }
   }, [toneById]);
 
-  const handleCancel = () => {
-    navigate("/tones");
-  };
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
+      const data = {
+        title: values.name,
+      };
 
-  const handleDeleteTone = async (id) => {
-    try {
-      await deleteToneById(id);
-      setSelectedFile(null);
-    } catch (error) {
-      console.error("Error deleting tone:", error);
-    }
-  };
+      const formData = new FormData();
+      formData.append("audio", selectedFile);
 
-  // for delete dialog
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const handleDeleteClick = () => {
-    setOpen(true);
-  };
-  const handleDeleteConfirm = () => {
+      const toneIntId = parseInt(toneId, 10);
+
+      if (selectedFile && selectedFile !== "Not available") {
+        await putData(toneIntId, data, formData);
+        if (!isLoading && !hasApiErrors()) {
+          navigate("/tones");
+        }
+      } else {
+        toast.error("Upload the audio too");
+      }
+    },
+  });
+
+  const handleDeleteConfirm = async () => {
+    const toneIntId = parseInt(toneId, 10);
+
+    await deleteToneById(toneIntId);
     setSelectedFile(null);
-    setDeleteItemConfirm(true);
     setOpen(false);
+  };
+
+  const handleCancel = () => {
+    if (selectedFile && selectedFile !== "Not available") {
+      navigate("/tones");
+    } else {
+      toast.error("Upload the audio too");
+    }
   };
 
   return (
@@ -136,12 +122,6 @@ const EditTonesPage = () => {
               errors={formik.errors.name}
               placeholder="Name*"
             />
-            {/* <UploadFile
-              label="Upload Tone (max 10mb)*"
-              sx={{ mt: "22px", mb: "151px" }}
-              selectedFile={selectedFile}
-              setSelectedFile={setSelectedFile}
-            /> */}
             {selectedFile && selectedFile !== "Not available" ? (
               <Box sx={{ mt: "22px", mb: "20px" }}>
                 {typeof selectedFile === "string" ? (
@@ -165,11 +145,10 @@ const EditTonesPage = () => {
                     </audio>
                   </Box>
                 )}
-
                 <CustomButton
                   btn="secondary"
                   label="Delete Tone"
-                  onClick={() => handleDeleteClick(toneId)}
+                  onClick={() => setOpen(true)}
                 />
               </Box>
             ) : (
@@ -182,7 +161,7 @@ const EditTonesPage = () => {
             )}
             <DeleteConfirmationDialog
               open={open}
-              onClose={handleClose}
+              onClose={() => setOpen(false)}
               onConfirm={handleDeleteConfirm}
               deleteItem={"Delete Audio?"}
               deleteMessage={"Are you sure you want to delete this Audio?"}
@@ -203,15 +182,3 @@ const EditTonesPage = () => {
 };
 
 export default EditTonesPage;
-
-// {selectedFile && (
-//   <Box sx={{ mt: 2, mb: "50px" }}>
-//     <audio
-//       controls
-//       src={URL.createObjectURL(selectedFile)}
-//       style={{ width: "100%" }}
-//     >
-//       Your browser does not support the audio element.
-//     </audio>
-//   </Box>
-// )}

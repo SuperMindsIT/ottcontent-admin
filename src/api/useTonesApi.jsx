@@ -8,7 +8,6 @@ const useTonesApi = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [fetchDataError, setFetchDataError] = useState(null);
   const [postDataError, setPostDataError] = useState(null);
-  const [putDataError, setPutDataError] = useState(null);
   const [deleteDataError, setDeleteDataError] = useState(null);
   const [getDataByIdError, setGetDataByIdError] = useState(null);
   const [deleteImageByIdError, setDeleteImageByIdError] = useState(null);
@@ -66,7 +65,7 @@ const useTonesApi = () => {
     const intid = parseInt(id);
     try {
       setIsLoading(true);
-      const response = await appsApi.delete(`/tones/${intid}`);
+      await appsApi.delete(`/tones/${intid}`);
       toast.success("Tone Deleted Successfully", "success");
       fetchData(); // Refresh data after posting
     } catch (error) {
@@ -111,7 +110,6 @@ const useTonesApi = () => {
     const errors = [
       fetchDataError,
       postDataError,
-      putDataError,
       deleteDataError,
       deleteImageByIdError,
       getDataByIdError,
