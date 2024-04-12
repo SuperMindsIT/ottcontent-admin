@@ -68,61 +68,6 @@ const EditRecipesPage = () => {
     }
   }, []);
 
-  const formik = useFormik({
-    initialValues: {
-      title_en: "",
-      description_en: "",
-      title_es: "",
-      description_es: "",
-      title_gr: "",
-      description_gr: "",
-      visible: 1,
-    },
-    validationSchema: validationSchema,
-    onSubmit: async (values) => {
-      const data = updateValuesForLanguages(values, language);
-      const recipeIdInt = parseInt(recipeId, 10);
-      if (
-        deleteCoverConfirm &&
-        (selectedCover !== "not available" || selectedCover !== null)
-      ) {
-        await handleDeleteCover(recipeIdInt);
-        setDeleteCoverConfirm(!deleteCoverConfirm);
-      }
-      if (
-        deleteThumbnailConfirm &&
-        (selectedThumbnail !== "not available" || selectedThumbnail !== null)
-      ) {
-        await handleDeleteThumbnail(recipeIdInt);
-        setDeleteThumbnailConfirm(!deleteThumbnailConfirm);
-      }
-      if (selectedCover === "Not available" || selectedCover === null) {
-        toast.error(
-          "Cover is necessary , if uploaded please save your changes"
-        );
-        return;
-      }
-      if (selectedThumbnail === "Not available" || selectedThumbnail === null) {
-        toast.error(
-          "Thumbnail is necessary , if uploaded please save your changes"
-        );
-        return;
-      }
-      await putData(recipeIdInt, data, selectedCover, selectedThumbnail);
-      {
-        // Navigate only if loading is finished and there are no API errors
-        if (
-          !isLoading &&
-          !hasApiErrors() &&
-          (selectedCover !== "Not available" || selectedCover !== null) &&
-          (selectedThumbnail !== "Not available" || selectedThumbnail !== null)
-        ) {
-          navigate("/recipes");
-        }
-      }
-    },
-  });
-
   useEffect(() => {
     if (categoryDetails) {
       // Update form values and files if data is loaded
@@ -140,10 +85,69 @@ const EditRecipesPage = () => {
       }
       if (categoryDetails.thumbnail) {
         setSelectedThumbnail(categoryDetails.thumbnail);
-        setSelectedThumbnailBackend(categoryDetails?.thumbnail);
+        setSelectedThumbnailBackend(categoryDetails.thumbnail);
       }
     }
   }, [categoryDetails]);
+
+  const formik = useFormik({
+    initialValues: {
+      title_en: "",
+      description_en: "",
+      title_es: "",
+      description_es: "",
+      title_gr: "",
+      description_gr: "",
+      visible: 1,
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
+      const data = updateValuesForLanguages(values, language);
+      const recipeIdInt = parseInt(recipeId, 10);
+      if (
+        deleteCoverConfirm &&
+        (selectedCoverBackend !== "not available" ||
+          selectedCoverBackend !== null)
+      ) {
+        await handleDeleteCover(recipeIdInt);
+        setDeleteCoverConfirm(!deleteCoverConfirm);
+      }
+      if (
+        deleteThumbnailConfirm &&
+        (selectedThumbnailBackend !== "not available" ||
+          selectedThumbnailBackend !== null)
+      ) {
+        await handleDeleteThumbnail(recipeIdInt);
+        setDeleteThumbnailConfirm(!deleteThumbnailConfirm);
+      }
+      if (selectedCover === "Not available" || selectedCover === null) {
+        toast.error(
+          "Cover is necessary , if uploaded please save your changes"
+        );
+        return;
+      }
+      if (selectedThumbnail === "Not available" || selectedThumbnail === null) {
+        toast.error(
+          "Thumbnail is necessary , if uploaded please save your changes"
+        );
+        return;
+      }
+      await putData(recipeIdInt, data, selectedCover, selectedThumbnail),
+        selectedCoverBackend,
+        selectedThumbnailBackend;
+      {
+        // Navigate only if loading is finished and there are no API errors
+        if (
+          !isLoading &&
+          !hasApiErrors() &&
+          (selectedCover !== "Not available" || selectedCover !== null) &&
+          (selectedThumbnail !== "Not available" || selectedThumbnail !== null)
+        ) {
+          navigate("/recipes");
+        }
+      }
+    },
+  });
 
   const handleValueUpdate = (fieldName, value) => {
     formik.setValues((prevValues) => ({
@@ -153,22 +157,22 @@ const EditRecipesPage = () => {
   };
 
   const handleCancel = () => {
-    if (
-      selectedCoverBackend === "Not available" ||
-      selectedCoverBackend === null
-    ) {
-      toast.error("Cover is necessary , if uploaded please save your changes");
-      return;
-    }
-    if (
-      selectedThumbnailBackend === "Not available" ||
-      selectedThumbnailBackend === null
-    ) {
-      toast.error(
-        "Thumbnail is necessary , if uploaded please save your changes"
-      );
-      return;
-    }
+    // if (
+    //   selectedCoverBackend === "Not available" ||
+    //   selectedCoverBackend === null
+    // ) {
+    //   toast.error("Cover is necessary , if uploaded please save your changes");
+    //   return;
+    // }
+    // if (
+    //   selectedThumbnailBackend === "Not available" ||
+    //   selectedThumbnailBackend === null
+    // ) {
+    //   toast.error(
+    //     "Thumbnail is necessary , if uploaded please save your changes"
+    //   );
+    //   return;
+    // }
     navigate("/recipes");
   };
 

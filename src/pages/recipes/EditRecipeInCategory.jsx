@@ -29,11 +29,6 @@ const EditRecipeInCategory = () => {
   const [selectedCoverBackend, setSelectedCoverBackend] = useState(null);
   const [language, setLanguage] = useState("en");
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
-
-  // for delete dialog cover
-  const [openCover, setOpenCover] = useState(false);
-  const [deleteCoverConfirm, setDeleteCoverConfirm] = useState(false);
-
   const {
     putCategoryData,
     isLoading,
@@ -42,6 +37,24 @@ const EditRecipeInCategory = () => {
     deleteSubcategoryCoverById,
     fetchSubCategoryData,
   } = useRecipesApi();
+
+  // for delete dialog cover
+  const [openCover, setOpenCover] = useState(false);
+  const [deleteCoverConfirm, setDeleteCoverConfirm] = useState(false);
+
+  // editor
+  const onEditorStateChange = (editorState) => {
+    setEditorState(editorState);
+    const currentLanguage = language; // Get the current language
+
+    // Convert ContentState to raw format
+    const rawContentState = convertToRaw(editorState.getCurrentContent());
+    // Convert rawContentState to HTML
+    const htmlContent = draftToHtml(rawContentState);
+
+    // Update content for the current language only
+    formik.setFieldValue(`content_${currentLanguage}`, htmlContent);
+  };
 
   const updateValuesForLanguages = (values, language) => {
     const data = {
@@ -63,13 +76,6 @@ const EditRecipeInCategory = () => {
   useEffect(() => {
     if (subcategoryId) {
       fetchSubCategoryData(subcategoryId);
-      // getDataDetailsById(subcategoryId);
-      console.log(
-        subCategoryDetails,
-        "sub-category details in edit category page"
-      );
-
-      console.log(language, "language in edit page");
     }
   }, [subcategoryId]);
 
@@ -84,19 +90,6 @@ const EditRecipeInCategory = () => {
   //     setEditorState(EditorState.createWithContent(contentState));
   //   }
   // }, [subCategoryDetails, language]);
-
-  const onEditorStateChange = (editorState) => {
-    setEditorState(editorState);
-    const currentLanguage = language; // Get the current language
-
-    // Convert ContentState to raw format
-    const rawContentState = convertToRaw(editorState.getCurrentContent());
-    // Convert rawContentState to HTML
-    const htmlContent = draftToHtml(rawContentState);
-
-    // Update content for the current language only
-    formik.setFieldValue(`content_${currentLanguage}`, htmlContent);
-  };
 
   useEffect(() => {
     if (subCategoryDetails) {
@@ -136,6 +129,7 @@ const EditRecipeInCategory = () => {
       content_gr: "",
       visible: 1,
     },
+    validateOnBlur: true,
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const data = updateValuesForLanguages(values, language);
@@ -143,7 +137,8 @@ const EditRecipeInCategory = () => {
       console.log(subcategoryIdInt, "int id subcategory");
       if (
         deleteCoverConfirm &&
-        (selectedCover !== "not available" || selectedCover !== null)
+        (selectedCoverBackend !== "not available" ||
+          selectedCoverBackend !== null)
       ) {
         await handleDeleteCover(subcategoryIdInt);
         setDeleteCoverConfirm(!deleteCoverConfirm);
@@ -156,7 +151,12 @@ const EditRecipeInCategory = () => {
         return;
       }
 
-      await putCategoryData(subcategoryIdInt, data, selectedCover);
+      await putCategoryData(
+        subcategoryIdInt,
+        data,
+        selectedCover,
+        selectedCoverBackend
+      );
       {
         // Navigate only if loading is finished and there are no API errors
         if (
@@ -181,7 +181,9 @@ const EditRecipeInCategory = () => {
         title_gr: subCategoryDetails.title_gr || "",
         content_gr: subCategoryDetails.content_gr || "",
       });
-      setSelectedCover(subCategoryDetails.cover);
+      if (subCategoryDetails?.cover) {
+        setSelectedCover(subCategoryDetails.cover);
+      }
     }
   }, [subCategoryDetails]);
 
@@ -193,13 +195,13 @@ const EditRecipeInCategory = () => {
   };
 
   const handleCancel = () => {
-    if (
-      selectedCoverBackend === "Not available" ||
-      selectedCoverBackend === null
-    ) {
-      toast.error("image is necessary");
-      return;
-    }
+    // if (
+    //   selectedCoverBackend === "Not available" ||
+    //   selectedCoverBackend === null
+    // ) {
+    //   toast.error("image is necessary");
+    //   return;
+    // }
     navigate(`/recipes/${subCategoryDetails?.parent_id}`);
   };
 
