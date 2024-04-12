@@ -37,16 +37,15 @@ const useFitnessApi = () => {
     } catch (error) {
       if (error?.response?.status === 409) {
         console.log("image conflict");
-      } else {
-        console.log(error, "statues is nt 409");
-        const errorMessage =
-          error.response.data?.message || "An error occurred";
-        setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
-        toast.error(errorMessage);
+        return;
       }
+      toast.error(error.response.data.message, "error");
+      console.log(error.response.data.message, "status is not 409");
+      setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
+
       // setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
       // toast.error(error.response?.data?.message || error.message, "error");
-      // throw error; // rethrow the error to handle it in the calling function
+      throw error; // rethrow the error to handle it in the calling function
     }
   };
 
@@ -69,14 +68,25 @@ const useFitnessApi = () => {
     }
   };
 
-  const putData = async (id, fitnessData, thumbnailData) => {
+  const putData = async (
+    id,
+    fitnessData,
+    thumbnailData,
+    selectedFileBackend
+  ) => {
     const intid = parseInt(id);
+    console.log(selectedFileBackend, "selected file backend in put data");
     try {
       setIsLoading(true);
       let response;
       console.log(thumbnailData, "thumbnail in putData");
       response = await appsApi.put(`/fitness/${intid}`, fitnessData);
-      await postThumbnail(intid, thumbnailData);
+      if (
+        selectedFileBackend !== null &&
+        selectedFileBackend !== "Not available"
+      ) {
+        await postThumbnail(intid, thumbnailData);
+      }
       toast.success("Fitness Workout Updated Successfully", "success");
       toast.success(response.data.message, "success");
       getDataById(intid);
