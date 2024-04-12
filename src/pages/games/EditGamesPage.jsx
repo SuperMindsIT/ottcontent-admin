@@ -64,7 +64,7 @@ const EditGamesPage = () => {
 
       const gameIdInt = parseInt(gameId, 10);
 
-      if (selectedFile && selectedFile !== "Not available") {
+      if (selectedFile !== null && selectedFile !== "Not available") {
         await putData(gameIdInt, data, formData);
         if (!isLoading && !hasApiErrors()) {
           navigate("/games");
