@@ -63,9 +63,9 @@ const useRecipesApi = () => {
         console.log("image conflict");
         return;
       }
+      setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
       toast.error(error.response.data.message, "error");
       console.log(error.response.data.message, "status is not 409");
-      setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
     }
   };
 
@@ -89,9 +89,9 @@ const useRecipesApi = () => {
         console.log("image conflict");
         return;
       }
+      setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
       toast.error(error.response.data.message, "error");
       console.log(error.response.data.message, "status is not 409");
-      setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
     }
   };
 
@@ -322,7 +322,7 @@ const useRecipesApi = () => {
       const intid = parseInt(response?.data?.id);
 
       if (coverData !== null || coverData !== "Not available") {
-        await postSubategoryCover(intId, coverData);
+        await postSubategoryCover(intid, coverData);
       }
       toast.success("Recipe Category Created Successfully", "success");
       toast.success(response.data.message, "success");
@@ -369,6 +369,24 @@ const useRecipesApi = () => {
       fetchData(); // Refresh data after posting
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, postData: error }));
+      toast.error(error.response.data.message, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // delete recipe subcategory
+  const deleteSubcategoryData = async (id) => {
+    const intid = parseInt(id);
+    try {
+      setIsLoading(true);
+      const response = await appsApi.delete(`/recipes/sub-categories/${intid}`);
+      toast.success("Recipe sub-category Deleted Successfully", "success");
+      // getDataById(intid);
+      fetchData(); // Refresh data after posting
+    } catch (error) {
+      setErrors((prevErrors) => ({ ...prevErrors, deleteData: error }));
+      console.error("Error deleting recipe category:", error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -434,6 +452,7 @@ const useRecipesApi = () => {
     deleteThumbnailById,
     fetchCategoryData,
     postCategoryData,
+    deleteSubcategoryData,
     fetchSubCategoryData,
     putCategoryData,
     deleteSubcategoryCoverById,

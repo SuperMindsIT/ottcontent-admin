@@ -15,7 +15,7 @@ const RecipesByCategoryPage = () => {
 
   const {
     isLoading,
-    deleteData,
+    deleteSubcategoryData,
     getDataById,
     getDataDetailsById,
     dataById,
@@ -26,16 +26,15 @@ const RecipesByCategoryPage = () => {
     getDataById(recipeId); // This will update dataById in your hook
     getDataDetailsById(recipeId);
     console.log(dataById, "data in category");
-    console.log(dataDetailsById, "data details by id");
   }, []);
 
-  const handleDeleteClick = (recipeId) => {
-    setDeleteId(recipeId);
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
     setOpen(true);
   };
 
   const handleDeleteConfirm = () => {
-    deleteData(deleteId);
+    deleteSubcategoryData(deleteId);
     setOpen(false);
   };
 
@@ -43,12 +42,8 @@ const RecipesByCategoryPage = () => {
     setOpen(false);
   };
 
-  const handleViewAll = (recipeId) => {
-    navigate(`recipes/${recipeId}`);
-  };
-
-  const handleEdit = (recipeId) => {
-    navigate(`/subcategory/edit/${recipeId}`);
+  const handleEdit = (id) => {
+    navigate(`/subcategory/edit/${id}`);
   };
 
   const columns = [

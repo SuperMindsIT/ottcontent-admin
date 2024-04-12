@@ -151,12 +151,8 @@ const EditRecipeInCategory = () => {
         return;
       }
 
-      await putCategoryData(
-        subcategoryIdInt,
-        data,
-        selectedCover,
-        selectedCoverBackend
-      );
+      await putCategoryData(subcategoryIdInt, data, selectedCover),
+        selectedCoverBackend;
       {
         // Navigate only if loading is finished and there are no API errors
         if (
