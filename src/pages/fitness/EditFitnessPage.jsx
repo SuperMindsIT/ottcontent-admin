@@ -79,19 +79,6 @@ const EditFitnessPage = () => {
     getDataById(fitnessId);
   }, []);
 
-  // useEffect(() => {
-  //   if (fitnessById) {
-  //     const htmlContent = fitnessById[`content_${language}`] || "";
-  //     const blocksFromHTML = convertFromHTML(htmlContent);
-  //     const contentState = ContentState.createFromBlockArray(
-  //       blocksFromHTML.contentBlocks,
-  //       blocksFromHTML.entityMap
-  //     );
-  //     setEditorState(EditorState.createWithContent(contentState));
-  //     setSelectedFileBackend(fitnessById?.image);
-  //   }
-  // }, [fitnessById, language]);
-
   useEffect(() => {
     if (fitnessById) {
       // Save the current editor content for the previous language before switching
@@ -114,7 +101,7 @@ const EditFitnessPage = () => {
       );
       setEditorState(EditorState.createWithContent(contentState));
       setSelectedFileBackend(fitnessById?.image);
-      console.log(selectedFileBackend, "rkfh rfheorhf oer oefheo ");
+      // console.log(selectedFileBackend, "rkfh rfheorhf oer oefheo ");
 
       // Also update the formik state with the new language content
       formik.setFieldValue(`content_${language}`, newHtmlContent);
@@ -140,7 +127,11 @@ const EditFitnessPage = () => {
       const formData = new FormData();
       formData.append("image", selectedFile);
       const fitnessIntId = parseInt(fitnessId, 10);
-      if (deleteItemConfirm) {
+      if (
+        deleteItemConfirm &&
+        selectedFileBackend !== null &&
+        selectedFileBackend !== "Not available"
+      ) {
         await handleDeleteImage(fitnessIntId);
         setDeleteItemConfirm(!deleteItemConfirm);
       }
@@ -195,13 +186,13 @@ const EditFitnessPage = () => {
   };
 
   const handleCancel = () => {
-    if (
-      selectedFileBackend === "Not available" ||
-      selectedFileBackend === null
-    ) {
-      toast.error("image is necessary");
-      return;
-    }
+    // if (
+    //   selectedFileBackend === "Not available" ||
+    //   selectedFileBackend === null
+    // ) {
+    //   toast.error("image is necessary");
+    //   return;
+    // }
     navigate("/fitness");
   };
 
@@ -222,7 +213,6 @@ const EditFitnessPage = () => {
     blockType: {
       inDropdown: true, // Ensure blockType selection is in a dropdown
       options: ["Normal", "H1", "H2"], // Specify block types you want
-      // onClick: toggleBlockType,
     },
     list: {
       options: ["unordered", "ordered"],
