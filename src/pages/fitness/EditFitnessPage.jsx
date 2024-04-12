@@ -114,6 +114,7 @@ const EditFitnessPage = () => {
       );
       setEditorState(EditorState.createWithContent(contentState));
       setSelectedFileBackend(fitnessById?.image);
+      console.log(selectedFileBackend, "rkfh rfheorhf oer oefheo ");
 
       // Also update the formik state with the new language content
       formik.setFieldValue(`content_${language}`, newHtmlContent);
@@ -148,7 +149,7 @@ const EditFitnessPage = () => {
         return;
       }
 
-      await putData(fitnessIntId, data, formData);
+      await putData(fitnessIntId, data, formData), selectedFileBackend;
 
       console.log(
         !isLoading &&

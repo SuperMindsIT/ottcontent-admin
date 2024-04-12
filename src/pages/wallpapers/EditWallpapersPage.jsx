@@ -36,6 +36,7 @@ const EditWallpapersPage = () => {
 
   useEffect(() => {
     if (wallpaperById) {
+      console.log(wallpaperById, "wallpaper by id in edit page");
       formik.setValues({
         name: wallpaperById.title || "",
       });
