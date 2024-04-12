@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 
 const useRecipesApi = () => {
   const [data, setData] = useState([]);
-  const [categoryData, setCategoryData] = useState([]);
   const [subCategoryDetails, setSubCategoryDetails] = useState([]);
   const [categoryDetails, setCategoryDetails] = useState([]);
   const [dataById, setDataById] = useState([]);
@@ -60,16 +59,13 @@ const useRecipesApi = () => {
       console.log(response, "in thumbnail");
       return response;
     } catch (error) {
-      if (response && response?.status !== 409) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          postCategoryCover: error,
-        }));
-        toast.error(error.response?.data?.message || error.message, "error");
+      if (error?.response?.status === 409) {
+        console.log("image conflict");
+        return;
       }
-      // setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
-      // toast.error(error.response?.data?.message || error.message, "error");
-      // throw error; // rethrow the error to handle it in the calling function
+      toast.error(error.response.data.message, "error");
+      console.log(error.response.data.message, "status is not 409");
+      setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
     }
   };
 
@@ -89,16 +85,13 @@ const useRecipesApi = () => {
       console.log(response, "in cover");
       return response;
     } catch (error) {
-      if (response && response?.status !== 409) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          postCategoryCover: error,
-        }));
-        toast.error(error.response?.data?.message || error.message, "error");
+      if (error?.response?.status === 409) {
+        console.log("image conflict");
+        return;
       }
-      // setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
-      // toast.error(error.response?.data?.message || error.message, "error");
-      // throw error; // rethrow the error to handle it in the calling function
+      toast.error(error.response.data.message, "error");
+      console.log(error.response.data.message, "status is not 409");
+      setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
     }
   };
 
@@ -125,8 +118,19 @@ const useRecipesApi = () => {
   };
 
   // edit recipe category
-  const putData = async (id, recipesData, coverData, thumbnailData) => {
-    console.log(recipesData, coverData, thumbnailData, "kejd lkedh ");
+  const putData = async (
+    id,
+    recipesData,
+    coverData,
+    thumbnailData,
+    selectedCoverBackend,
+    selectedThumbnailBackend
+  ) => {
+    console.log(
+      selectedCoverBackend,
+      selectedThumbnailBackend,
+      "cover and thumbnail in backend in put data"
+    );
     const intid = parseInt(id);
     try {
       setIsLoading(true);
@@ -137,11 +141,17 @@ const useRecipesApi = () => {
           recipesData
         );
       }
-      if (coverData) {
+      if (
+        selectedCoverBackend !== null &&
+        selectedCoverBackend !== "Not available"
+      ) {
         await postCategoryCover(intid, coverData);
       }
 
-      if (thumbnailData) {
+      if (
+        selectedThumbnailBackend !== null &&
+        selectedThumbnailBackend !== "Not available"
+      ) {
         await postCategoryThumbnail(intid, thumbnailData);
       }
       toast.success("Fitness Workout Updated Successfully", "success");
@@ -283,9 +293,17 @@ const useRecipesApi = () => {
       toast.success("Subcategory Cover posted successfully", "success");
       return response;
     } catch (error) {
+      if (error?.response?.status === 409) {
+        console.log("image conflict");
+        return;
+      }
+      toast.error(error.response.data.message, "error");
+      console.log(error.response.data.message, "status is not 409");
+      setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
+
       // setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
       // toast.error(error.response?.data?.message || error.message, "error");
-      // throw error; // rethrow the error to handle it in the calling function
+      throw error; // rethrow the error to handle it in the calling function
     }
   };
 
@@ -318,7 +336,12 @@ const useRecipesApi = () => {
   };
 
   // edit recipe subcategory
-  const putCategoryData = async (id, recipesData, coverData) => {
+  const putCategoryData = async (
+    id,
+    recipesData,
+    coverData,
+    selectedCoverBackend
+  ) => {
     const intId = parseInt(id);
     try {
       setIsLoading(true);
@@ -333,7 +356,11 @@ const useRecipesApi = () => {
         );
       }
 
-      if (coverData !== null || coverData !== "Not available") {
+      if (
+        (coverData !== null || coverData !== "Not available") &&
+        selectedCoverBackend !== null &&
+        selectedCoverBackend !== "Not available"
+      ) {
         await postSubategoryCover(intId, coverData);
       }
 
