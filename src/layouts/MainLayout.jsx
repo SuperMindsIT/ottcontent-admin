@@ -1,13 +1,17 @@
 import { Box, Button, Typography } from "@mui/material";
 import DataTable from "../components/DataTable";
 import PropTypes from "prop-types";
+import AccountLogo from "../../src/assets/AccountLogo.svg";
 
 const MainLayout = (props) => {
   const { title, onAddClick, rows, columns, isLoading, searchFields } = props;
-  console.log(rows, "row data");
+  // console.log(rows, "row data");
 
   return (
     <div>
+      <Box sx={{ display: "flex", justifyContent: "right", mb: 7.4 }}>
+        <img src={AccountLogo} alt="Search" />
+      </Box>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2.4 }}>
         <Typography sx={{ fontSize: 24, color: "#fff", fontWeight: 800 }}>
           {title}

@@ -5,6 +5,7 @@ import useRecipesApi from "../api/useRecipesApi";
 import useTonesApi from "../api/useTonesApi";
 import useWallpapersApi from "../api/useWallpapersApi";
 import { useNavigate } from "react-router-dom";
+import AccountLogo from "../../src/assets/AccountLogo.svg";
 
 const DashboardPage = () => {
   const { data: fitnessData } = useFitnessApi();
@@ -53,6 +54,9 @@ const DashboardPage = () => {
   };
   return (
     <Box>
+      <Box sx={{ display: "flex", justifyContent: "right", mb: 7.4 }}>
+        <img src={AccountLogo} alt="Search" />
+      </Box>
       <Typography
         sx={{ fontSize: 24, fontWeight: 800, color: "white", mb: 8.4 }}
       >

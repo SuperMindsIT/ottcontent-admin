@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
@@ -18,6 +18,13 @@ const AddTonesPage = () => {
   const { postData, isLoading, hasApiErrors } = useTonesApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  useEffect(() => {
+    if (submitAttempted && !isLoading && !hasApiErrors()) {
+      navigate("/tones");
+    }
+  }, [submitAttempted, isLoading, hasApiErrors]);
 
   const formik = useFormik({
     initialValues: {
@@ -34,9 +41,7 @@ const AddTonesPage = () => {
 
       if (selectedFile) {
         await postData(data, formData);
-        if (!isLoading && !hasApiErrors()) {
-          navigate("/tones");
-        }
+        setSubmitAttempted(true);
       } else {
         toast.error("Upload the audio file");
       }

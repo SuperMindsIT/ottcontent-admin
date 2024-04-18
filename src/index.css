@@ -94,3 +94,19 @@ body {
 .rdw-dropdownoption-active {
   background: #403e4c4d;
 }
+
+.MuiDataGrid-overlay {
+  visibility: hidden;
+  position: relative;
+}
+
+.MuiDataGrid-overlay::after {
+  content: "No records available";
+  visibility: visible;
+  position: absolute;
+  color: white;
+  font-size: 25px;
+  top: 60%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust the positioning */
+}

@@ -30,6 +30,7 @@ const EditGamesPage = () => {
 
   const [open, setOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   useEffect(() => {
     getDataById(gameId);
@@ -46,6 +47,13 @@ const EditGamesPage = () => {
       }
     }
   }, [gameById]);
+
+  useEffect(() => {
+    // console.log(isLoading, "is loading in edit");
+    if (submitAttempted && !isLoading && !hasApiErrors()) {
+      navigate("/games");
+    }
+  }, [submitAttempted, isLoading, hasApiErrors]);
 
   const formik = useFormik({
     initialValues: {
@@ -66,9 +74,7 @@ const EditGamesPage = () => {
 
       if (selectedFile !== null && selectedFile !== "Not available") {
         await putData(gameIdInt, data, formData);
-        if (!isLoading && !hasApiErrors()) {
-          navigate("/games");
-        }
+        setSubmitAttempted(true);
       } else {
         toast.error("Upload the image too");
       }
@@ -77,8 +83,11 @@ const EditGamesPage = () => {
 
   const handleDeleteConfirm = async () => {
     const gameIdInt = parseInt(gameId, 10);
-
-    await deleteImageById(gameIdInt);
+    if (selectedFile !== null && selectedFile !== "Not available") {
+      await deleteImageById(gameIdInt);
+    } else {
+      toast.error("no image to delete");
+    }
     setSelectedFile(null);
     setOpen(false);
   };

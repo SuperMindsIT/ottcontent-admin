@@ -7,6 +7,7 @@ const UploadFile = (props) => {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+    console.log("Uploaded file type:", file.type);
     setSelectedFile(file);
   };
 

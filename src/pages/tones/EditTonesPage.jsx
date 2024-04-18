@@ -29,6 +29,7 @@ const EditTonesPage = () => {
 
   const [open, setOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   useEffect(() => {
     getDataById(toneId);
@@ -44,6 +45,13 @@ const EditTonesPage = () => {
       }
     }
   }, [toneById]);
+
+  useEffect(() => {
+    console.log(isLoading, "is loading in edit");
+    if (submitAttempted && !isLoading && !hasApiErrors()) {
+      navigate("/tones");
+    }
+  }, [submitAttempted, isLoading, hasApiErrors]);
 
   const formik = useFormik({
     initialValues: {
@@ -62,9 +70,7 @@ const EditTonesPage = () => {
 
       if (selectedFile && selectedFile !== "Not available") {
         await putData(toneIntId, data, formData);
-        if (!isLoading && !hasApiErrors()) {
-          navigate("/tones");
-        }
+        setSubmitAttempted(true);
       } else {
         toast.error("Upload the audio too");
       }
@@ -74,7 +80,11 @@ const EditTonesPage = () => {
   const handleDeleteConfirm = async () => {
     const toneIntId = parseInt(toneId, 10);
 
-    await deleteToneById(toneIntId);
+    if (selectedFile !== null && selectedFile !== "Not available") {
+      await deleteToneById(toneIntId);
+    } else {
+      toast.error("no audio to delete");
+    }
     setSelectedFile(null);
     setOpen(false);
   };

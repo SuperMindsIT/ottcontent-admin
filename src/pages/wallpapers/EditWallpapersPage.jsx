@@ -29,6 +29,7 @@ const EditWallpapersPage = () => {
 
   const [open, setOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   useEffect(() => {
     getDataById(wallpaperId);
@@ -45,6 +46,13 @@ const EditWallpapersPage = () => {
       }
     }
   }, [wallpaperById]);
+
+  useEffect(() => {
+    // console.log(isLoading, "is loading in edit");
+    if (submitAttempted && !isLoading && !hasApiErrors()) {
+      navigate("/wallpapers");
+    }
+  }, [submitAttempted, isLoading, hasApiErrors]);
 
   const formik = useFormik({
     initialValues: {
@@ -63,9 +71,7 @@ const EditWallpapersPage = () => {
 
       if (selectedFile && selectedFile !== "Not available") {
         await putData(wallpaperIntId, data, formData);
-        if (!isLoading && !hasApiErrors()) {
-          navigate("/wallpapers");
-        }
+        setSubmitAttempted(true);
       } else {
         toast.error("Upload the wallpaper too");
       }
@@ -75,7 +81,9 @@ const EditWallpapersPage = () => {
   const handleDeleteConfirm = async () => {
     const wallpaperIntId = parseInt(wallpaperId, 10);
 
-    await deleteImageById(wallpaperIntId);
+    if (selectedFile !== null && selectedFile !== "Not available") {
+      await deleteImageById(wallpaperIntId);
+    }
     setSelectedFile(null);
     setOpen(false);
   };

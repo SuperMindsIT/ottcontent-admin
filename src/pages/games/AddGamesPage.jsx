@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
@@ -19,6 +19,13 @@ const AddGamesPage = () => {
   const { postData, isLoading, hasApiErrors } = useGamesApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  useEffect(() => {
+    if (submitAttempted && !isLoading && !hasApiErrors()) {
+      navigate("/games");
+    }
+  }, [submitAttempted, isLoading, hasApiErrors]);
 
   const formik = useFormik({
     initialValues: {
@@ -37,9 +44,7 @@ const AddGamesPage = () => {
 
       if (selectedFile) {
         await postData(data, formData);
-        if (!isLoading && !hasApiErrors()) {
-          navigate("/games");
-        }
+        setSubmitAttempted(true);
       } else {
         toast.error("Upload the image too");
       }
