@@ -6,7 +6,12 @@ const useTonesApi = () => {
   const [data, setData] = useState([]);
   const [toneById, setToneById] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [errors, setErrors] = useState({});
+  const [fetchDataError, setFetchDataError] = useState(null);
+  const [postDataError, setPostDataError] = useState(null);
+  const [putDataError, setPutDataError] = useState(null);
+  const [deleteDataError, setDeleteDataError] = useState(null);
+  const [getDataByIdError, setGetDataByIdError] = useState(null);
+  const [deleteToneByIdError, setDeleteToneByIdError] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -14,9 +19,8 @@ const useTonesApi = () => {
       const { data } = await appsApi.get("/tones");
       setData(data);
       setIsLoading(false);
-      clearError("fetchData"); // Clear error on success
     } catch (error) {
-      setErrors((prevErrors) => ({ ...prevErrors, fetchData: error }));
+      setFetchDataError(error);
       console.error(error);
     }
   };
@@ -26,8 +30,6 @@ const useTonesApi = () => {
     let response;
     try {
       response = await appsApi.post(`/tones/${intId}/audio`, audioData);
-      clearError("postAudio");
-      clearError("deleteToneById");
       toast.success("Audio posted successfully", "success");
       return response;
     } catch (error) {
@@ -36,6 +38,8 @@ const useTonesApi = () => {
         console.log("audio conflict");
         return;
       }
+      toast.error(error.response.data.message, "error");
+      console.log(error.response.data.message, "status is not 409");
       setErrors((prevErrors) => ({ ...prevErrors, postAudio: error }));
       // console.log(error.response.data.message, "status is not 409");
       throw error;
@@ -46,47 +50,49 @@ const useTonesApi = () => {
     try {
       setIsLoading(true);
       let response;
-      if (audioData) {
-        response = await appsApi.post("/tones", toneData);
-        const intid = parseInt(response?.data?.id);
-        await postAudio(intid, audioData);
-        clearError("postData"); // Clear error on success
-        // response = await appsApi.post(`/tones/${intid}/audio`, audioData);
-      }
+      response = await appsApi.post("/tones", toneData);
+      const intid = parseInt(response?.data?.id);
+      await postAudio(intid, audioData);
       toast.success("Tone Created Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData(); // Refresh data after posting
-      // getDataById(intid);
+      getDataById(intid);
     } catch (error) {
-      if (error?.response?.status !== 409) {
-        setErrors((prevErrors) => ({ ...prevErrors, postData: error }));
-        toast.error(error.response?.data?.message || error.message, "error");
+      if (error?.response?.status === 409) {
+        console.log("file conflict");
       }
+      // setErrors((prevErrors) => ({ ...prevErrors, postData: error }));
+      setPostDataError(error);
+      toast.error(error.response?.data?.message || error.message, "error");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const putData = async (id, toneData, audioData) => {
+  const putData = async (id, toneData, audioData, selectedFileBackend) => {
     const intid = parseInt(id);
     try {
       setIsLoading(true);
       let response;
-      if (audioData) {
-        response = await appsApi.put(`/tones/${intid}`, toneData);
-        await postAudio(intid, thumbnailData);
-        clearError("putData"); // Clear error on success
-        clearError("deleteToneById");
+      response = await appsApi.put(`/tones/${intid}`, toneData);
+      if (
+        selectedFileBackend !== null &&
+        selectedFileBackend !== "Not available"
+      ) {
+        await postAudio(intid, audioData);
       }
       toast.success("Tone Updated Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData(); // Refresh data after updating
       getDataById(intid);
     } catch (error) {
-      if (error?.response?.status !== 409) {
-        setErrors((prevErrors) => ({ ...prevErrors, putData: error }));
-        toast.error(error.response.data.message, "error");
+      if (error?.response?.status === 409) {
+        console.log("image/file conflict");
+        return;
       }
+      // setErrors((prevErrors) => ({ ...prevErrors, putData: error }));
+      setPutDataError(error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -97,11 +103,11 @@ const useTonesApi = () => {
     try {
       setIsLoading(true);
       await appsApi.delete(`/tones/${intid}`);
-      clearError("deleteData"); // Clear error on success
       toast.success("Tone Deleted Successfully", "success");
       fetchData(); // Refresh data after posting
     } catch (error) {
-      setErrors((prevErrors) => ({ ...prevErrors, deleteData: error }));
+      // setErrors((prevErrors) => ({ ...prevErrors, deleteData: error }));
+      setDeleteDataError(error);
       if (error?.response?.status !== 404) {
         toast.error(error.response.data.message, "error");
       }
@@ -115,10 +121,10 @@ const useTonesApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.get(`/tones/${intid}`);
-      clearError("getDataById"); // Clear error on success
       setToneById(response?.data);
+      fetchData();
     } catch (error) {
-      setErrors((prevErrors) => ({ ...prevErrors, getDataById: error }));
+      setGetDataByIdError(error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -130,29 +136,41 @@ const useTonesApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.delete(`/tones/${intid}/audio`);
-      clearError("deleteToneById"); // Clear error on success
       toast.success(response.data.message, "success");
       getDataById(intid);
     } catch (error) {
-      setErrors((prevErrors) => ({ ...prevErrors, deleteToneById: error }));
+      setDeleteToneByIdError(error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const clearError = (key) => {
-    setErrors((prevErrors) => {
-      const newErrors = { ...prevErrors };
-      delete newErrors[key]; // Remove the error for the key if it exists
-      return newErrors;
-    });
-  };
+  // const clearError = (key) => {
+  //   setErrors((prevErrors) => {
+  //     const newErrors = { ...prevErrors };
+  //     delete newErrors[key]; // Remove the error for the key if it exists
+  //     return newErrors;
+  //   });
+  // };
 
-  const hasApiErrors = useCallback(() => {
-    console.log(errors);
-    return Object.values(errors).some((error) => error != null);
-  }, [errors]);
+  // const hasApiErrors = useCallback(() => {
+  //   console.log(errors);
+  //   return Object.values(errors).some((error) => error != null);
+  // }, [errors]);
+
+  const hasApiErrors = () => {
+    const errors = [
+      fetchDataError,
+      postDataError,
+      putDataError,
+      deleteDataError,
+      deleteToneByIdError,
+      getDataByIdError,
+    ];
+
+    return errors.some((error) => error && error.length > 0);
+  };
 
   useEffect(() => {
     fetchData();

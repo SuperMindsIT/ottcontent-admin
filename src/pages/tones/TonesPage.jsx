@@ -12,8 +12,8 @@ const TonesPage = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [open, setOpen] = useState(false);
 
-  const handleDeleteClick = (gameId) => {
-    setDeleteId(gameId);
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
     setOpen(true);
   };
 

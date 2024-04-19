@@ -18,13 +18,7 @@ const AddTonesPage = () => {
   const { postData, isLoading, hasApiErrors } = useTonesApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
-  const [submitAttempted, setSubmitAttempted] = useState(false);
-
-  useEffect(() => {
-    if (submitAttempted && !isLoading && !hasApiErrors()) {
-      navigate("/tones");
-    }
-  }, [submitAttempted, isLoading, hasApiErrors]);
+  console.log(selectedFile, "ddmdmdmd");
 
   const formik = useFormik({
     initialValues: {
@@ -35,15 +29,21 @@ const AddTonesPage = () => {
       const data = {
         title: values.name,
       };
-
       const formData = new FormData();
       formData.append("audio", selectedFile);
-
-      if (selectedFile) {
-        await postData(data, formData);
-        setSubmitAttempted(true);
-      } else {
-        toast.error("Upload the audio file");
+      if (selectedFile === "Not available" || selectedFile === null) {
+        toast.error("image is necessary");
+        return;
+      }
+      await postData(data, formData);
+      {
+        if (
+          !isLoading &&
+          !hasApiErrors() &&
+          (selectedFile !== "Not available" || selectedFile !== null)
+        ) {
+          navigate("/tones");
+        }
       }
     },
   });

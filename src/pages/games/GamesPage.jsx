@@ -16,10 +16,17 @@ const GamesPage = () => {
     setDeleteId(gameId);
     setOpen(true);
   };
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleDeleteConfirm = () => {
     deleteData(deleteId);
     setOpen(false);
+  };
+
+  const handleGameClick = (gameId) => {
+    navigate(`/games/${gameId}`);
   };
 
   const columns = [
@@ -54,7 +61,7 @@ const GamesPage = () => {
           <Stack direction="row" spacing={2}>
             <Button
               sx={{ px: 0, minWidth: 0 }}
-              onClick={() => navigate(`/games/${params.id}`)}
+              onClick={() => handleGameClick(params.id)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -96,7 +103,7 @@ const GamesPage = () => {
             </Button>
             <DeleteConfirmationDialog
               open={open}
-              onClose={() => setOpen(false)}
+              onClose={handleClose}
               onConfirm={handleDeleteConfirm}
               deleteItem={"Delete Game?"}
               deleteMessage={"Are you sure you want to delete this Game?"}

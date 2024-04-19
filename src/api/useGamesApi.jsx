@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { appsApi } from "./api";
 import { toast } from "react-toastify";
 
@@ -6,7 +6,12 @@ const useGamesApi = () => {
   const [data, setData] = useState([]);
   const [gameById, setGameById] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [errors, setErrors] = useState({});
+  const [fetchDataError, setFetchDataError] = useState(null);
+  const [postDataError, setPostDataError] = useState(null);
+  const [putDataError, setPutDataError] = useState(null);
+  const [deleteDataError, setDeleteDataError] = useState(null);
+  const [getDataByIdError, setGetDataByIdError] = useState(null);
+  const [deleteImageByIdError, setDeleteImageByIdError] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -14,9 +19,8 @@ const useGamesApi = () => {
       const { data } = await appsApi.get("/games");
       setData(data);
       setIsLoading(false);
-      clearError("fetchData"); // Clear error on success
     } catch (error) {
-      setErrors((prevErrors) => ({ ...prevErrors, fetchData: error }));
+      setFetchDataError(error);
       console.error(error);
     }
   };
@@ -24,8 +28,6 @@ const useGamesApi = () => {
   const postThumbnail = async (gameId, thumbnailData) => {
     const intId = parseInt(gameId);
     let response;
-    clearError("postThumbnail");
-    clearError("deleteImageById");
     try {
       response = await appsApi.post(`/games/${intId}/thumbnail`, thumbnailData);
       toast.success("Thumbnail posted successfully", "success");
@@ -36,7 +38,11 @@ const useGamesApi = () => {
         console.log("image conflict");
         return;
       }
+      toast.error(error.response.data.message, "error");
+      console.log(error.response.data.message, "status is not 409");
       setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
+
+      // setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
       // console.log(error.response.data.message, "status is not 409");
       throw error;
     }
@@ -46,38 +52,37 @@ const useGamesApi = () => {
     try {
       setIsLoading(true);
       let response;
-      if (thumbnailData) {
-        response = await appsApi.post("/games", gameData);
-        const intid = parseInt(response?.data?.id);
-        await postThumbnail(intid, thumbnailData);
-        clearError("postData"); // Clear error on success
-        clearError("postThumbnail");
-      }
+      response = await appsApi.post("/games", gameData);
+      const intid = parseInt(response?.data?.id);
+      await postThumbnail(intid, thumbnailData);
       toast.success("Game Created Successfully", "success");
       toast.success(response.data.message, "success");
+      getDataById(intid);
       fetchData();
-      // getDataById(intid);
     } catch (error) {
-      // console.log(error?.response?.status);
-      if (error?.response?.status !== 409) {
-        setErrors((prevErrors) => ({ ...prevErrors, postData: error }));
-        toast.error(error.response?.data?.message || error.message, "error");
+      if (error?.response?.status === 409) {
+        console.log("image/file conflict");
       }
+      setPostDataError(error);
+      toast.error(error.response?.data?.message || error.message, "error");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const putData = async (id, gameData, thumbnailData) => {
+  const putData = async (id, gameData, thumbnailData, selectedFileBackend) => {
     const intid = parseInt(id);
+    // console.log(selectedFileBackend, "selected file backend in put data");
     try {
       setIsLoading(true);
       let response;
-      if (thumbnailData) {
-        response = await appsApi.put(`/games/${intid}`, gameData);
+      // console.log(thumbnailData, "thumbnail in putData");
+      response = await appsApi.put(`/games/${intid}`, gameData);
+      if (
+        selectedFileBackend !== null &&
+        selectedFileBackend !== "Not available"
+      ) {
         await postThumbnail(intid, thumbnailData);
-        clearError("putData"); // Clear error on success
-        clearError("postThumbnail");
       }
       toast.success("Game Updated Successfully", "success");
       toast.success(response.data.message, "success");
@@ -85,10 +90,12 @@ const useGamesApi = () => {
       getDataById(intid);
     } catch (error) {
       console.log(error?.response?.status);
-      if (error?.response?.status !== 409) {
-        setErrors((prevErrors) => ({ ...prevErrors, putData: error }));
-        toast.error(error.response.data.message, "error");
+      if (error?.response?.status === 409) {
+        console.log("image/ file conflict");
+        return;
       }
+      setPutDataError(error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -99,14 +106,11 @@ const useGamesApi = () => {
     try {
       setIsLoading(true);
       await appsApi.delete(`/games/${intid}`);
-      clearError("deleteData"); // Clear error on success
       toast.success("Game Deleted Successfully", "success");
       fetchData(); // Refresh data after posting
     } catch (error) {
-      setErrors((prevErrors) => ({ ...prevErrors, deleteData: error }));
-      if (error?.response?.status !== 404) {
-        toast.error(error.response.data.message, "error");
-      }
+      setDeleteDataError(error);
+      toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
@@ -117,10 +121,10 @@ const useGamesApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.get(`/games/${intid}`);
-      clearError("getDataById"); // Clear error on success
       setGameById(response?.data);
+      fetchData();
     } catch (error) {
-      setErrors((prevErrors) => ({ ...prevErrors, getDataById: error }));
+      setGetDataByIdError(error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
@@ -132,53 +136,37 @@ const useGamesApi = () => {
     try {
       setIsLoading(true);
       const response = await appsApi.delete(`/games/${intid}/thumbnail`);
-      clearError("deleteImageById"); // Clear error on success
       toast.success(response.data.message, "success");
       getDataById(intid);
     } catch (error) {
-      setErrors((prevErrors) => ({ ...prevErrors, deleteImageById: error }));
+      setDeleteImageByIdError(error);
       toast.error(error.response.data.message, "error");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // const clearError = (key) => {
-  //   setErrors((prevErrors) => {
-  //     const newErrors = { ...prevErrors };
-  //     delete newErrors[key]; // Remove the error for the key if it exists
-  //     return newErrors;
-  //   });
-  // };
+  const hasApiErrors = () => {
+    const errors = [
+      fetchDataError,
+      postDataError,
+      putDataError,
+      deleteDataError,
+      deleteImageByIdError,
+      getDataByIdError,
+    ];
 
-  const clearError = (key) => {
-    console.log(`Clearing error for key: ${key}`);
-    setErrors((prevErrors) => {
-      if (key in prevErrors) {
-        const { [key]: removedError, ...newErrors } = prevErrors;
-        console.log(`Error cleared. New errors:`, newErrors);
-        return newErrors;
-      }
-      // console.log(`No change in errors as key ${key} did not exist.`);
-      return prevErrors;
-    });
+    return errors.some((error) => error && error.length > 0);
   };
-
-  const hasApiErrors = useCallback(() => {
-    console.log(errors);
-    return Object.values(errors).some((error) => error != null);
-  }, [errors]);
 
   useEffect(() => {
     fetchData();
-    // hasApiErrors();
   }, []);
 
   return {
     data,
     isLoading,
     gameById,
-    errors,
     hasApiErrors,
     postData,
     deleteData,

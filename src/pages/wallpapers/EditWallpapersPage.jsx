@@ -29,7 +29,8 @@ const EditWallpapersPage = () => {
 
   const [open, setOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [selectedFileBackend, setSelectedFileBackend] = useState(null);
+  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
 
   useEffect(() => {
     getDataById(wallpaperId);
@@ -37,22 +38,15 @@ const EditWallpapersPage = () => {
 
   useEffect(() => {
     if (wallpaperById) {
-      console.log(wallpaperById, "wallpaper by id in edit page");
       formik.setValues({
         name: wallpaperById.title || "",
       });
       if (wallpaperById.image) {
         setSelectedFile(wallpaperById.image);
       }
+      setSelectedFileBackend(wallpaperById.image);
     }
   }, [wallpaperById]);
-
-  useEffect(() => {
-    // console.log(isLoading, "is loading in edit");
-    if (submitAttempted && !isLoading && !hasApiErrors()) {
-      navigate("/wallpapers");
-    }
-  }, [submitAttempted, isLoading, hasApiErrors]);
 
   const formik = useFormik({
     initialValues: {
@@ -63,37 +57,62 @@ const EditWallpapersPage = () => {
       const data = {
         title: values.name,
       };
-
       const formData = new FormData();
       formData.append("image", selectedFile);
-
       const wallpaperIntId = parseInt(wallpaperId, 10);
+      if (
+        deleteItemConfirm &&
+        selectedFileBackend !== null &&
+        selectedFileBackend !== "Not available"
+      ) {
+        await handleDeleteImage(wallpaperIntId);
+        setDeleteItemConfirm(!deleteItemConfirm);
+      }
+      if (selectedFile === null && selectedFile === "Not available") {
+        toast.error("image is necessary");
+        return;
+      }
+      await putData(wallpaperIntId, data, formData), selectedFileBackend;
 
-      if (selectedFile && selectedFile !== "Not available") {
-        await putData(wallpaperIntId, data, formData);
-        setSubmitAttempted(true);
-      } else {
-        toast.error("Upload the wallpaper too");
+      console.log(
+        !isLoading &&
+          !hasApiErrors() &&
+          (selectedFile !== "Not available" || selectedFile !== null)
+      );
+      if (
+        !isLoading &&
+        !hasApiErrors() &&
+        (selectedFile !== "Not available" || selectedFile !== null)
+      ) {
+        navigate("/wallpapers");
       }
     },
   });
 
-  const handleDeleteConfirm = async () => {
-    const wallpaperIntId = parseInt(wallpaperId, 10);
-
-    if (selectedFile !== null && selectedFile !== "Not available") {
-      await deleteImageById(wallpaperIntId);
+  const handleDeleteImage = async (id) => {
+    try {
+      await deleteImageById(id);
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Error deleting image:", error);
     }
-    setSelectedFile(null);
-    setOpen(false);
   };
 
   const handleCancel = () => {
-    if (selectedFile && selectedFile !== "Not available") {
-      navigate("/wallpapers");
-    } else {
-      toast.error("Upload the wallpaper too");
-    }
+    navigate("/wallpapers");
+  };
+
+  // for delete dialog
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleDeleteClick = () => {
+    setOpen(true);
+  };
+  const handleDeleteConfirm = () => {
+    setSelectedFile(null);
+    setDeleteItemConfirm(true);
+    setOpen(false);
   };
 
   return (
@@ -153,7 +172,7 @@ const EditWallpapersPage = () => {
                 <CustomButton
                   btn="secondary"
                   label="Delete Image"
-                  onClick={() => setOpen(true)}
+                  onClick={() => handleDeleteClick(wallpaperId)}
                 />
               </Box>
             ) : (
@@ -166,7 +185,7 @@ const EditWallpapersPage = () => {
             )}
             <DeleteConfirmationDialog
               open={open}
-              onClose={() => setOpen(false)}
+              onClose={handleClose}
               onConfirm={handleDeleteConfirm}
               deleteItem={"Delete Image?"}
               deleteMessage={"Are you sure you want to delete this Image?"}
