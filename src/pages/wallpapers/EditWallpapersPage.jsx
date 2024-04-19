@@ -31,10 +31,14 @@ const EditWallpapersPage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFileBackend, setSelectedFileBackend] = useState(null);
   const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
+  const [apiErrors, setApiError] = useState(false);
 
   useEffect(() => {
     getDataById(wallpaperId);
   }, []);
+  useEffect(() => {
+    setApiError(hasApiErrors());
+  }, [hasApiErrors, isLoading, selectedFile]);
 
   useEffect(() => {
     if (wallpaperById) {
@@ -77,7 +81,8 @@ const EditWallpapersPage = () => {
       console.log(
         !isLoading &&
           !hasApiErrors() &&
-          (selectedFile !== "Not available" || selectedFile !== null)
+          (selectedFile !== "Not available" || selectedFile !== null),
+        "kjahdkjw diwuegf ieugfou fguekyg"
       );
       if (
         !isLoading &&

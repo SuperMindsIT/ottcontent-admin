@@ -7,6 +7,7 @@ const useWallpapersApi = () => {
   const [wallpaperById, setWallpaperById] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchDataError, setFetchDataError] = useState(null);
+  const [postThumbnailError, setPostThumbnailError] = useState(null);
   const [postDataError, setPostDataError] = useState(null);
   const [putDataError, setPutDataError] = useState(null);
   const [deleteDataError, setDeleteDataError] = useState(null);
@@ -41,7 +42,8 @@ const useWallpapersApi = () => {
         console.log("image conflict");
         return;
       }
-      toast.error(error.response.data.message, "error");
+      // toast.error(error.response.data.message, "error");
+      setPostThumbnailError(error);
       console.log(error.response.data.message, "status is not 409");
       // setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
 
@@ -159,6 +161,7 @@ const useWallpapersApi = () => {
       deleteDataError,
       deleteImageByIdError,
       getDataByIdError,
+      postThumbnailError,
     ];
 
     return errors.some((error) => error && error.length > 0);
