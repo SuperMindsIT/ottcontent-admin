@@ -18,6 +18,7 @@ const AddWallpapersPage = () => {
   const { postData, isLoading, hasApiErrors } = useWallpapersApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
+  console.log(selectedFile, "ddmdmdmd");
 
   const formik = useFormik({
     initialValues: {
@@ -32,13 +33,17 @@ const AddWallpapersPage = () => {
       const formData = new FormData();
       formData.append("image", selectedFile);
 
-      if (selectedFile) {
-        await postData(data, formData);
-        if (!isLoading && !hasApiErrors()) {
-          navigate("/wallpapers");
-        }
-      } else {
-        toast.error("Upload the wallpaper");
+      if (selectedFile === "Not available" || selectedFile === null) {
+        toast.error("image is necessary");
+        return;
+      }
+      await postData(data, formData);
+      if (
+        !isLoading &&
+        !hasApiErrors() &&
+        (selectedFile !== "Not available" || selectedFile !== null)
+      ) {
+        navigate("/wallpapers");
       }
     },
   });

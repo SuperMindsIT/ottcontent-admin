@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
@@ -19,6 +19,7 @@ const AddGamesPage = () => {
   const { postData, isLoading, hasApiErrors } = useGamesApi();
 
   const [selectedFile, setSelectedFile] = useState(null);
+  console.log(selectedFile, "ddmdmdmd");
 
   const formik = useFormik({
     initialValues: {
@@ -35,13 +36,19 @@ const AddGamesPage = () => {
       const formData = new FormData();
       formData.append("thumbnail", selectedFile);
 
-      if (selectedFile) {
-        await postData(data, formData);
-        if (!isLoading && !hasApiErrors()) {
+      if (selectedFile === "Not available" || selectedFile === null) {
+        toast.error("image is necessary");
+        return;
+      }
+      await postData(data, formData);
+      {
+        if (
+          !isLoading &&
+          !hasApiErrors() &&
+          (selectedFile !== "Not available" || selectedFile !== null)
+        ) {
           navigate("/games");
         }
-      } else {
-        toast.error("Upload the image too");
       }
     },
   });

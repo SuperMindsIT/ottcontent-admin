@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { appsApi } from "./api";
 import { toast } from "react-toastify";
 
@@ -25,45 +25,82 @@ const useWallpapersApi = () => {
     }
   };
 
+  const postThumbnail = async (id, thumbnailData) => {
+    const intId = parseInt(id);
+    let response;
+    try {
+      response = await appsApi.post(
+        `/wallpapers/${intId}/image`,
+        thumbnailData
+      );
+      toast.success("Wallpaper posted successfully", "success");
+      return response;
+    } catch (error) {
+      console.log(error?.response?.status);
+      if (error?.response?.status === 409) {
+        console.log("image conflict");
+        return;
+      }
+      toast.error(error.response.data.message, "error");
+      console.log(error.response.data.message, "status is not 409");
+      // setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
+
+      // setErrors((prevErrors) => ({ ...prevErrors, postThumbnail: error }));
+      // console.log(error.response.data.message, "status is not 409");
+      throw error;
+    }
+  };
+
   const postData = async (wallpaperData, thumbnailData) => {
     try {
       setIsLoading(true);
       let response;
       response = await appsApi.post("/wallpapers", wallpaperData);
       const intid = parseInt(response?.data?.id);
-      response = await appsApi.post(
-        `/wallpapers/${intid}/image`,
-        thumbnailData
-      );
+      await postThumbnail(intid, thumbnailData);
       toast.success("Wallpaper Created Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData(); // Refresh data after posting
       getDataById(intid);
     } catch (error) {
+      if (error?.response?.status === 409) {
+        console.log("image conflict");
+      }
       setPostDataError(error);
-      toast.error(error.response.data.message, "error");
+      toast.error(error.response?.data?.message || error.message, "error");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const putData = async (id, wallpaperData, thumbnailData) => {
+  const putData = async (
+    id,
+    wallpaperData,
+    thumbnailData,
+    selectedFileBackend
+  ) => {
     const intid = parseInt(id);
     try {
       setIsLoading(true);
       let response;
       response = await appsApi.put(`/wallpapers/${intid}`, wallpaperData);
-      response = await appsApi.post(
-        `/wallpapers/${intid}/image`,
-        thumbnailData
-      );
+      if (
+        selectedFileBackend !== null &&
+        selectedFileBackend !== "Not available"
+      ) {
+        await postThumbnail(intid, thumbnailData);
+      }
       toast.success("Wallpaper Updated Successfully", "success");
       toast.success(response.data.message, "success");
       fetchData();
       getDataById(intid);
     } catch (error) {
+      if (error?.response?.status === 409) {
+        console.log("image conflict");
+        return;
+      }
       setPutDataError(error);
-      toast.error(error.response.data.message, "error");
+      toast.error(error.response?.data?.message || error.message, "error");
     } finally {
       setIsLoading(false);
     }

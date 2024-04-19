@@ -1,10 +1,15 @@
 import { Box, Button, Typography } from "@mui/material";
 import DataTable from "../components/DataTable";
 import PropTypes from "prop-types";
+import { useAuth } from "../hooks/useAuth";
 
 const MainLayout = (props) => {
   const { title, onAddClick, rows, columns, isLoading, searchFields } = props;
-  console.log(rows, "row data");
+  // console.log(rows, "row data");
+  const { user } = useAuth();
+  if (!user) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div>

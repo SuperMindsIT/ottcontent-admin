@@ -28,7 +28,9 @@ const EditTonesPage = () => {
   } = useTonesApi();
 
   const [open, setOpen] = useState(false);
+  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFileBackend, setSelectedFileBackend] = useState(null);
 
   useEffect(() => {
     getDataById(toneId);
@@ -42,6 +44,7 @@ const EditTonesPage = () => {
       if (toneById.audio) {
         setSelectedFile(toneById.audio);
       }
+      setSelectedFileBackend(toneById.audio);
     }
   }, [toneById]);
 
@@ -54,37 +57,62 @@ const EditTonesPage = () => {
       const data = {
         title: values.name,
       };
-
       const formData = new FormData();
       formData.append("audio", selectedFile);
-
       const toneIntId = parseInt(toneId, 10);
+      if (
+        deleteItemConfirm &&
+        selectedFileBackend !== null &&
+        selectedFileBackend !== "Not available"
+      ) {
+        await handleDeleteTone(toneIntId);
+        setDeleteItemConfirm(!deleteItemConfirm);
+      }
+      if (selectedFile === null && selectedFile === "Not available") {
+        toast.error("Audio is necessary");
+        return;
+      }
+      await putData(toneIntId, data, formData), selectedFileBackend;
 
-      if (selectedFile && selectedFile !== "Not available") {
-        await putData(toneIntId, data, formData);
-        if (!isLoading && !hasApiErrors()) {
-          navigate("/tones");
-        }
-      } else {
-        toast.error("Upload the audio too");
+      console.log(
+        !isLoading &&
+          !hasApiErrors() &&
+          (selectedFile !== "Not available" || selectedFile !== null)
+      );
+      if (
+        !isLoading &&
+        !hasApiErrors() &&
+        (selectedFile !== "Not available" || selectedFile !== null)
+      ) {
+        navigate("/tones");
       }
     },
   });
 
-  const handleDeleteConfirm = async () => {
-    const toneIntId = parseInt(toneId, 10);
-
-    await deleteToneById(toneIntId);
-    setSelectedFile(null);
-    setOpen(false);
+  const handleDeleteTone = async (id) => {
+    try {
+      await deleteToneById(id);
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Error deleting tone:", error);
+    }
   };
 
   const handleCancel = () => {
-    if (selectedFile && selectedFile !== "Not available") {
-      navigate("/tones");
-    } else {
-      toast.error("Upload the audio too");
-    }
+    navigate("/tones");
+  };
+
+  // for delete dialog
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleDeleteClick = () => {
+    setOpen(true);
+  };
+  const handleDeleteConfirm = () => {
+    setSelectedFile(null);
+    setDeleteItemConfirm(true);
+    setOpen(false);
   };
 
   return (
@@ -161,7 +189,7 @@ const EditTonesPage = () => {
             )}
             <DeleteConfirmationDialog
               open={open}
-              onClose={() => setOpen(false)}
+              onClose={handleClose}
               onConfirm={handleDeleteConfirm}
               deleteItem={"Delete Audio?"}
               deleteMessage={"Are you sure you want to delete this Audio?"}

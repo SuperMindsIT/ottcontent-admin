@@ -6,14 +6,22 @@ import * as Yup from "yup";
 import { Button, Checkbox, FormControlLabel } from "@mui/material";
 import CustomTextField from "../components/CustomTextField";
 import { useAuth } from "../hooks/useAuth";
+import { toast } from "react-toastify";
 
 const LoginPage = () => {
   const { login } = useAuth();
 
-  const onSubmit = async (values, setSubmitting) => {
-    alert(JSON.stringify(values));
-    setSubmitting(true);
-    await login(values.username);
+  const onSubmit = async (values, setSubmitting, resetForm) => {
+    if (
+      values.username === "adminOttContent" &&
+      values.password === "ottContent@123"
+    ) {
+      setSubmitting(true);
+      await login(values.username);
+      resetForm();
+    } else {
+      toast.error("Wrong Credentials");
+    }
   };
 
   return (
@@ -57,8 +65,8 @@ const LoginPage = () => {
           </Typography>
           <Formik
             initialValues={{ username: "", password: "" }}
-            onSubmit={(values, { setSubmitting }) =>
-              onSubmit(values, setSubmitting)
+            onSubmit={(values, { setSubmitting, resetForm }) =>
+              onSubmit(values, setSubmitting, resetForm)
             }
             validationSchema={Yup.object().shape({
               username: Yup.string().required("Required"),

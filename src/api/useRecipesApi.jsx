@@ -13,6 +13,15 @@ const useRecipesApi = () => {
 
   const [errors, setErrors] = useState({});
 
+  const hasApiErrors = useCallback(() => {
+    console.log(errors, "errors in hasApi ");
+    return Object.values(errors).some((error) => error != null);
+  }, [errors]);
+
+  useEffect(() => {
+    hasApiErrors();
+  }, [errors]);
+
   // get recipes data (all the categories)
   const fetchData = async () => {
     setIsLoading(true);
@@ -424,11 +433,6 @@ const useRecipesApi = () => {
 
   //   return errors.some((error) => error && error.length > 0);
   // };
-
-  const hasApiErrors = useCallback(() => {
-    console.log(errors, "errors in hasApi ");
-    return Object.values(errors).some((error) => error != null);
-  }, [errors]);
 
   useEffect(() => {
     fetchData();

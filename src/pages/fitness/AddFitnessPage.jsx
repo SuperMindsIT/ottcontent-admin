@@ -12,7 +12,6 @@ import useFitnessApi from "../../api/useFitnessApi";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
-import { values } from "draft-js/lib/DefaultDraftBlockRenderMap";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 

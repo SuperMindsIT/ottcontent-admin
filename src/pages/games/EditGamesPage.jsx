@@ -29,7 +29,9 @@ const EditGamesPage = () => {
   } = useGamesApi();
 
   const [open, setOpen] = useState(false);
+  const [deleteItemConfirm, setDeleteItemConfirm] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFileBackend, setSelectedFileBackend] = useState(null);
 
   useEffect(() => {
     getDataById(gameId);
@@ -44,6 +46,7 @@ const EditGamesPage = () => {
       if (gameById.thumbnail) {
         setSelectedFile(gameById.thumbnail);
       }
+      setSelectedFileBackend(gameById.thumbnail);
     }
   }, [gameById]);
 
@@ -58,37 +61,62 @@ const EditGamesPage = () => {
         title: values.name,
         iframe: values.iframe,
       };
-
       const formData = new FormData();
       formData.append("thumbnail", selectedFile);
-
       const gameIdInt = parseInt(gameId, 10);
+      if (
+        deleteItemConfirm &&
+        selectedFileBackend !== null &&
+        selectedFileBackend !== "Not available"
+      ) {
+        await handleDeleteImage(gameIdInt);
+        setDeleteItemConfirm(!deleteItemConfirm);
+      }
+      if (selectedFile === null && selectedFile === "Not available") {
+        toast.error("image is necessary");
+        return;
+      }
+      await putData(gameIdInt, data, formData), selectedFileBackend;
 
-      if (selectedFile !== null && selectedFile !== "Not available") {
-        await putData(gameIdInt, data, formData);
-        if (!isLoading && !hasApiErrors()) {
-          navigate("/games");
-        }
-      } else {
-        toast.error("Upload the image too");
+      console.log(
+        !isLoading &&
+          !hasApiErrors() &&
+          (selectedFile !== "Not available" || selectedFile !== null)
+      );
+      if (
+        !isLoading &&
+        !hasApiErrors() &&
+        (selectedFile !== "Not available" || selectedFile !== null)
+      ) {
+        navigate("/games");
       }
     },
   });
 
-  const handleDeleteConfirm = async () => {
-    const gameIdInt = parseInt(gameId, 10);
-
-    await deleteImageById(gameIdInt);
-    setSelectedFile(null);
-    setOpen(false);
+  const handleDeleteImage = async (id) => {
+    try {
+      await deleteImageById(id);
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
   };
 
   const handleCancel = () => {
-    if (selectedFile && selectedFile !== "Not available") {
-      navigate("/games");
-    } else {
-      toast.error("Upload the image too");
-    }
+    navigate("/games");
+  };
+
+  // for delete dialog
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleDeleteClick = () => {
+    setOpen(true);
+  };
+  const handleDeleteConfirm = () => {
+    setSelectedFile(null);
+    setDeleteItemConfirm(true);
+    setOpen(false);
   };
 
   return (
@@ -159,7 +187,7 @@ const EditGamesPage = () => {
                 <CustomButton
                   btn="secondary"
                   label="Delete Image"
-                  onClick={() => setOpen(true)}
+                  onClick={() => handleDeleteClick(gameId)}
                 />
               </Box>
             ) : (
@@ -172,12 +200,10 @@ const EditGamesPage = () => {
             )}
             <DeleteConfirmationDialog
               open={open}
-              onClose={() => setOpen(false)}
+              onClose={handleClose}
               onConfirm={handleDeleteConfirm}
               deleteItem={"Delete Image?"}
-              deleteMessage={
-                "Are you sure you want to delete this image? This action wont be restored."
-              }
+              deleteMessage={"Are you sure you want to delete this image?"}
             />
             <Stack direction="row" spacing={2} sx={{ mt: "150px" }}>
               <CustomButton btn="primary" label="save" type="submit" />

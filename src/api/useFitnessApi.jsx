@@ -61,6 +61,10 @@ const useFitnessApi = () => {
       getDataById(intid);
       fetchData(); // Refresh data after posting
     } catch (error) {
+      if (error?.response?.status === 409) {
+        console.log("image conflict");
+        return;
+      }
       setPostDataError(error);
       toast.error(error.response.data.message, "error");
     } finally {
@@ -92,6 +96,10 @@ const useFitnessApi = () => {
       getDataById(intid);
       fetchData(); // Refresh data after updating
     } catch (error) {
+      if (error?.response?.status === 409) {
+        console.log("image conflict");
+        return;
+      }
       setPutDataError(error);
       toast.error(error.response.data.message, "error");
     } finally {
