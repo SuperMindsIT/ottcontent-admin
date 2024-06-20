@@ -38,7 +38,7 @@ jobs:
 
       # Step 4: Deploys to k8s
       - name: Save DigitalOcean kubeconfig with short-lived credentials
-        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 k8s-superminds
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 k8s-new-superminds
 
       - name: Deploy to DigitalOcean Kubernetes
         if: github.ref == 'refs/heads/main'
